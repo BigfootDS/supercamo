@@ -1,0 +1,44 @@
+{
+  "name": "@bigfootds/super-camo",
+  "version": "0.0.1",
+  "description": "Camo-inspired ODM for NeDB, built specifically for BigfootDS' needs.",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BigfootDS/super-camo.git"
+  },
+  "keywords": [
+    "es6",
+    "odm",
+    "nedb",
+    "nosql",
+    "document",
+    "model",
+    "schema",
+    "database",
+    "data",
+    "datastore",
+    "query",
+    "db"
+  ],
+  "author": {
+    "name": "Alex Stormwood",
+    "email": "alex@bigfootds.com",
+    "url": "https://github.com/AlexStormwood"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BigfootDS/super-camo/issues"
+  },
+  "homepage": "https://github.com/BigfootDS/super-camo#readme",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "dependencies": {
+    "@seald-io/nedb": "^4.0.4"
+  }
+}
