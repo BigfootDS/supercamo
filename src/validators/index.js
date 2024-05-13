@@ -1,6 +1,9 @@
-import { doesExtendNedbClient } from "./doesExtendNedbClient.js";
+import { doesExtendBaseDocument, doesExtendNedbClient } from "./doesExtendClass.js";
 import { isDatabaseConnected } from "./isDatabaseConnected.js";
 
-export { doesExtendNedbClient, isDatabaseConnected };
+export { 
+	doesExtendBaseDocument, doesExtendNedbClient , 
+	isDatabaseConnected 
+};
 
 

@@ -1,6 +1,6 @@
-# @bigfootds/super-camo
+# @bigfootds/supercamo
 
-Camo-inspired ODM for NeDB, built specifically for BigfootDS' needs.
+Camo-inspired object data modeller (ODM) for NeDB, built specifically for BigfootDS' needs.
 
 ## The what
 
@@ -20,7 +20,7 @@ Camo-inspired ODM for NeDB, built specifically for BigfootDS' needs.
 Run this command:
 
 ```bash
-npm install @bigfootds/super-camo
+npm install @bigfootds/supercamo
 ```
 
 ## The usage
@@ -29,9 +29,9 @@ This package is intended for usage in back-end JavaScript systems - anything tha
 
 ### Concepts
 
-Super-Camo is an object document manager (ODM) for NeDB. This means it's essentially a NoSQL database wrapper.
+SuperCamo is an object document manager (ODM) for NeDB. This means it's essentially a NoSQL database wrapper.
 
-Since Super-Camo facilitates concurrent connections of multiple databases, it's got some fundamental differences in how it works compared to ye olde Camo and other NeDB-compatible ODMs.
+Since SuperCamo facilitates concurrent connections of multiple databases, it's got some fundamental differences in how it works compared to ye olde Camo and other NeDB-compatible ODMs.
 
 Essentially:
 
@@ -45,7 +45,7 @@ Essentially:
 Import the package like so:
 
 ```js
-const supercamo = require("@bigfootds/super-camo");
+const SuperCamo = require("@bigfootds/supercamo");
 ```
 
 ## Example Projects

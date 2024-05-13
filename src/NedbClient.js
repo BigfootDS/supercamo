@@ -1,5 +1,13 @@
 import Datastore from "@seald-io/nedb";
-import path from "node:fs";
+import path from "node:path";
+import fs from "node:fs";
+
+const urlToPath = function(url) {
+    if (url.indexOf('nedb://') > -1) {
+        return url.slice(7, url.length);
+    }
+    return url;
+};
 
 const getCollectionPath = function(dbLocation, collection) {
     if (dbLocation === 'memory') {
@@ -31,16 +39,29 @@ export default class NedbClient {
 		this._url = url;
 	}
 
+
+	// #region Client static properties
+
+	/**
+	 * 
+	 */
 	static documents = {
 		// DocumentName: some imported ref of the Document
 	}
 
+	static collections = [
+
+	]
 	
     static connect(url, options) {
         throw new TypeError('You must override connect (static).');
     }
 
+	//#endregion
 	
+
+	// #region Client instance properties
+
     /**
 	 * Disconnect from the database.
 	 * 
@@ -66,4 +87,67 @@ export default class NedbClient {
 	dropDatabase(disconnect = true) {
         throw new TypeError('You must override dropDatabase.');
     }
+
+	clearCollection(collection) {
+        throw new TypeError('You must override clearCollection.');
+    }
+
+	toCanonicalId(id) {
+        return id;
+    }
+
+	// Native ids are the same as NeDB ids
+    isNativeId(value) {
+        return String(value).match(/^[a-zA-Z0-9]{16}$/) !== null;
+    }
+
+	nativeIdType() {
+        return String;
+    }
+
+    driver() {
+        return this._collections;
+    }
+
+	save(collection, query, values) {
+        throw new TypeError('You must override save.');
+    }
+
+    delete(collection) {
+        throw new TypeError('You must override delete.');
+    }
+
+    deleteOne(collection, query) {
+        throw new TypeError('You must override deleteOne.');
+    }
+
+    deleteMany(collection, query) {
+        throw new TypeError('You must override deleteMany.');
+    }
+
+    findOne(collection, query) {
+        throw new TypeError('You must override findOne.');
+    }
+
+    findOneAndUpdate(collection, query, values, options) {
+        throw new TypeError('You must override findOneAndUpdate.');
+    }
+
+    findOneAndDelete(collection, query, options) {
+        throw new TypeError('You must override findOneAndDelete.');
+    }
+
+    find(collection, query, options) {
+        throw new TypeError('You must override findMany.');
+    }
+
+    count(collection, query) {
+        throw new TypeError('You must override count.');
+    }
+
+    createIndex(collection, field, options) {
+        throw new TypeError('You must override createIndex.');
+    }
+
+	//#endregion
 }

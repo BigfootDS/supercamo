@@ -14,12 +14,22 @@ class CustomClient extends NedbClient{
 	}
 }
 
+class GrandchildClient extends CustomClient {
+	constructor(url){
+		super(url);
+	}
+
+	someFunction = () => {
+		console.log("grandchild!");
+	}
+}
+
 async function testo(){
 	
 	/**
 	 * @type CustomClient
 	 */
-	let customClientInstance = await SuperCamo.connect(CustomClient, "someName", "./elephants");
+	let customClientInstance = await SuperCamo.connect(GrandchildClient, "someName", "./elephants");
 	// console.log(customClientInstance);
 	// console.log(SuperCamo.connect(CustomClient, "someName", "./elephants"));
 	console.log(SuperCamo.activeClients.someName);
