@@ -41,7 +41,8 @@ export default class SuperCamo {
 	 * @param databaseDirectory A path to a directory to store all NeDB files.
 	 * @returns An instance of the provided clientClass.
 	 */
-	static connect = async (clientClass, databaseName, databaseDirectory) => {
+	static connect = async (databaseName, databaseDirectory) => {
+		// THIS FUNCTION NEEDS A REWRITE TO WORK WITH NEDB CLIENT INSTANCES
 		if (!doesExtendNedbClient(clientClass)){
 			throw new Error(`Provided client class doesn't inherit from NedbClient: ${clientClass.name}`);
 		}

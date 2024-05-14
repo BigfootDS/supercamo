@@ -1,39 +1,46 @@
-// import SuperCamo from "../src/index.js";
-
+import Document from "../src/Document.js";
 import NedbClient from "../src/NedbClient.js";
-import SuperCamo from "../src/index.js";
+import * as path from "node:path";
 
-class CustomClient extends NedbClient{
-	constructor(url){
-		super(url);
-		this.url = this._url;
+class User extends Document {
+	constructor(){
+		super();
 	}
 
-	someFunction = () => {
-		console.log("blah");
-	}
-}
-
-class GrandchildClient extends CustomClient {
-	constructor(url){
-		super(url);
-	}
-
-	someFunction = () => {
-		console.log("grandchild!");
-	}
-}
-
-async function testo(){
 	
-	/**
-	 * @type CustomClient
-	 */
-	let customClientInstance = await SuperCamo.connect(GrandchildClient, "someName", "./elephants");
-	// console.log(customClientInstance);
-	// console.log(SuperCamo.connect(CustomClient, "someName", "./elephants"));
-	console.log(SuperCamo.activeClients.someName);
-	customClientInstance.someFunction();
 }
 
-testo();
+class Profile extends Document {
+	constructor(){
+		super();
+	}
+}
+
+class Settings extends Document {
+	constructor(){
+		super();
+	}
+}
+
+
+
+
+
+
+const settingsDb = new NedbClient(
+	path.join(process.cwd(), ".sandbox", "Settings"), 
+	[
+		{name: "Users", model: User}, 
+		{name: "Admins", model: User}, 
+		{name: "Config", model: Settings}
+	]
+);
+
+let result1 = await settingsDb.findOne("Users", {});
+let result2 = await settingsDb.findOne("Admins", {});
+// console.log(settingsDb);
+console.log(result1, result2);
+console.log(settingsDb);
+await settingsDb.dropDatabase();
+console.log(settingsDb);
+

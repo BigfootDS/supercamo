@@ -8,4 +8,8 @@ export default class BaseDocument {
 
 		this._id = null;
 	}
+
+	static findOne = (collectionPath, query) => {
+		console.log("Gonna find one document inside:\n" + collectionPath);
+	}
 }

@@ -1,4 +1,4 @@
-import BaseDocument from "./BaseDocument";
+import BaseDocument from "./BaseDocument.js";
 
 
 export default class EmbeddedDocument extends BaseDocument {
