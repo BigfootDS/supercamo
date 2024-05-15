@@ -8,6 +8,8 @@ Camo-inspired object data modeller (ODM) for NeDB, built specifically for Bigfoo
 - Treat multiple NeDB datastores as a singular database
 - Allow concurrent connections to multiple databases
 - ODM-style wrapping around NeDB datastores
+- Modern JavaScript implementations
+- Leaning on standard NodeJS functions and APIs more than ever before
 
 ## The nitty-gritty
 
