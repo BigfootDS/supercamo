@@ -1,6 +1,6 @@
 
 
-export default class BaseDocument {
+export default class NedbBaseDocument {
 	constructor(){
 		this._schema = {
 			_id: {type: String}

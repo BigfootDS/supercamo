@@ -1,4 +1,4 @@
-import SuperCamo from "../index.js"
+import SuperCamo from "../../index.js";
 
 
 export const isDatabaseConnected = (databaseName) => {

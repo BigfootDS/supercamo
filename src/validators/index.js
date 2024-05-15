@@ -1,5 +1,5 @@
-import { doesExtendBaseDocument, doesExtendNedbClient } from "./doesExtendClass.js";
-import { isDatabaseConnected } from "./isDatabaseConnected.js";
+import { doesExtendBaseDocument, doesExtendNedbClient } from "./functions/doesExtendClass.js";
+import { isDatabaseConnected } from "./functions/isDatabaseConnected.js";
 
 export { 
 	doesExtendBaseDocument, doesExtendNedbClient , 

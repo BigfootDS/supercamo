@@ -1,3 +1,4 @@
+import { NedbDocument, NedbClient } from "./structures/index.js";
 import { doesExtendNedbClient, isDatabaseConnected } from "./validators/index.js";
 
 
@@ -8,7 +9,23 @@ export default class SuperCamo {
 	// SuperCamo.getDatabase(databaseName)[modelName].findOne(collectionQuery);
 	// etc etc.
 
-	//#region Supercamo.activeClients
+
+	// #region SuperCamo.NedbClient
+
+	static #client = NedbClient;
+
+	static get client(){
+		return SuperCamo.#client;
+	}
+
+	static set client(newValue){
+		throw new Error("This reference cannot be updated. Please read the SuperCamo documentation for methods to use, to achieve what you want to do.");
+	}
+
+	// #endregion
+
+
+	//#region SuperCamo.activeClients
 
 	static #activeClients = {};
 
@@ -30,18 +47,18 @@ export default class SuperCamo {
 
 	
 	/**
-	 * Connect to a new database client instance, store its reference in SuperCamo, and return the newly-connected instance.
+	 * Connect to a new database client instance, store its reference in SuperCamo's `SuperCamo.activeClients` property, and return the newly-connected instance.
 	 * 
 	 * This also creates the database if it didn't already exist.
 	 * @author BigfootDS
 	 *
 	 * @async
-	 * @param clientClass A class that inherits from NedbClient, containing your customisations such as allowed Documents.
 	 * @param databaseName A string that follows JavaScript variable naming rules. This will be the key needed to access this database from the SuperCamo.activeClients object, and doesn't need to have any commonality with the database directory path.
 	 * @param databaseDirectory A path to a directory to store all NeDB files.
-	 * @returns An instance of the provided clientClass.
+	 * @param {[{name: string, model: NedbDocument}]} collectionsList An array of objects containing a desired name for a collection as well as the Document-inheriting model that should be used for that collection. You must provide ALL intended models & collections for the database client in this property - don't leave anything out!
+	 * @returns An instance of a NeDB database client.
 	 */
-	static connect = async (databaseName, databaseDirectory) => {
+	static connect = async (databaseName, databaseDirectory = "", collectionsList = []) => {
 		// THIS FUNCTION NEEDS A REWRITE TO WORK WITH NEDB CLIENT INSTANCES
 		if (!doesExtendNedbClient(clientClass)){
 			throw new Error(`Provided client class doesn't inherit from NedbClient: ${clientClass.name}`);
