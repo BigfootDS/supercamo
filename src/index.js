@@ -12,13 +12,13 @@ export default class SuperCamo {
 
 	// #region SuperCamo.NedbClient
 
-	static #client = NedbClient;
+	static #clientType = NedbClient;
 
-	static get client(){
-		return SuperCamo.#client;
+	static get clientType(){
+		return SuperCamo.#clientType;
 	}
 
-	static set client(newValue){
+	static set clientType(newValue){
 		throw new Error("This reference cannot be updated. Please read the SuperCamo documentation for methods to use, to achieve what you want to do.");
 	}
 
@@ -70,6 +70,10 @@ export default class SuperCamo {
 		let clientInstance = new clientClass(databaseDirectory);
 		SuperCamo.#activeClients[databaseName] = clientInstance;
 		return clientInstance;
+	}
+
+	static getClientByName = (name) => {
+		return SuperCamo.#activeClients[databaseName];
 	}
 
 }

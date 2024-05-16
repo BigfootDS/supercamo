@@ -3,7 +3,8 @@ import { isArray, isInChoices, isObject, isType } from "../../validators/index.j
 
 export default class NedbBaseDocument {
 	#data = {};
-	constructor(incomingData){
+	#parentClient = null;
+	constructor(incomingData, parentClient = null){
 		// This _id value comes from NeDB datastores, the dev or user should never be editing this.
 		this._id = {
 			type: String,
@@ -11,6 +12,8 @@ export default class NedbBaseDocument {
 		}
 
 		this.#data = {...incomingData};
+
+		this.#parentClient = parentClient;
 	}
 
 	static create = async (dataObj) => {
@@ -30,12 +33,15 @@ export default class NedbBaseDocument {
 		// Validation stuff 
 		for await (const [key, value] of Object.entries(this)){
 			// #region Compile the data that could potentially trigger a validation failure.
-			let modelExpectsProperty = isObject(this[key])
+			let modelExpectsProperty = isObject(this[key]);
 			let modelInstanceHasData = this.#data[key];
 			let modelInstanceDataMatchesExpectedType = isType(this[key].type, this.#data[key]);
 			let modelHasChoices = isArray(this[key].choices);
 			let modelInstanceDataIsInChoices = isInChoices(this[key].choices, [this.#data[key]]);
 			let modelExpectsUniqueValue = this[key].unique === true;
+			
+			// This one is gonna be a doozy...
+			// let modelInstanceDataIsUnique = this.#parentClient && this.#parentClient[somethingSomething]
 			
 			// #endregion
 
