@@ -4,7 +4,9 @@ import { isArray, isInChoices, isObject, isType } from "../../validators/index.j
 export default class NedbBaseDocument {
 	#data = {};
 	#parentClient = null;
-	constructor(incomingData, parentClient = null){
+	#collectionName = null;
+
+	constructor(incomingData, incomingParentClient = null, incomingCollectionName = null){
 		// This _id value comes from NeDB datastores, the dev or user should never be editing this.
 		this._id = {
 			type: String,
@@ -13,7 +15,9 @@ export default class NedbBaseDocument {
 
 		this.#data = {...incomingData};
 
-		this.#parentClient = parentClient;
+		this.#parentClient = incomingParentClient;
+
+		this.#collectionName = incomingCollectionName;
 	}
 
 	static create = async (dataObj) => {
@@ -39,7 +43,6 @@ export default class NedbBaseDocument {
 			let modelHasChoices = isArray(this[key].choices);
 			let modelInstanceDataIsInChoices = isInChoices(this[key].choices, [this.#data[key]]);
 			let modelExpectsUniqueValue = this[key].unique === true;
-			
 			// This one is gonna be a doozy...
 			// let modelInstanceDataIsUnique = this.#parentClient && this.#parentClient[somethingSomething]
 			
