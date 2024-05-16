@@ -60,3 +60,33 @@ export const isInChoices = (choices, item) => {
 	// https://github.com/nodejs/node/issues/26568
 	return choices.includes(item);
 }
+
+
+// Used in document data validation
+export const isType = (typeWanted, valueToCheck) => {
+	switch (typeWanted.name) {
+		case "String":
+			return isString(valueToCheck);
+		case "Number":
+			return isNumber(valueToCheck);
+		case "Boolean":
+			return isBoolean(valueToCheck);
+		case "Buffer":
+			return isBuffer(valueToCheck);
+		case "Date":
+			return isDate(valueToCheck);
+		case "Array":
+		case isArray(typeWanted):
+			return isArray(valueToCheck);
+		case "Object":
+			return isObject(valueToCheck);
+		case isDocument(typeWanted):
+			// this feels incorrect, will fix later
+			return isDocument(valueToCheck);
+		case isEmbeddedDocument(typeWanted):
+			// this feels incorrect, will fix later
+			return isEmbeddedDocument(valueToCheck);
+		default:
+			throw new TypeError("Unsupported type set in document:" + typeWanted);
+	}
+}
