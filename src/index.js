@@ -1,5 +1,5 @@
 import { NedbDocument, NedbClient } from "./structures/index.js";
-import { doesExtendNedbClient, isDatabaseConnected } from "./validators/index.js";
+import { isDatabaseConnected } from "./validators/index.js";
 import * as path from "node:path";
 
 export default class SuperCamo {
@@ -54,8 +54,16 @@ export default class SuperCamo {
 		return clientInstance;
 	}
 
+	
+	/**
+	 * Retrieve a specific active database client instance from SuperCamo.
+	 * @author BigfootDS
+	 *
+	 * @param name The name of the database you wish to access.
+	 * @returns {NedbClient} A client managing a specific database.
+	 */
 	static getClientByName = (name) => {
-		return SuperCamo.#activeClients[databaseName];
+		return SuperCamo.#activeClients[name];
 	}
 
 	static getClientList = () => {

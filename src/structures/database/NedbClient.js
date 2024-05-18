@@ -384,9 +384,9 @@ export default class NedbClient {
      * @param {Object} query The NeDB query used to find the specific documents within the collection. Read more about NeDB queries here: https://github.com/seald/nedb?tab=readme-ov-file#finding-documents
      * @returns An array of instances of the collection's model.
      */
-    findManyDocuments = async (collectionName, query, projections) => {
+    findManyDocuments = async (collectionName, query) => {
         let accessor = this.getCollectionAccessor(collectionName);
-        let results = await accessor.datastore.findAsync(query, projections);   
+        let results = await accessor.datastore.findAsync(query);   
         let resultsAsInstances = Promise.all(results.map(async (result) => {
             return await accessor.model.create(result);
         }))
@@ -443,17 +443,24 @@ export default class NedbClient {
      * @param {String} collectionName The name of the collection that you wish to search through and modify.
      * @param {Object} query The NeDB query used to find the specific document within the collection.
      * @param {Object} update The updated data to apply to the found document.
-     * @param {Boolean} returnUpdatedDocument If true, this function returns the updated document and all of its contents.
+     * @param {Boolean} returnDocument If true, this function returns the updated document as a document instance. If false, the returned value is just a plain object of data.
      * @returns {{numAffected: Number, upsert: Boolean, affectedDocuments: BaseDocument}}
      */
-    findAndUpdateOne = async (collectionName, query, update, returnUpdatedDocument) => {
+    findAndUpdateOne = async (collectionName, query, update, upsert = false, returnDocument = true) => {
         let options = {
             multi: false,
-            upsert: false,
-            returnUpdatedDocs: returnUpdatedDocument
+            upsert: upsert,
+            returnUpdatedDocs: true
         }
         let accessor = this.getCollectionAccessor(collectionName);
-        return await accessor.datastore.updateAsync(query, update, options);
+        
+        if (returnDocument){
+            let result = await accessor.datastore.updateAsync(query, update, options);
+            return await accessor.model.create(result.affectedDocuments[0]);
+        } else {         
+            return await accessor.datastore.updateAsync(query, update, options);
+
+        }
     }
 
 
@@ -468,17 +475,31 @@ export default class NedbClient {
      * @param {String} collectionName The name of the collection that you wish to search through and modify.
      * @param {Object} query The NeDB query used to find the specific document within the collection.
      * @param {Object} update The updated data to apply to the found document.
-     * @param {Boolean} returnUpdatedDocuments If true, this function returns the updated documents and all of its contents.
+     * @param {Boolean} returnDocuments If true, this function returns the updated documents as document instances. Otherwise, the data is returned as an array of plain objects.
      * @returns {{numAffected: Number, upsert: Boolean, affectedDocuments: [BaseDocument]}}
      */
-    findAndUpdateMany = async (collectionName, query, update, returnUpdatedDocument) => {
+    findAndUpdateMany = async (collectionName, query, update, upsert = false, returnDocuments = true) => {
         let options = {
             multi: true,
-            upsert: false,
-            returnUpdatedDocs: returnUpdatedDocument
+            upsert: upsert,
+            returnUpdatedDocs: true
         }
         let accessor = this.getCollectionAccessor(collectionName);
-        return await accessor.datastore.updateAsync(query, update, options);
+
+        if (returnDocuments){
+            let result = await accessor.datastore.updateAsync(query, update, options);
+
+            let documentList = Promise.all(result.affectedDocuments.map((doc) => {
+                return accessor.model.create(doc)
+            }));
+
+            return documentList;
+        } else {
+            
+            let result = await accessor.datastore.updateAsync(query, update, options);
+
+            return result.affectedDocuments;
+        }
     }
 
     // #endregion
