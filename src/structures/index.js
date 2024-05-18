@@ -1,10 +1,9 @@
-import NedbClient from "./database/NedbClient.js";
-import NedbBaseDocument from "./documents/NedbBaseDocument.js";
-import NedbDocument from "./documents/NedbDocument.js";
-import NedbEmbeddedDocument from "./documents/NedbEmbeddedDocument.js";
+const NedbClient = require("./database/NedbClient.js");
+const NedbBaseDocument = require("./documents/NedbBaseDocument.js");
+const NedbDocument = require("./documents/NedbDocument.js");
+const NedbEmbeddedDocument = require("./documents/NedbEmbeddedDocument.js");
 
-
-export {
+module.exports = {
 	NedbClient, 
 	NedbBaseDocument, NedbDocument, NedbEmbeddedDocument
 };

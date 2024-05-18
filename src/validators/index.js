@@ -1,12 +1,12 @@
-import { doesExtendBaseDocument, doesExtendNedbClient, doesExtendDocument, doesExtendEmbeddedDocument } from "./functions/doesExtendClass.js";
-import { isDatabaseConnected } from "./functions/isDatabaseConnected.js";
-import { isString, isNumber, isBoolean, isDate, isBuffer, isObject, isArray, isDocument, isEmbeddedDocument, isSupportedType, isSupportedTypeOrInheritsFromADocument, isInChoices, isType } from "./functions/typeValidators.js";
+// const { doesExtendBaseDocument, doesExtendNedbClient, doesExtendDocument, doesExtendEmbeddedDocument } = require("./functions/doesExtendClass.js");
+const { isDatabaseConnected, isDatabaseConnected_RootHelper } = require("./functions/isDatabaseConnected.js");
+const { isString, isNumber, isBoolean, isDate, isBuffer, isObject, isArray, isSupportedType, isSupportedTypeOrInheritsFromADocument, isInChoices, isType } = require("./functions/typeValidators.js");
 
 
-export {
-	isString, isNumber, isBoolean, isDate, isBuffer, isObject, isArray, isDocument, isEmbeddedDocument, isSupportedType, isSupportedTypeOrInheritsFromADocument, isInChoices, isType,
-	doesExtendBaseDocument, doesExtendNedbClient, doesExtendDocument, doesExtendEmbeddedDocument,
-	isDatabaseConnected
+module.exports = {
+	isString, isNumber, isBoolean, isDate, isBuffer, isObject, isArray, isSupportedType, isSupportedTypeOrInheritsFromADocument, isInChoices, isType,
+	// doesExtendBaseDocument, doesExtendNedbClient, doesExtendDocument, doesExtendEmbeddedDocument,
+	isDatabaseConnected, isDatabaseConnected_RootHelper
 };
 
 

@@ -1,7 +1,7 @@
-import BaseDocument from "./NedbBaseDocument.js";
+const BaseDocument = require("./NedbBaseDocument.js");
 
 
-export default class NedbEmbeddedDocument extends BaseDocument {
+module.exports = class NedbEmbeddedDocument extends BaseDocument {
 	constructor(incomingData){
 		super(incomingData);
 		
