@@ -1,6 +1,6 @@
 {
   "name": "@bigfootds/supercamo",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Camo-inspired ODM for NeDB, built specifically for BigfootDS' needs.",
   "main": "src/index.js",
   "type": "module",
