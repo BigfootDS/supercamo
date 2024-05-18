@@ -3,10 +3,10 @@ import { isArray, isInChoices, isObject, isType } from "../../validators/index.j
 
 export default class NedbBaseDocument {
 	#data = {};
-	#parentClient = null;
+	#parentDatabaseId = null;
 	#collectionName = null;
 
-	constructor(incomingData, incomingParentClient = null, incomingCollectionName = null){
+	constructor(incomingData, incomingParentDatabaseId = null, incomingCollectionName = null){
 		// This _id value comes from NeDB datastores, the dev or user should never be editing this.
 		this._id = {
 			type: String,
@@ -15,13 +15,34 @@ export default class NedbBaseDocument {
 
 		this.#data = {...incomingData};
 
-		this.#parentClient = incomingParentClient;
+		this.#parentDatabaseId = incomingParentDatabaseId;
 
 		this.#collectionName = incomingCollectionName;
 	}
 
-	static create = async (dataObj) => {
-		
+	
+	/**
+	 * Create a new instance of the model.
+	 * @author BigfootDS
+	 *
+	 * @async
+	 * @param dataObj An object of data matching the model's schema.
+	 * @param {Boolean} [validateOnCreate=false] If you want the instance data to be validated when this function runs, set this to true. Otherwise, you have to save the instance into the database to trigger the validation step.
+	 * @returns {ThisParameterType} An instance of the model.
+	 */
+	static async create (dataObj, validateOnCreate = false) {
+		// For educational notes:
+		// The "this" reference below correctly points to an inheriting class
+		// ONLY when the function is declared with function syntax
+		// (including the weird static async funcName() declaration syntax)
+		// If you declared with const/"fat arrow" syntax, then 
+		// "this" will refer to the originating class of the method instead.
+		// console.log(this);
+		let newInstance = new this(dataObj);
+		if (validateOnCreate){
+			let isValid = await newInstance.#validate();
+		}
+		return newInstance;
 	}
 
 	async preValidate() {
@@ -37,15 +58,42 @@ export default class NedbBaseDocument {
 		// Validation stuff 
 		for await (const [key, value] of Object.entries(this)){
 			// #region Compile the data that could potentially trigger a validation failure.
+		
 			let modelExpectsProperty = isObject(this[key]);
+			if (!modelExpectsProperty){
+				throw new Error("Unexpected property on model instance: " + key);
+			}
+
+			let modelPropertyIsRequired = this[key].required == true;
 			let modelInstanceHasData = this.#data[key];
-			let modelInstanceDataMatchesExpectedType = isType(this[key].type, this.#data[key]);
-			let modelHasChoices = isArray(this[key].choices);
-			let modelInstanceDataIsInChoices = isInChoices(this[key].choices, [this.#data[key]]);
-			let modelExpectsUniqueValue = this[key].unique === true;
-			// This one is gonna be a doozy...
-			// let modelInstanceDataIsUnique = this.#parentClient && this.#parentClient[somethingSomething]
+			if (modelPropertyIsRequired && !modelInstanceHasData){
+				throw new Error("Property requires a value but no value provided: " + key);
+			}
 			
+			let modelInstanceDataMatchesExpectedType = isType(this[key].type, this.#data[key]);
+			if (modelPropertyIsRequired && !modelInstanceDataMatchesExpectedType) {
+				throw new Error(`Property expects a certain data type but did not receive it:\n\tProperty:${key}\n\tType:${key}:${this[key].type.name}\n\tReceived:${this.#data[key]} (${typeof this.#data[key]})`);
+			}
+
+			let modelHasChoices = isArray(this[key].choices);
+			let modelInstanceDataIsInChoices = undefined; 
+			if (modelPropertyIsRequired && modelHasChoices){
+				modelInstanceDataIsInChoices = isInChoices(this[key].choices, [this.#data[key]]);
+
+				if (!modelInstanceDataIsInChoices){
+					throw new Error(`Property limits values to choices, and given value was not one of those allowed choices:\n\tChoices: ${JSON.stringify(this[key].choices)}\n\tReceived: ${this.#data[key]}`);
+				}
+			} 
+
+			let modelExpectsUniqueValue = this[key].unique == true;
+			// This one is gonna be a doozy...
+			let modelInstanceDataIsUnique = undefined;
+			if (modelExpectsUniqueValue){
+
+			}
+			
+
+
 			// #endregion
 
 			// #region Sanitise any properties that are invalid but without triggering a validation failure.
@@ -114,5 +162,9 @@ export default class NedbBaseDocument {
 		}
 
 		return result;
+	}
+
+	static async convertObjectToInstance(dataObj, validateOnCreate = false){
+		return this.create(dataObj, validateOnCreate);
 	}
 }

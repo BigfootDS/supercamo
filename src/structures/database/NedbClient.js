@@ -2,6 +2,7 @@ import Datastore from "@seald-io/nedb";
 import path from "node:path";
 import fs from "node:fs";
 import {NedbDocument} from "../../structures/index.js";
+import { doesExtendDocument } from "../../validators/index.js";
 
 
 const urlToPath = function(url) {
@@ -274,11 +275,19 @@ export default class NedbClient {
      * @returns {Object}
      */
     insertOne = async (collectionName, dataObject) => {
-        if (Array.isArray(dataObject)){
+        let localDataObj = dataObject;
+
+        if (Array.isArray(localDataObj)){
             throw new Error("Don't use insertOne to create multiple documents. Use insertMany instead, please!");
         }
+
+        // If the dataObj is a Document-inheriting class, just convert it to its dataObj
+        if (doesExtendDocument(localDataObj)){
+            localDataObj = localDataObj.convertInstanceToObject();
+        }
+
         let accessor = this.getCollectionAccessor(collectionName);
-        return await accessor.datastore.insertAsync(dataObject);
+        return await accessor.datastore.insertAsync(localDataObj);
     }
 
     /**
@@ -314,7 +323,7 @@ export default class NedbClient {
      * @param {String} collectionName The name of the collection that you wish to search through.
      * @param {Object} query The NeDB query used to find the specific document within the collection. Read more about NeDB queries here: https://github.com/seald/nedb?tab=readme-ov-file#finding-documents
      * @param {Object} projections The NeDB projections used to filter the data returned by the matched query documents. Read more about NeDB projections here: https://github.com/seald/nedb?tab=readme-ov-file#projections
-     * @returns {Object} An array of found documents.
+     * @returns An array of found documents.
      */
     findOne = async (collectionName, query, projections) => {
         let accessor = this.getCollectionAccessor(collectionName);
@@ -329,7 +338,7 @@ export default class NedbClient {
      * @param {String} collectionName The name of the collection that you wish to search through.
      * @param {Object} query The NeDB query used to find the specific documents within the collection. Read more about NeDB queries here: https://github.com/seald/nedb?tab=readme-ov-file#finding-documents
      * @param {Object} projections The NeDB projections used to filter the data returned by the matched query documents. Read more about NeDB projections here: https://github.com/seald/nedb?tab=readme-ov-file#projections
-     * @returns {[Object]} An array of found documents.
+     * @returns An array of found documents.
      */
     findMany = async (collectionName, query, projections) => {
         let accessor = this.getCollectionAccessor(collectionName);

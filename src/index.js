@@ -1,6 +1,6 @@
 import { NedbDocument, NedbClient } from "./structures/index.js";
 import { doesExtendNedbClient, isDatabaseConnected } from "./validators/index.js";
-
+import * as path from "node:path";
 
 export default class SuperCamo {
 	// No constructor! Only statics!
@@ -8,21 +8,6 @@ export default class SuperCamo {
 	// SuperCamo.connect(clientClass, databaseName, databaseDirectory);
 	// SuperCamo.getDatabase(databaseName)[modelName].findOne(collectionQuery);
 	// etc etc.
-
-
-	// #region SuperCamo.NedbClient
-
-	static #clientType = NedbClient;
-
-	static get clientType(){
-		return SuperCamo.#clientType;
-	}
-
-	static set clientType(newValue){
-		throw new Error("This reference cannot be updated. Please read the SuperCamo documentation for methods to use, to achieve what you want to do.");
-	}
-
-	// #endregion
 
 
 	//#region SuperCamo.activeClients
@@ -59,21 +44,22 @@ export default class SuperCamo {
 	 * @returns An instance of a NeDB database client.
 	 */
 	static connect = async (databaseName, databaseDirectory = "", collectionsList = []) => {
-		// THIS FUNCTION NEEDS A REWRITE TO WORK WITH NEDB CLIENT INSTANCES
-		if (!doesExtendNedbClient(clientClass)){
-			throw new Error(`Provided client class doesn't inherit from NedbClient: ${clientClass.name}`);
-		}
+		
 		if (isDatabaseConnected(databaseName)){
 			throw new Error(`Database name already in use: ${databaseName}`);
 		}
 
-		let clientInstance = new clientClass(databaseDirectory);
+		let clientInstance = new NedbClient(path.join(databaseDirectory, databaseName), collectionsList);
 		SuperCamo.#activeClients[databaseName] = clientInstance;
 		return clientInstance;
 	}
 
 	static getClientByName = (name) => {
 		return SuperCamo.#activeClients[databaseName];
+	}
+
+	static getClientList = () => {
+		return Object.keys(SuperCamo.#activeClients);
 	}
 
 }
