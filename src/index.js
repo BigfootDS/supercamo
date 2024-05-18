@@ -1,6 +1,12 @@
-import { NedbDocument, NedbClient } from "./structures/index.js";
+import { NedbDocument, NedbClient, NedbEmbeddedDocument } from "./structures/index.js";
 import { isDatabaseConnected } from "./validators/index.js";
+import * as validators from "./validators/index.js";
 import * as path from "node:path";
+
+export const NedbDocument = NedbDocument;
+export const NedbEmbeddedDocument = NedbEmbeddedDocument;
+export const NedbClient = NedbClient;
+export const validators = validators;
 
 export default class SuperCamo {
 	// No constructor! Only statics!
