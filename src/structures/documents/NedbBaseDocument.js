@@ -28,7 +28,7 @@ export default class NedbBaseDocument {
 	 * @async
 	 * @param dataObj An object of data matching the model's schema.
 	 * @param {Boolean} [validateOnCreate=false] If you want the instance data to be validated when this function runs, set this to true. Otherwise, you have to save the instance into the database to trigger the validation step.
-	 * @returns {ThisParameterType} An instance of the model.
+	 * @returns {this} An instance of the model.
 	 */
 	static async create (dataObj, validateOnCreate = false) {
 		// For educational notes:
@@ -147,12 +147,13 @@ export default class NedbBaseDocument {
 
 	}
 
-	async convertInstanceToObject(){
+	convertInstanceToObject(){
 		let result = {};
 
-		await this.#validate();
+		// Disabling this here because I wanna let toString use it and stay synchronous
+		// await this.#validate();
 
-		for await (const [key, value] of Object.entries(this)){
+		for (const [key, value] of Object.entries(this)){
 			if (isObject(this[key]) && this.#data[key]) {
 				// Only add property to output if it
 				// was defined in the model AND
@@ -167,4 +168,14 @@ export default class NedbBaseDocument {
 	static async convertObjectToInstance(dataObj, validateOnCreate = false){
 		return this.create(dataObj, validateOnCreate);
 	}
+
+	toJson(){
+		return JSON.stringify(this.convertInstanceToObject());
+	}
+
+	toString() {
+		return this.toJson();
+	}
+
+
 }
