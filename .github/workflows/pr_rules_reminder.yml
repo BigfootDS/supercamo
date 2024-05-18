@@ -1,0 +1,18 @@
+name: PR Rules Reminder
+
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  example_comment_pr:
+    runs-on: ubuntu-latest
+    name: Rules for PRs to Main
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Comment PR
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          filePath: .github/workflows/prRulesReminderMessage.md
