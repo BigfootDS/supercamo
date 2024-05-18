@@ -1,8 +1,7 @@
-import Datastore from "@seald-io/nedb";
-import path from "node:path";
-import fs from "node:fs";
-import {NedbDocument} from "../../structures/index.js";
-import { doesExtendDocument, isObject } from "../../validators/index.js";
+const Datastore = require("@seald-io/nedb");
+const path = require("node:path");
+const { isObject } = require("../../validators/index.js");
+// const { doesExtendDocument } = require("../../validators/functions/doesExtendClass.js");
 
 
 const urlToPath = function(url) {
@@ -41,14 +40,14 @@ const getCollection = function(name, collections, path) {
 /**
  * @typedef {Object} CollectionAccessor 
  * @property {String} name Name of the collection.
- * @property {NedbDocument} model Reference to the NedbDocument-inheriting class used to define the collection's data structure.
+ * @property {Object} model Reference to the NedbDocument-inheriting class used to define the collection's data structure.
  * @property {String} path Path to its ".db" NeDB file.
  * @property {Datastore} datastore Reference to the NeDB Datastore object for this collection.
  * 
  */
 
 
-export default class NedbClient {
+module.exports = class NedbClient {
     #rootPath = "";
     #collections = [];
 
@@ -58,7 +57,7 @@ export default class NedbClient {
      *
      * @constructor
      * @param {String} dbDirectoryPath A string representing a resolved path to a directory. This directory will store many ".db" files in it. 
-     * @param {[{name: string, model: NedbDocument}]} collectionsList An array of objects containing a desired name for a collection as well as the NedbDocument-inheriting model that should be used for that collection. You must provide ALL intended models & collections for the database client in this property - don't leave anything out!
+     * @param {[{name: string, model: Object}]} collectionsList An array of objects containing a desired name for a collection as well as the NedbDocument-inheriting model that should be used for that collection. You must provide ALL intended models & collections for the database client in this property - don't leave anything out!
      * 
      * @example
      * let settingsDb = new NedbClient(
@@ -282,7 +281,7 @@ export default class NedbClient {
         }
 
         // If the dataObj is a Document-inheriting class, just convert it to its dataObj
-        if (doesExtendDocument(localDataObj)){
+        if (localDataObj !== null && typeof localDataObj !== 'object' ){
             localDataObj = localDataObj.convertInstanceToObject();
         }
 
@@ -312,7 +311,7 @@ export default class NedbClient {
 
         // If the dataObj is a Document-inheriting class, just convert it to its dataObj
         dataObjects.forEach(dataObject => {
-            if (doesExtendDocument(dataObject)){
+            if (dataObject !== null && typeof dataObject !== 'object' ){
                 localDataObjs.push(dataObject.convertInstanceToObject());
             } else if (isObject(dataObject)){
                 localDataObjs.push(dataObject);

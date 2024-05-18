@@ -1,6 +1,15 @@
-import SuperCamo from "../../index.js";
+const SuperCamo = require("../../index.js")
 
 
-export const isDatabaseConnected = (databaseName) => {
+const isDatabaseConnected = (databaseName) => {
 	return Object.keys(SuperCamo.activeClients).includes(databaseName);
+}
+
+const isDatabaseConnected_RootHelper = (databaseName, activeClientList) => {
+	return Object.keys(activeClientList).includes(databaseName);
+}
+
+module.exports = {
+	isDatabaseConnected,
+	isDatabaseConnected_RootHelper
 }

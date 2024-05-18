@@ -1,14 +1,16 @@
-import { NedbDocument, NedbClient, NedbEmbeddedDocument } from "./structures/index.js";
-import { isDatabaseConnected } from "./validators/index.js";
-import * as validators from "./validators/index.js";
-import * as path from "node:path";
+const { NedbDocument, NedbClient, NedbEmbeddedDocument } = require("./structures/index.js");
+const { isDatabaseConnected_RootHelper } = require("./validators/index.js");
+const validators = require("./validators/index.js");
+const path = require("node:path");
 
-export const NedbDocument = NedbDocument;
-export const NedbEmbeddedDocument = NedbEmbeddedDocument;
-export const NedbClient = NedbClient;
-export const validators = validators;
-
-export default class SuperCamo {
+/**
+ * Main interface of the SuperCamo system.
+ * @author BigfootDS
+ *
+ * @export
+ * @class
+ */
+module.exports = class SuperCamo {
 	// No constructor! Only statics!
 	// Use this library like: 
 	// SuperCamo.connect(clientClass, databaseName, databaseDirectory);
@@ -50,8 +52,7 @@ export default class SuperCamo {
 	 * @returns {NedbClient} An instance of a NeDB database client.
 	 */
 	static connect = async (databaseName, databaseDirectory = "", collectionsList = []) => {
-		
-		if (isDatabaseConnected(databaseName)){
+		if (isDatabaseConnected_RootHelper(databaseName, Object.keys(SuperCamo.#activeClients))){
 			throw new Error(`Database name already in use: ${databaseName}`);
 		}
 
@@ -77,3 +78,8 @@ export default class SuperCamo {
 	}
 
 }
+
+module.exports.NedbClient = NedbClient;
+module.exports.NedbDocument = NedbDocument;
+module.exports.NedbEmbeddedDocument = NedbEmbeddedDocument;
+module.exports.validators = validators;

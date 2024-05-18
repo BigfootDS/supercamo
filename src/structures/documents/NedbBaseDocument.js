@@ -1,7 +1,7 @@
-import { isArray, isInChoices, isObject, isType } from "../../validators/index.js";
+const { isArray, isInChoices, isObject, isType } = require("../../validators/functions/typeValidators.js");
 
 
-export default class NedbBaseDocument {
+module.exports = class NedbBaseDocument {
 	#data = {};
 	#parentDatabaseId = null;
 	#collectionName = null;

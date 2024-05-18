@@ -1,19 +1,24 @@
-import {NedbBaseDocument, NedbClient, NedbDocument, NedbEmbeddedDocument} from "../../structures/index.js";
+const {NedbBaseDocument, NedbDocument, NedbEmbeddedDocument} = require("../../structures/index.js");
 
 
-export const doesExtendBaseDocument = (childClass) => {
-	return NedbDocument.isPrototypeOf(childClass);
+const doesExtendBaseDocument = (childClass) => {
+	return NedbBaseDocument.prototype.isPrototypeOf(childClass);
 }
 
-export const doesExtendDocument = (childClass) => {
-	return NedbBaseDocument.isPrototypeOf(childClass);
+const doesExtendDocument = (childClass) => {
+	console.log("Checking NedbDocument require...")
+	console.log(NedbDocument);
+	return NedbDocument.prototype.isPrototypeOf(childClass);
 }
 
-export const doesExtendEmbeddedDocument = (childClass) => {
-	return NedbEmbeddedDocument.isPrototypeOf(childClass);
+const doesExtendEmbeddedDocument = (childClass) => {
+	return NedbEmbeddedDocument.prototype.isPrototypeOf(childClass);
 }
 
 
-export const doesExtendNedbClient = (childClass) => {
-	return NedbClient.isPrototypeOf(childClass);
+
+
+module.exports = {
+	doesExtendBaseDocument, doesExtendDocument, doesExtendEmbeddedDocument,
+	
 }
