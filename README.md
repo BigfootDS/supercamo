@@ -62,9 +62,59 @@ module.exports = class User extends NedbDocument {
 			type: String,
 			required: true
 		}
+
+		this.company = {
+			type: String,
+			required: true,
+			default: "BigfootDS"
+		}
+
+		this.luckyNumber = {
+			type: Number,
+			required: false,
+			default: () => {
+				return Math.floor(Math.random() * 100) 
+			}
+		}
+
+		this.assignedPokemonOne = {
+			type: String,
+			required: true,
+			default: async () => {
+				let pokemonNumber = Math.floor(Math.random() * 1025);
+				let response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonNumber}`);
+				let data = await response.json();
+				return data.name;
+			}
+		}
+
+		this.assignedPokemonTwo = {
+			type: String,
+			required: false,
+			default: new Promise((resolve, reject) => {
+				let pokemonNumber = Math.floor(Math.random() * 1025);
+				fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonNumber}`).then(response => response.json()).then((data) => {
+					resolve(data.name);
+				}).catch((error) => {
+					reject("pikachu");
+				})
+			})
+		}
 	}
 }
 ```
+
+Some points of difference here, compared to the original Camo library:
+
+- We do allow a document property to be both required **and** have a default value. So if no value is provided for `company` when making instances of the model shown above, it will not throw an error - it will just set the value to `"BigfootDS"` and move on.
+- Whatever value `default` has must evaluate into a supported data type. This means that `default` can be a value, a function, an async function, or promise. 
+
+```
+HEY!
+
+We're still working on this package. Pretty sure Document references and EmbeddedDocuments do nothing right now, as we haven't touched those yet. This package will actively change a lot in 2024!
+```
+
 
 ### Instantiating a Database Client
 

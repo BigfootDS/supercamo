@@ -1,4 +1,4 @@
-const { isArray, isInChoices, isObject, isType } = require("../../validators/functions/typeValidators.js");
+const { isArray, isInChoices, isObject, isType, isFunction, isPromise, isAsyncFunction } = require("../../validators/functions/typeValidators.js");
 
 
 module.exports = class NedbBaseDocument {
@@ -30,7 +30,7 @@ module.exports = class NedbBaseDocument {
 	 * @param {Boolean} [validateOnCreate=false] If you want the instance data to be validated when this function runs, set this to true. Otherwise, you have to save the instance into the database to trigger the validation step.
 	 * @returns {this} An instance of the model.
 	 */
-	static async create (dataObj, validateOnCreate = false) {
+	static async create (dataObj, validateOnCreate = true) {
 		// For educational notes:
 		// The "this" reference below correctly points to an inheriting class
 		// ONLY when the function is declared with function syntax
@@ -64,11 +64,38 @@ module.exports = class NedbBaseDocument {
 				throw new Error("Unexpected property on model instance: " + key);
 			}
 
+			// If no instance data was set, then apply the default value to it.
+			// This is different to regular Camo, where setting a property
+			// to have required & default keys still needs you to provide a value.
+			// This way, we can set a property as required & default and not need
+			// to provide a value to each instance constructor.
+			if (this[key].default && !this.#data[key]){
+				// console.log(this[key].default);
+
+				if (isAsyncFunction(this[key].default)) {
+					console.log(`${key} is an async function`);
+					this.#data[key] ??= await this[key].default();
+				} else if (isPromise(this[key].default)) {
+					console.log(`${key} is a promise`);
+					this.#data[key] ??= await Promise.race([this[key].default]);
+				} else if (isFunction(this[key].default)){
+					console.log(`${key} is a synchronous function`);
+					this.#data[key] ??= this[key].default();
+				} else {
+					console.log(`${key} is a variable`);
+					this.#data[key] ??= this[key].default;
+				}
+
+				
+			}
+
 			let modelPropertyIsRequired = this[key].required == true;
 			let modelInstanceHasData = this.#data[key];
 			if (modelPropertyIsRequired && !modelInstanceHasData){
 				throw new Error("Property requires a value but no value provided: " + key);
 			}
+
+
 			
 			let modelInstanceDataMatchesExpectedType = isType(this[key].type, this.#data[key]);
 			if (modelPropertyIsRequired && !modelInstanceDataMatchesExpectedType) {
@@ -165,7 +192,7 @@ module.exports = class NedbBaseDocument {
 		return result;
 	}
 
-	static async convertObjectToInstance(dataObj, validateOnCreate = false){
+	static async convertObjectToInstance(dataObj, validateOnCreate = true){
 		return this.create(dataObj, validateOnCreate);
 	}
 
