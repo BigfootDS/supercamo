@@ -280,12 +280,23 @@ module.exports = class NedbClient {
             throw new Error("Don't use insertOne to create multiple documents. Use insertMany instead, please!");
         }
 
-        // If the dataObj is a Document-inheriting class, just convert it to its dataObj
+        let accessor = this.getCollectionAccessor(collectionName);
+
+        // If the provided data is a bunch of document instances, convert them to objects and save them.
+        // Otherwise, assuming we were given raw objects instead, we need to convert them into 
+        // document instances to trigger some validation steps and then convert that back into an object.
+        // This lets things like default property values in a document get applied.
         if (localDataObj !== null && typeof localDataObj !== 'object' ){
             localDataObj = localDataObj.convertInstanceToObject();
+        } else if (isObject(localDataObj)){
+            let tempInstance = await accessor.model.create(localDataObj);
+            console.log("Temp instance:");
+            console.log(tempInstance);
+            localDataObj = tempInstance.convertInstanceToObject();
+        } else {
+            throw new Error("Data provided is not an object or based on a Document: " + JSON.stringify(localDataObj));
         }
 
-        let accessor = this.getCollectionAccessor(collectionName);
         let result = await accessor.datastore.insertAsync(localDataObj);
         return accessor.model.create(result);
     }
@@ -307,21 +318,24 @@ module.exports = class NedbClient {
             throw new Error("Don't use insertMany to create singular documents. Use insertOne instead, please!");
         }
 
-        let localDataObjs = [];
+        let accessor = this.getCollectionAccessor(collectionName);
 
-        // If the dataObj is a Document-inheriting class, just convert it to its dataObj
-        dataObjects.forEach(dataObject => {
+        // If the provided data is a bunch of document instances, convert them to objects and save them.
+        // Otherwise, assuming we were given raw objects instead, we need to convert them into 
+        // document instances to trigger some validation steps and then convert that back into an object.
+        // This lets things like default property values in a document get applied.
+        let localDataObjs = await Promise.all(dataObjects.map(async (dataObject) => {
             if (dataObject !== null && typeof dataObject !== 'object' ){
-                localDataObjs.push(dataObject.convertInstanceToObject());
+                return dataObject.convertInstanceToObject();
             } else if (isObject(dataObject)){
-                localDataObjs.push(dataObject);
+                let tempInstance = await accessor.model.create(dataObject);
+                return tempInstance.convertInstanceToObject();
             } else {
                 throw new Error("Data provided is not an object or based on a Document: " + JSON.stringify(dataObject));
             }
-        });
+        }))
         
 
-        let accessor = this.getCollectionAccessor(collectionName);
         let results = await accessor.datastore.insertAsync(localDataObjs);
         let resultsAsInstances = Promise.all(results.map(async (result) => {
             return await accessor.model.create(result);

@@ -91,11 +91,24 @@ const isType = (typeWanted, valueToCheck) => {
 	}
 }
 
+const isFunction = (valueToCheck) => {
+	return typeof valueToCheck === 'function';
+}
+
+const isAsyncFunction = (valueToCheck) => {
+	return util.types.isAsyncFunction(valueToCheck);
+}
+
+const isPromise = (valueToCheck) => {
+	return util.types.isPromise(valueToCheck);
+}
+
 
 module.exports = {
 	isString, isNumber, isBoolean, isDate, isBuffer, isObject, isArray,
 	// isDocument, isEmbeddedDocument, 
 	isSupportedType, isSupportedTypeOrInheritsFromADocument,
 	isInChoices,
-	isType
+	isType,
+	isFunction, isAsyncFunction, isPromise
 }
