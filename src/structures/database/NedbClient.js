@@ -300,7 +300,7 @@ module.exports = class NedbClient {
         // }
 
         try {
-            console.log("Making temp instance...");
+            console.log("Making temp instance for validation purposes...");
             let tempInstance = await accessor.model.create(localDataObj, this.databaseName, collectionName);
             console.log(Object.keys(tempInstance));
         } catch (error) {
@@ -349,11 +349,29 @@ module.exports = class NedbClient {
                 throw new Error("Data provided is not an object or based on a Document: " + JSON.stringify(dataObject));
             }
         }))
-        
 
-        let results = await accessor.datastore.insertAsync(localDataObjs);
+        let tempInstances = await Promise.all(dataObjects.map(async (dataObject) => {
+            try {
+                console.log("Making temp instance for validation purposes...");
+                let tempInstance = await accessor.model.create(dataObject, this.databaseName, collectionName);
+                console.log(Object.keys(tempInstance));
+                return tempInstance;
+            } catch (error) {
+                throw error;
+            }
+        })).catch(error => {
+            throw new Error("Something went wrong with document validation. Seeing this message means it was probably a uniqueness constraint not being adhered to. Original error: \n" + JSON.stringify(error));
+
+        });
+        
+        let results = null;
+        try {
+            results = await accessor.datastore.insertAsync(localDataObjs);
+        } catch (error) {
+            throw new Error("Something went wrong with document validation. Seeing this message means it was probably a uniqueness constraint not being adhered to.");
+        }
         let resultsAsInstances = Promise.all(results.map(async (result) => {
-            return await accessor.model.create(result, this.databaseName, collectionName);
+            return await accessor.model.create(result, this.databaseName, collectionName, false);
         }))
         return resultsAsInstances;
     }
