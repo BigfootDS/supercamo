@@ -80,12 +80,12 @@ const isType = (typeWanted, valueToCheck) => {
 			return isArray(valueToCheck);
 		case "Object":
 			return isObject(valueToCheck);
-		case isDocument(typeWanted):
-			// this feels incorrect, will fix later
-			return isDocument(valueToCheck);
-		case isEmbeddedDocument(typeWanted):
-			// this feels incorrect, will fix later
-			return isEmbeddedDocument(valueToCheck);
+		// case isDocument(typeWanted):
+		// 	// this feels incorrect, will fix later
+		// 	return isDocument(valueToCheck);
+		// case isEmbeddedDocument(typeWanted):
+		// 	// this feels incorrect, will fix later
+		// 	return isEmbeddedDocument(valueToCheck);
 		default:
 			throw new TypeError("Unsupported type set in document:" + typeWanted);
 	}

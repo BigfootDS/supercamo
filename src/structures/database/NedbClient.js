@@ -302,7 +302,8 @@ module.exports = class NedbClient {
         try {
             console.log("Making temp instance for validation purposes...");
             let tempInstance = await accessor.model.create(localDataObj, this.databaseName, collectionName);
-            console.log(Object.keys(tempInstance));
+            console.log("Temp instance:");
+            console.log(tempInstance);
         } catch (error) {
             console.log(error);
         }
@@ -310,10 +311,12 @@ module.exports = class NedbClient {
         let result = null;
         try {
             let result = await accessor.datastore.insertAsync(localDataObj);
+            return await this.findOneDocument(collectionName, {_id: result._id});
         } catch (error) {
             throw new Error("Something went wrong with document validation. Seeing this message means it was probably a uniqueness constraint not being adhered to.");
         }
-        return accessor.model.create(result, this.databaseName, collectionName, false);
+
+        // return accessor.model.create(result, this.databaseName, collectionName, false);
     }
 
     /**
@@ -367,13 +370,14 @@ module.exports = class NedbClient {
         let results = null;
         try {
             results = await accessor.datastore.insertAsync(localDataObjs);
+            let resultsAsInstances = Promise.all(results.map(async (result) => {
+                return await this.findOneDocument(collectionName, {_id: result._id});
+            }))
+            return resultsAsInstances;
         } catch (error) {
             throw new Error("Something went wrong with document validation. Seeing this message means it was probably a uniqueness constraint not being adhered to.");
         }
-        let resultsAsInstances = Promise.all(results.map(async (result) => {
-            return await accessor.model.create(result, this.databaseName, collectionName, false);
-        }))
-        return resultsAsInstances;
+        
     }
 
 

@@ -1,4 +1,5 @@
-const { isArray, isInChoices, isObject, isType, isFunction, isPromise, isAsyncFunction } = require("../../validators/functions/typeValidators.js");
+const { getBaseClass } = require("../../validators/functions/ancestors.js");
+const { isArray, isInChoices, isObject, isType, isFunction, isPromise, isAsyncFunction, isSupportedType } = require("../../validators/functions/typeValidators.js");
 
 
 module.exports = class NedbBaseDocument {
@@ -86,16 +87,16 @@ module.exports = class NedbBaseDocument {
 				// console.log(this[key].default);
 
 				if (isAsyncFunction(this[key].default)) {
-					console.log(`${key} is an async function`);
+					// console.log(`${key} is an async function`);
 					this.#data[key] ??= await this[key].default();
 				} else if (isPromise(this[key].default)) {
-					console.log(`${key} is a promise`);
+					// console.log(`${key} is a promise`);
 					this.#data[key] ??= await Promise.race([this[key].default]);
 				} else if (isFunction(this[key].default)){
-					console.log(`${key} is a synchronous function`);
+					// console.log(`${key} is a synchronous function`);
 					this.#data[key] ??= this[key].default();
 				} else {
-					console.log(`${key} is a variable`);
+					// console.log(`${key} is a variable`);
 					this.#data[key] ??= this[key].default;
 				}
 
@@ -109,11 +110,40 @@ module.exports = class NedbBaseDocument {
 			}
 
 
-			
-			let modelInstanceDataMatchesExpectedType = isType(this[key].type, this.#data[key]);
-			if (modelPropertyIsRequired && !modelInstanceDataMatchesExpectedType) {
-				throw new Error(`Property expects a certain data type but did not receive it:\n\tProperty:${key}\n\tType:${key}:${this[key].type.name}\n\tReceived:${this.#data[key]} (${typeof this.#data[key]})`);
+			// Is the key type based on Document?
+			let keyAncestralClass = getBaseClass(this[key].type);
+			console.log(`Key ${key} has type of ${this[key].type.name} and its parent-most class is: ${keyAncestralClass.name}`);
+			if (keyAncestralClass.name == "NedbBaseDocument"){
+				// If so, validate the ID amongst the collection within the database
+
+				let targetCollectionName = this[key].collection;
+				const SuperCamo = require("../../index.js");
+				let targetCollection = await SuperCamo.activeClients[this.#parentDatabaseName].getCollectionAccessor(targetCollectionName);
+				if (modelPropertyIsRequired || modelInstanceHasData){
+					// If some ID is required or provided, make sure it's for an actual document in the collection that this key needs.
+					console.log(`Searching for ID of ${this.#data[key]} in collection ${targetCollectionName}`);
+					console.log(JSON.stringify(this.#data[key]));
+					let referencedDoc = await targetCollection.datastore.findOneAsync({_id: this.#data[key]});
+					if (referencedDoc == null){
+						let errorToThrow = new Error(`Key expects a reference to a document.`);
+						errorToThrow.data = {
+							key: key,
+							value: this.#data[key],
+							rule: this[key]
+						}
+						throw errorToThrow;
+					} 
+				}
+			} else {
+				let modelInstanceDataMatchesExpectedType = isType(this[key].type, this.#data[key]);
+				if (modelPropertyIsRequired && !modelInstanceDataMatchesExpectedType) {
+					throw new Error(`Property expects a certain data type but did not receive it:\n\tProperty:${key}\n\tType:${key}:${this[key].type.name}\n\tReceived:${this.#data[key]} (${typeof this.#data[key]})`);
+				}
 			}
+			
+
+			
+			
 
 			let modelHasChoices = isArray(this[key].choices);
 			let modelInstanceDataIsInChoices = undefined; 
@@ -206,8 +236,12 @@ module.exports = class NedbBaseDocument {
 		return result;
 	}
 
-	static async convertObjectToInstance(dataObj, validateOnCreate = true){
-		return this.create(dataObj, validateOnCreate);
+	getData(){
+		return this.convertInstanceToObject();
+	}
+
+	static async convertObjectToInstance(dataObj, incomingParentDatabaseName, incomingCollectionName, validateOnCreate = true){
+		return this.create(dataObj, incomingParentDatabaseName, incomingCollectionName, validateOnCreate);
 	}
 
 	toJson(){
