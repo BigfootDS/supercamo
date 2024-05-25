@@ -3,10 +3,10 @@ const { isArray, isInChoices, isObject, isType, isFunction, isPromise, isAsyncFu
 
 module.exports = class NedbBaseDocument {
 	#data = {};
-	#parentDatabaseId = null;
+	#parentDatabaseName = null;
 	#collectionName = null;
 
-	constructor(incomingData, incomingParentDatabaseId = null, incomingCollectionName = null){
+	constructor(incomingData, incomingParentDatabaseName = null, incomingCollectionName = null){
 		// This _id value comes from NeDB datastores, the dev or user should never be editing this.
 		this._id = {
 			type: String,
@@ -15,9 +15,17 @@ module.exports = class NedbBaseDocument {
 
 		this.#data = {...incomingData};
 
-		this.#parentDatabaseId = incomingParentDatabaseId;
+		this.#parentDatabaseName = incomingParentDatabaseName;
 
 		this.#collectionName = incomingCollectionName;
+	}
+
+	get parentDatabaseName(){
+		return this.#parentDatabaseName;
+	}
+
+	get collectionName(){
+		return this.#collectionName;
 	}
 
 	
@@ -30,7 +38,7 @@ module.exports = class NedbBaseDocument {
 	 * @param {Boolean} [validateOnCreate=false] If you want the instance data to be validated when this function runs, set this to true. Otherwise, you have to save the instance into the database to trigger the validation step.
 	 * @returns {this} An instance of the model.
 	 */
-	static async create (dataObj, validateOnCreate = true) {
+	static async create (dataObj, incomingParentDatabaseName, incomingCollectionName, validateOnCreate = true) {
 		// For educational notes:
 		// The "this" reference below correctly points to an inheriting class
 		// ONLY when the function is declared with function syntax
@@ -38,9 +46,14 @@ module.exports = class NedbBaseDocument {
 		// If you declared with const/"fat arrow" syntax, then 
 		// "this" will refer to the originating class of the method instead.
 		// console.log(this);
-		let newInstance = new this(dataObj);
+		let newInstance = new this(dataObj, incomingParentDatabaseName, incomingCollectionName);
 		if (validateOnCreate){
-			let isValid = await newInstance.#validate();
+			try {
+				let isValid = await newInstance.#validate();
+				console.log("This document is valid: " + newInstance.toJson());
+			} catch (error) {
+				throw error;
+			}
 		}
 		return newInstance;
 	}
@@ -114,10 +127,26 @@ module.exports = class NedbBaseDocument {
 
 			let modelExpectsUniqueValue = this[key].unique == true;
 			// This one is gonna be a doozy...
-			let modelInstanceDataIsUnique = undefined;
+			let modelInstanceDataIsUnique = true;
 			if (modelExpectsUniqueValue){
-
+				const SuperCamo = require("../../index.js");
+				await SuperCamo.activeClients[this.#parentDatabaseName].getCollectionAccessor(this.#collectionName).datastore.ensureIndexAsync({fieldName: key, unique: true});
+				// console.log(this.#parentDatabaseName, this.#collectionName);
+				// let matchesFound = await SuperCamo.activeClients[this.#parentDatabaseName].findOneObject(this.#collectionName, {[key]: this.#data[key]});
+				// console.log("completed the find: " + JSON.stringify(matchesFound));
+				// if (matchesFound){
+				// 	modelInstanceDataIsUnique = false;
+				// 	console.log("Uniqueness validation found a matching document:" + JSON.stringify(matchesFound));
+				// } else {
+				// 	modelInstanceDataIsUnique = true;
+				// }
 			}
+
+			if (modelInstanceDataIsUnique == false){
+				throw new Error(`Property expects value to be unique amongst its collection. Checking property ${key} with value ${this.#data[key]}`);
+			}
+			
+
 			
 
 
