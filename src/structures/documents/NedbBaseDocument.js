@@ -126,28 +126,13 @@ module.exports = class NedbBaseDocument {
 			} 
 
 			let modelExpectsUniqueValue = this[key].unique == true;
-			// This one is gonna be a doozy...
-			let modelInstanceDataIsUnique = true;
 			if (modelExpectsUniqueValue){
 				const SuperCamo = require("../../index.js");
 				await SuperCamo.activeClients[this.#parentDatabaseName].getCollectionAccessor(this.#collectionName).datastore.ensureIndexAsync({fieldName: key, unique: true});
-				// console.log(this.#parentDatabaseName, this.#collectionName);
-				// let matchesFound = await SuperCamo.activeClients[this.#parentDatabaseName].findOneObject(this.#collectionName, {[key]: this.#data[key]});
-				// console.log("completed the find: " + JSON.stringify(matchesFound));
-				// if (matchesFound){
-				// 	modelInstanceDataIsUnique = false;
-				// 	console.log("Uniqueness validation found a matching document:" + JSON.stringify(matchesFound));
-				// } else {
-				// 	modelInstanceDataIsUnique = true;
-				// }
+				// Using NeDB indexes will not actively do a unique validation here, 
+				// but it sets up any unique-failing documents to fail when they are about to get written into the datastore.
 			}
 
-			if (modelInstanceDataIsUnique == false){
-				throw new Error(`Property expects value to be unique amongst its collection. Checking property ${key} with value ${this.#data[key]}`);
-			}
-			
-
-			
 
 
 			// #endregion
