@@ -299,21 +299,24 @@ module.exports = class NedbClient {
         //     throw new Error("Data provided is not an object or based on a Document: " + JSON.stringify(localDataObj));
         // }
 
+        let tempInstance = null;
         try {
-            console.log("Making temp instance for validation purposes...");
-            let tempInstance = await accessor.model.create(localDataObj, this.databaseName, collectionName);
-            console.log("Temp instance:");
-            console.log(tempInstance);
+            tempInstance = await accessor.model.create(localDataObj, this.databaseName, collectionName);
         } catch (error) {
-            console.log(error);
+            throw error;
         }
 
         let result = null;
         try {
-            let result = await accessor.datastore.insertAsync(localDataObj);
+            let result = await accessor.datastore.insertAsync(await tempInstance.getData(false));
+            console.log("insertOne insert result:");
+            console.log(result);
+            let tempInstanceData = await tempInstance.getData(false);
+            console.log("insertOne tempInstance result:");
+            console.log(tempInstance);
             return await this.findOneDocument(collectionName, {_id: result._id});
         } catch (error) {
-            throw new Error("Something went wrong with document validation. Seeing this message means it was probably a uniqueness constraint not being adhered to.");
+            throw error;
         }
 
         // return accessor.model.create(result, this.databaseName, collectionName, false);
@@ -357,8 +360,7 @@ module.exports = class NedbClient {
             try {
                 console.log("Making temp instance for validation purposes...");
                 let tempInstance = await accessor.model.create(dataObject, this.databaseName, collectionName);
-                console.log(Object.keys(tempInstance));
-                return tempInstance;
+                return await tempInstance.getData(false);
             } catch (error) {
                 throw error;
             }
@@ -369,7 +371,7 @@ module.exports = class NedbClient {
         
         let results = null;
         try {
-            results = await accessor.datastore.insertAsync(localDataObjs);
+            results = await accessor.datastore.insertAsync(tempInstances);
             let resultsAsInstances = Promise.all(results.map(async (result) => {
                 return await this.findOneDocument(collectionName, {_id: result._id});
             }))

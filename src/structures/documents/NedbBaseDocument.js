@@ -1,4 +1,4 @@
-const { getBaseClass } = require("../../validators/functions/ancestors.js");
+const { getBaseClass, getClassInheritanceList } = require("../../validators/functions/ancestors.js");
 const { isArray, isInChoices, isObject, isType, isFunction, isPromise, isAsyncFunction, isSupportedType } = require("../../validators/functions/typeValidators.js");
 
 
@@ -51,7 +51,9 @@ module.exports = class NedbBaseDocument {
 		if (validateOnCreate){
 			try {
 				let isValid = await newInstance.#validate();
-				console.log("This document is valid: " + newInstance.toJson());
+				let newInstanceData = await newInstance.getData();
+				console.log("This document is valid: ");
+				console.log(newInstanceData);
 			} catch (error) {
 				throw error;
 			}
@@ -78,6 +80,7 @@ module.exports = class NedbBaseDocument {
 				throw new Error("Unexpected property on model instance: " + key);
 			}
 
+			console.log(`Validating ${key} with value of ${this.#data[key]}.`);
 			// If no instance data was set, then apply the default value to it.
 			// This is different to regular Camo, where setting a property
 			// to have required & default keys still needs you to provide a value.
@@ -104,28 +107,30 @@ module.exports = class NedbBaseDocument {
 			}
 
 			let modelPropertyIsRequired = this[key].required == true;
-			let modelInstanceHasData = this.#data[key];
+			let modelInstanceHasData = !(this.#data[key] == null);
 			if (modelPropertyIsRequired && !modelInstanceHasData){
 				throw new Error("Property requires a value but no value provided: " + key);
 			}
 
 
-			// Is the key type based on Document?
-			let keyAncestralClass = getBaseClass(this[key].type);
-			console.log(`Key ${key} has type of ${this[key].type.name} and its parent-most class is: ${keyAncestralClass.name}`);
-			if (keyAncestralClass.name == "NedbBaseDocument"){
+			// Is the key type based on Document, EmbeddedDocument, or not?
+			let keyClassList = getClassInheritanceList(this[key].type);
+			if (keyClassList.includes("NedbDocument")){
 				// If so, validate the ID amongst the collection within the database
-
+				console.log(`Key of ${key} is expecting this to be an ID referring to a document: \n${JSON.stringify(this.#data[key])}`)
 				let targetCollectionName = this[key].collection;
 				const SuperCamo = require("../../index.js");
 				let targetCollection = await SuperCamo.activeClients[this.#parentDatabaseName].getCollectionAccessor(targetCollectionName);
 				if (modelPropertyIsRequired || modelInstanceHasData){
 					// If some ID is required or provided, make sure it's for an actual document in the collection that this key needs.
-					console.log(`Searching for ID of ${this.#data[key]} in collection ${targetCollectionName}`);
-					console.log(JSON.stringify(this.#data[key]));
+
 					let referencedDoc = await targetCollection.datastore.findOneAsync({_id: this.#data[key]});
 					if (referencedDoc == null){
-						let errorToThrow = new Error(`Key expects a reference to a document.`);
+						let forgotToCallGetData = null;
+						if (JSON.stringify(this.#data[key]).includes("required")){
+							forgotToCallGetData = true;
+						}
+						let errorToThrow = new Error(`Key expects a reference to a document. ${forgotToCallGetData ? 'Make sure you call ".getData()" before calling _id, otherwise you\'re just accessing the schema in the reference document instead of its data!' : ""}`);
 						errorToThrow.data = {
 							key: key,
 							value: this.#data[key],
@@ -134,6 +139,13 @@ module.exports = class NedbBaseDocument {
 						throw errorToThrow;
 					} 
 				}
+			} else if (keyClassList.includes("NedbEmbeddedDocument")) { 
+				// Make new instance of this.#data[key] and let it validate
+				// console.log("~~~~~~~~~~~~~")
+				// console.log(this.#data[key]);
+				// console.log(await this.#data[key].getData());
+				// console.log("~~~~~~~~~~~~~")
+
 			} else {
 				let modelInstanceDataMatchesExpectedType = isType(this[key].type, this.#data[key]);
 				if (modelPropertyIsRequired && !modelInstanceDataMatchesExpectedType) {
@@ -195,6 +207,9 @@ module.exports = class NedbBaseDocument {
 			throw passedPostValidate;
 		}
 
+		// console.log("Document's data after validation:");
+		// console.log(this.#data);
+
 		return true;
 	}
 	
@@ -225,19 +240,64 @@ module.exports = class NedbBaseDocument {
 		// await this.#validate();
 
 		for (const [key, value] of Object.entries(this)){
-			if (isObject(this[key]) && this.#data[key]) {
-				// Only add property to output if it
-				// was defined in the model AND
-				// has a value to export
-				result[key] = this.#data[key];
-			}
+
+			result[key] = this.#data[key];
 		}
 
 		return result;
 	}
 
-	getData(){
-		return this.convertInstanceToObject();
+	
+	/**
+	 * Get the plain JavaScript object representation of a SuperCamo document instance.
+	 * @author BigfootDS
+	 *
+	 * @async
+	 * @param {Boolean} [populate=true] Optional. Set this to true to return all referenced documents as objects within the parent object.
+	 * @returns {Object}
+	 */
+	async getData(populate = true){
+		let result = {};
+
+		for (const [key, value] of Object.entries(this)){
+			if (isObject(this[key]) && !(this.#data[key] == null)) {
+				// Only add property to output if it
+				// was defined in the model AND
+				// has a value to export
+				
+				let keyClassList = getClassInheritanceList(this[key].type);
+				if (keyClassList.includes("NedbDocument")) {
+					if (populate){
+						// Convert doc into JS obj
+						
+						const SuperCamo = require("../../index.js");
+						let foundDocument = await SuperCamo.activeClients[this.#parentDatabaseName].findOneDocument(this[key].collection, {_id: this.#data[key]});
+						result[key] = await foundDocument.getData();
+					} else {
+						result[key] = this.#data[key];
+					}
+				} else if (keyClassList.includes("NedbEmbeddedDocument")){
+					// Convert doc into JS obj
+					// Assume all embedded docs are instances, would simplify things greatly.
+					console.log("-------------");
+					console.log("Found embedded document:");
+					console.log(this[key]);
+					console.log(this.#data[key]);
+					console.log("-------------");
+					if (this.#data[key]['getData']){
+						result[key] = await this.#data[key].getData();
+					} else {
+						result[key] = this.#data[key];
+					}
+					
+				
+				} else {
+					result[key] = this.#data[key];
+				}
+			}
+		}
+
+		return result;
 	}
 
 	static async convertObjectToInstance(dataObj, incomingParentDatabaseName, incomingCollectionName, validateOnCreate = true){
