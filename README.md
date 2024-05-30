@@ -13,7 +13,7 @@ Camo-inspired object data modeller (ODM) for NeDB, built specifically for Bigfoo
 
 ## The nitty-gritty
 
-- Built using NodeJS version 22, looking _forward_ only.
+- Built using NodeJS version 20, looking _forward_ only.
 - Built to depend on this particular flavour of NeDB:
 	- [@seald-io/nedb](https://github.com/seald/nedb)
 
@@ -96,7 +96,8 @@ module.exports = class User extends NedbDocument {
 				fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonNumber}`).then(response => response.json()).then((data) => {
 					resolve(data.name);
 				}).catch((error) => {
-					reject("pikachu");
+					// No reject() since we want this fallback data to be accepted if the fetch fails.
+					resolve("pikachu");
 				})
 			})
 		}
@@ -215,6 +216,182 @@ let foundUsers = await dbInstance.findManyDocuments("Users", {});
 console.log(foundUsers);
 
 ```
+
+### Document References
+
+Documents can reference other documents. You would do this by definind a property in one document using the other document as a data type, like so:
+
+```js
+class Profile extends SuperCamo.NedbDocument {
+	constructor(data, databaseName, collectionName){
+		super(data, databaseName, collectionName);
+
+		this.username = {
+			type: String,
+			required: true
+		}
+
+		this.user = {
+			type: User,
+			collection: "Users",
+			required: true
+		}
+
+	}
+}
+```
+
+Please note that you must specify the `collection` as well as the `type` when using a document reference.
+
+You would then work with that data like so:
+
+```js
+let existingUser = await exampleDb.findOneDocument("Users", {email:"alex@bigfootds.com"});
+let existingUserData = await existingUser.getData();
+let existingUserId = existingUserData._id;
+let newProfile = await exampleDb.insertOne("Profiles", {
+	username: "thebestalex", 
+	user: existingUserId,
+});
+```
+
+When retrieving data, the query will populate all referenced documents by default.
+
+```js
+let existingProfile = await blogDb.findOneDocument("Profiles", {username: "thebestalex"});
+console.log(await existingProfile.getData());
+```
+
+```bash
+{
+  _id: 'UE5t6EzCDTB1f6Ss',
+  username: 'thebestalex',
+  user: {
+    _id: 'lX2uQosLgGPdHpbU',
+    name: 'Alex',
+    email: 'alex@bigfootds.com',
+    company: 'BigfootDS',
+    luckyNumber: 11,
+    assignedPokemonOne: 'magmortar',
+    assignedPokemonTwo: 'dragonite'
+  }
+}
+```
+
+You can prevent document population by passing `false` to the `getData()` method:
+
+```js
+let existingProfile = await blogDb.findOneDocument("Profiles", {username: "thebestalex"});
+console.log(await existingProfile.getData(false));
+```
+
+```bash
+{
+  _id: 'UE5t6EzCDTB1f6Ss',
+  username: 'thebestalex',
+  user: 'lX2uQosLgGPdHpbU',
+}
+```
+
+
+### Embedded Documents
+
+Embedded documents (a.k.a "subdocuments") are a way to give a schema and validation to a set of properties. They're like Documents, but cannot exist on their own.
+
+Create them like so:
+
+```js
+class ProfileFlags extends SuperCamo.NedbEmbeddedDocument {
+	constructor(data, databaseName, collectionName){
+		super(data, databaseName, collectionName);
+
+		this.banned = {
+			type: Boolean,
+			required: true,
+			default: false
+		}
+
+		this.premium = {
+			type: Boolean,
+			required: true,
+			default: false
+		}
+	}
+}
+```
+
+You would then use them in another document's schema as if they were a data type, like so:
+
+```js
+class Profile extends SuperCamo.NedbDocument {
+	constructor(data, databaseName, collectionName){
+		super(data, databaseName, collectionName);
+
+		this.username = {
+			type: String,
+			required: true
+		}
+
+		this.user = {
+			type: User,
+			collection: "Users",
+			required: true
+		}
+
+		this.profileFlags = {
+			type: ProfileFlags,
+			required: false
+		}
+	}
+}
+```
+
+You need to use the `create()` method of an Embedded Document when inserting or modifying data in a parent document:
+
+```js
+let newProfile = await blogDb.insertOne("Profiles", {
+	username: "thebestalex", 
+	user: existingUserId,
+	profileFlags: await ProfileFlags.create({banned: false, premium: true})
+});
+```
+
+Embedded documents are converted to objects internally most of the time - this is still WIP, but basically:
+- when validating, the data for a property that uses an Embedded Document should be an Embedded Document instance, so that it can run its own hooks & validations & so on.
+- in all other situations, the data for a property that uses an Embedded Document should be a JavaScript object.
+The package may or may not work this way right now, this part is still under development.
+
+Embedded documents are not impacted by populate settings.
+
+```bash
+{
+  _id: 'UE5t6EzCDTB1f6Ss',
+  username: 'thebestalex',
+  user: 'lX2uQosLgGPdHpbU',
+  profileFlags: { banned: false, premium: true }
+}
+```
+
+```bash
+{
+  _id: 'UE5t6EzCDTB1f6Ss',
+  username: 'thebestalex',
+  user: {
+    _id: 'lX2uQosLgGPdHpbU',
+    name: 'Alex',
+    email: 'alex@bigfootds.com',
+    company: 'BigfootDS',
+    luckyNumber: 11,
+    assignedPokemonOne: 'magmortar',
+    assignedPokemonTwo: 'dragonite'
+  },
+  profileFlags: { banned: false, premium: true }
+}
+```
+
+
+
+
 
 ## Example Projects
 

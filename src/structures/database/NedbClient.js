@@ -70,13 +70,16 @@ module.exports = class NedbClient {
      * );
      * 
      */
-    constructor(dbDirectoryPath, collectionsList = []){
+    constructor(dbDirectoryPath, dbName, collectionsList = []){
+
 
 		this.#rootPath = dbDirectoryPath;
 
         this.#collections = collectionsList.map((kvp) => {
             return this.createCollection(kvp.model, kvp.name);
         });
+
+        this.databaseName = dbName;
 
 	}
 
@@ -93,7 +96,7 @@ module.exports = class NedbClient {
         this.#collections = newValue;
         
     }
-	
+
 
 	// #region Client instance utilities
 
@@ -286,19 +289,37 @@ module.exports = class NedbClient {
         // Otherwise, assuming we were given raw objects instead, we need to convert them into 
         // document instances to trigger some validation steps and then convert that back into an object.
         // This lets things like default property values in a document get applied.
-        if (localDataObj !== null && typeof localDataObj !== 'object' ){
-            localDataObj = localDataObj.convertInstanceToObject();
-        } else if (isObject(localDataObj)){
-            let tempInstance = await accessor.model.create(localDataObj);
-            console.log("Temp instance:");
-            console.log(tempInstance);
-            localDataObj = tempInstance.convertInstanceToObject();
-        } else {
-            throw new Error("Data provided is not an object or based on a Document: " + JSON.stringify(localDataObj));
+        // if (localDataObj !== null && typeof localDataObj !== 'object' ){
+        //     localDataObj = localDataObj.convertInstanceToObject();
+        // } else if (isObject(localDataObj)){
+        //     let tempInstance = await accessor.model.create(localDataObj, this.databaseName, collectionName);
+
+        //     localDataObj = tempInstance.convertInstanceToObject();
+        // } else {
+        //     throw new Error("Data provided is not an object or based on a Document: " + JSON.stringify(localDataObj));
+        // }
+
+        let tempInstance = null;
+        try {
+            tempInstance = await accessor.model.create(localDataObj, this.databaseName, collectionName);
+        } catch (error) {
+            throw error;
         }
 
-        let result = await accessor.datastore.insertAsync(localDataObj);
-        return accessor.model.create(result);
+        let result = null;
+        try {
+            let result = await accessor.datastore.insertAsync(await tempInstance.getData(false));
+            console.log("insertOne insert result:");
+            console.log(result);
+            let tempInstanceData = await tempInstance.getData(false);
+            console.log("insertOne tempInstance result:");
+            console.log(tempInstance);
+            return await this.findOneDocument(collectionName, {_id: result._id});
+        } catch (error) {
+            throw error;
+        }
+
+        // return accessor.model.create(result, this.databaseName, collectionName, false);
     }
 
     /**
@@ -328,19 +349,37 @@ module.exports = class NedbClient {
             if (dataObject !== null && typeof dataObject !== 'object' ){
                 return dataObject.convertInstanceToObject();
             } else if (isObject(dataObject)){
-                let tempInstance = await accessor.model.create(dataObject);
+                let tempInstance = await accessor.model.create(dataObject, this.databaseName, collectionName);
                 return tempInstance.convertInstanceToObject();
             } else {
                 throw new Error("Data provided is not an object or based on a Document: " + JSON.stringify(dataObject));
             }
         }))
-        
 
-        let results = await accessor.datastore.insertAsync(localDataObjs);
-        let resultsAsInstances = Promise.all(results.map(async (result) => {
-            return await accessor.model.create(result);
-        }))
-        return resultsAsInstances;
+        let tempInstances = await Promise.all(dataObjects.map(async (dataObject) => {
+            try {
+                console.log("Making temp instance for validation purposes...");
+                let tempInstance = await accessor.model.create(dataObject, this.databaseName, collectionName);
+                return await tempInstance.getData(false);
+            } catch (error) {
+                throw error;
+            }
+        })).catch(error => {
+            throw new Error("Something went wrong with document validation. Seeing this message means it was probably a uniqueness constraint not being adhered to. Original error: \n" + JSON.stringify(error));
+
+        });
+        
+        let results = null;
+        try {
+            results = await accessor.datastore.insertAsync(tempInstances);
+            let resultsAsInstances = Promise.all(results.map(async (result) => {
+                return await this.findOneDocument(collectionName, {_id: result._id});
+            }))
+            return resultsAsInstances;
+        } catch (error) {
+            throw new Error("Something went wrong with document validation. Seeing this message means it was probably a uniqueness constraint not being adhered to.");
+        }
+        
     }
 
 
@@ -363,7 +402,11 @@ module.exports = class NedbClient {
     findOneDocument = async (collectionName, query) => {
         let accessor = this.getCollectionAccessor(collectionName);
         let result = await accessor.datastore.findOneAsync(query);
-        return await accessor.model.create(result);
+        if (result) {
+            return await accessor.model.create(result, this.databaseName, collectionName);
+        } else {
+            return null;
+        }
 	}
 
     /**
@@ -381,7 +424,12 @@ module.exports = class NedbClient {
      */
     findOneObject = async (collectionName, query, projections = null) => {
         let accessor = this.getCollectionAccessor(collectionName);
-        return await accessor.datastore.findOneAsync(query, projections);        
+        if (projections){
+            return await accessor.datastore.findOneAsync(query, projections);        
+        }
+
+        return await accessor.datastore.findOneAsync(query);        
+
 	}
 
 
@@ -401,7 +449,7 @@ module.exports = class NedbClient {
         let accessor = this.getCollectionAccessor(collectionName);
         let results = await accessor.datastore.findAsync(query);   
         let resultsAsInstances = Promise.all(results.map(async (result) => {
-            return await accessor.model.create(result);
+            return await accessor.model.create(result, this.databaseName, collectionName);
         }))
         return resultsAsInstances;
     } 
@@ -469,7 +517,7 @@ module.exports = class NedbClient {
         
         if (returnDocument){
             let result = await accessor.datastore.updateAsync(query, update, options);
-            return await accessor.model.create(result.affectedDocuments[0]);
+            return await accessor.model.create(result.affectedDocuments[0], this.databaseName, collectionName);
         } else {         
             return await accessor.datastore.updateAsync(query, update, options);
 
@@ -503,7 +551,7 @@ module.exports = class NedbClient {
             let result = await accessor.datastore.updateAsync(query, update, options);
 
             let documentList = Promise.all(result.affectedDocuments.map((doc) => {
-                return accessor.model.create(doc)
+                return accessor.model.create(doc, this.databaseName, collectionName)
             }));
 
             return documentList;
