@@ -1,4 +1,5 @@
 const {NedbBaseDocument, NedbDocument, NedbEmbeddedDocument} = require("../../structures/index.js");
+const SuperCamoLogger = require("../../utils/logging.js");
 
 
 const doesExtendBaseDocument = (childClass) => {
@@ -6,8 +7,8 @@ const doesExtendBaseDocument = (childClass) => {
 }
 
 const doesExtendDocument = (childClass) => {
-	console.log("Checking NedbDocument require...")
-	console.log(NedbDocument);
+	SuperCamoLogger("Checking NedbDocument require...", "Validators")
+	SuperCamoLogger(NedbDocument, "Validators");
 	return NedbDocument.prototype.isPrototypeOf(childClass);
 }
 
