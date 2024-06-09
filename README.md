@@ -51,7 +51,7 @@ const {NedbDocument} = require("@bigfootds/supercamo");
 
 module.exports = class User extends NedbDocument {
 	constructor(data, databaseName, collectionName){
-		super(data);
+		super(data, databaseName, collectionName);
 
 		this.name = {
 			type: String,
