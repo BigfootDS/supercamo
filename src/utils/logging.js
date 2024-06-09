@@ -47,29 +47,31 @@ log.superCamoValidators("Starting SuperCamo with SuperCamo validator-specific ve
  * @param {("Client"|"BaseDocument"|"Document"|"EmbeddedDocument"|"Validators"|"")} caller Specific string to help with conditional logging, eg. "Client" to allow the SuperCamoClient logger to log. Defaults to "", which will allow the SuperCamo catch-all logger and Verbose generic logger to log.
  */
 function SuperCamoLogger(message, caller = "") {
-	switch (caller) {
-		case "Client":
-			log.superCamoClient(message);
-			break;
-		case "BaseDocument":
-			log.superCamoBaseDocument(message);
-			break;
-		case "Document":
-			log.superCamoDocument(message);
-			break;
-		case "EmbeddedDocument":
-			log.superCamoEmbeddedDocument(message);
-			break;
-		case "Validators":
-			log.superCamoValidators(message);
-			break;
-		default:
-			if (log.superCamo.enabled){
-				log.superCamo(message);
-			} else {
-				log.verbose(message);
-			}
-			break;
+	
+	if (log.superCamo.enabled){
+		log.superCamo(message);
+	} else if (log.verbose.enabled){
+		log.verbose(message);
+	} else {
+		switch (caller) {
+			case "Client":
+				log.superCamoClient(message);
+				break;
+			case "BaseDocument":
+				log.superCamoBaseDocument(message);
+				break;
+			case "Document":
+				log.superCamoDocument(message);
+				break;
+			case "EmbeddedDocument":
+				log.superCamoEmbeddedDocument(message);
+				break;
+			case "Validators":
+				log.superCamoValidators(message);
+				break;
+			default:
+				break;
+		}
 	}
 }
 
