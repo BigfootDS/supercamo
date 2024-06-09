@@ -48,6 +48,7 @@ module.exports = class NedbBaseDocument {
 		// If you declared with const/"fat arrow" syntax, then 
 		// "this" will refer to the originating class of the method instead.
 		// SuperCamoLogger(this, "BaseDocument");
+
 		let newInstance = new this(dataObj, incomingParentDatabaseName, incomingCollectionName);
 		if (validateOnCreate){
 			try {
@@ -101,6 +102,7 @@ module.exports = class NedbBaseDocument {
 					this.#data[key] ??= this[key].default();
 				} else {
 					SuperCamoLogger(`${key} is a variable`, "BaseDocument");
+
 					this.#data[key] ??= this[key].default;
 				}
 
@@ -119,6 +121,7 @@ module.exports = class NedbBaseDocument {
 			if (keyClassList.includes("NedbDocument")){
 				// If so, validate the ID amongst the collection within the database
 				SuperCamoLogger(`Key of ${key} is expecting this to be an ID referring to a document: \n${JSON.stringify(this.#data[key])}`, "BaseDocument")
+
 				let targetCollectionName = this[key].collection;
 				const SuperCamo = require("../../index.js");
 				let targetCollection = await SuperCamo.activeClients[this.#parentDatabaseName].getCollectionAccessor(targetCollectionName);
@@ -146,6 +149,7 @@ module.exports = class NedbBaseDocument {
 				// SuperCamoLogger(this.#data[key], "BaseDocument");
 				// SuperCamoLogger(await this.#data[key].getData(), "BaseDocument");
 				// SuperCamoLogger("~~~~~~~~~~~~~", "BaseDocument");
+
 
 			} else {
 				let modelInstanceDataMatchesExpectedType = isType(this[key].type, this.#data[key]);
@@ -210,6 +214,7 @@ module.exports = class NedbBaseDocument {
 
 		SuperCamoLogger("Document's data after validation:", "BaseDocument");
 		SuperCamoLogger(this.#data, "BaseDocument");
+
 
 		return true;
 	}
@@ -285,7 +290,6 @@ module.exports = class NedbBaseDocument {
 					SuperCamoLogger(this[key], "BaseDocument");
 					SuperCamoLogger(this.#data[key], "BaseDocument");
 					SuperCamoLogger("-------------", "BaseDocument");
-	
 					if (this.#data[key]['getData']){
 						result[key] = await this.#data[key].getData();
 					} else {

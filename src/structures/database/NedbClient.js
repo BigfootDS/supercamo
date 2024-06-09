@@ -359,6 +359,7 @@ module.exports = class NedbClient {
         let tempInstances = await Promise.all(dataObjects.map(async (dataObject) => {
             try {
                 SuperCamoLogger("Making temp instance for validation purposes...", "Client");
+
                 let tempInstance = await accessor.model.create(dataObject, this.databaseName, collectionName);
                 return await tempInstance.getData(false);
             } catch (error) {
