@@ -50,7 +50,7 @@ First, you should create some models or documents.
 const {NedbDocument} = require("@bigfootds/supercamo");
 
 module.exports = class User extends NedbDocument {
-	constructor(data){
+	constructor(data, databaseName, collectionName){
 		super(data);
 
 		this.name = {
