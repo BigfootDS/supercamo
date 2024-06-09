@@ -1,3 +1,4 @@
+const SuperCamoLogger = require("../../utils/logging.js");
 const { getBaseClass, getClassInheritanceList } = require("../../validators/functions/ancestors.js");
 const { isArray, isInChoices, isObject, isType, isFunction, isPromise, isAsyncFunction, isSupportedType } = require("../../validators/functions/typeValidators.js");
 
@@ -46,14 +47,14 @@ module.exports = class NedbBaseDocument {
 		// (including the weird static async funcName() declaration syntax)
 		// If you declared with const/"fat arrow" syntax, then 
 		// "this" will refer to the originating class of the method instead.
-		// console.log(this);
+		// SuperCamoLogger(this, "BaseDocument");
 		let newInstance = new this(dataObj, incomingParentDatabaseName, incomingCollectionName);
 		if (validateOnCreate){
 			try {
 				let isValid = await newInstance.#validate();
 				let newInstanceData = await newInstance.getData();
-				console.log("This document is valid: ");
-				console.log(newInstanceData);
+				SuperCamoLogger("This document is valid:", "BaseDocument");
+				SuperCamoLogger(newInstanceData, "BaseDocument");
 			} catch (error) {
 				throw error;
 			}
@@ -80,26 +81,26 @@ module.exports = class NedbBaseDocument {
 				throw new Error("Unexpected property on model instance: " + key);
 			}
 
-			console.log(`Validating ${key} with value of ${this.#data[key]}.`);
+			SuperCamoLogger(`Validating ${key} with value of ${this.#data[key]}.`, "BaseDocument");
 			// If no instance data was set, then apply the default value to it.
 			// This is different to regular Camo, where setting a property
 			// to have required & default keys still needs you to provide a value.
 			// This way, we can set a property as required & default and not need
 			// to provide a value to each instance constructor.
 			if (this[key].default && !this.#data[key]){
-				// console.log(this[key].default);
+				(this[key].default);
 
 				if (isAsyncFunction(this[key].default)) {
-					// console.log(`${key} is an async function`);
+					SuperCamoLogger(`${key} is an async function`, "BaseDocument");
 					this.#data[key] ??= await this[key].default();
 				} else if (isPromise(this[key].default)) {
-					// console.log(`${key} is a promise`);
+					SuperCamoLogger(`${key} is a promise`, "BaseDocument");
 					this.#data[key] ??= await Promise.race([this[key].default]);
 				} else if (isFunction(this[key].default)){
-					// console.log(`${key} is a synchronous function`);
+					SuperCamoLogger(`${key} is a synchronous function`, "BaseDocument");
 					this.#data[key] ??= this[key].default();
 				} else {
-					// console.log(`${key} is a variable`);
+					SuperCamoLogger(`${key} is a variable`, "BaseDocument");
 					this.#data[key] ??= this[key].default;
 				}
 
@@ -117,7 +118,7 @@ module.exports = class NedbBaseDocument {
 			let keyClassList = getClassInheritanceList(this[key].type);
 			if (keyClassList.includes("NedbDocument")){
 				// If so, validate the ID amongst the collection within the database
-				console.log(`Key of ${key} is expecting this to be an ID referring to a document: \n${JSON.stringify(this.#data[key])}`)
+				SuperCamoLogger(`Key of ${key} is expecting this to be an ID referring to a document: \n${JSON.stringify(this.#data[key])}`, "BaseDocument")
 				let targetCollectionName = this[key].collection;
 				const SuperCamo = require("../../index.js");
 				let targetCollection = await SuperCamo.activeClients[this.#parentDatabaseName].getCollectionAccessor(targetCollectionName);
@@ -141,10 +142,10 @@ module.exports = class NedbBaseDocument {
 				}
 			} else if (keyClassList.includes("NedbEmbeddedDocument")) { 
 				// Make new instance of this.#data[key] and let it validate
-				// console.log("~~~~~~~~~~~~~")
-				// console.log(this.#data[key]);
-				// console.log(await this.#data[key].getData());
-				// console.log("~~~~~~~~~~~~~")
+				// SuperCamoLogger("~~~~~~~~~~~~~", "BaseDocument");
+				// SuperCamoLogger(this.#data[key], "BaseDocument");
+				// SuperCamoLogger(await this.#data[key].getData(), "BaseDocument");
+				// SuperCamoLogger("~~~~~~~~~~~~~", "BaseDocument");
 
 			} else {
 				let modelInstanceDataMatchesExpectedType = isType(this[key].type, this.#data[key]);
@@ -207,8 +208,8 @@ module.exports = class NedbBaseDocument {
 			throw passedPostValidate;
 		}
 
-		// console.log("Document's data after validation:");
-		// console.log(this.#data);
+		SuperCamoLogger("Document's data after validation:", "BaseDocument");
+		SuperCamoLogger(this.#data, "BaseDocument");
 
 		return true;
 	}
@@ -279,11 +280,12 @@ module.exports = class NedbBaseDocument {
 				} else if (keyClassList.includes("NedbEmbeddedDocument")){
 					// Convert doc into JS obj
 					// Assume all embedded docs are instances, would simplify things greatly.
-					console.log("-------------");
-					console.log("Found embedded document:");
-					console.log(this[key]);
-					console.log(this.#data[key]);
-					console.log("-------------");
+					SuperCamoLogger("-------------", "BaseDocument");
+					SuperCamoLogger("Found embedded document:", "BaseDocument");
+					SuperCamoLogger(this[key], "BaseDocument");
+					SuperCamoLogger(this.#data[key], "BaseDocument");
+					SuperCamoLogger("-------------", "BaseDocument");
+	
 					if (this.#data[key]['getData']){
 						result[key] = await this.#data[key].getData();
 					} else {

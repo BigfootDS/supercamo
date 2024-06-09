@@ -2,7 +2,7 @@ const Datastore = require("@seald-io/nedb");
 const path = require("node:path");
 const { isObject } = require("../../validators/index.js");
 // const { doesExtendDocument } = require("../../validators/functions/doesExtendClass.js");
-
+const SuperCamoLogger = require("../../utils/logging.js");
 
 const urlToPath = function(url) {
     if (url.indexOf('nedb://') > -1) {
@@ -92,7 +92,7 @@ module.exports = class NedbClient {
     }
 
     set collections(newValue){
-        console.log(newValue);
+        SuperCamoLogger(newValue, "Client");
         this.#collections = newValue;
         
     }
@@ -309,11 +309,11 @@ module.exports = class NedbClient {
         let result = null;
         try {
             let result = await accessor.datastore.insertAsync(await tempInstance.getData(false));
-            console.log("insertOne insert result:");
-            console.log(result);
+            SuperCamoLogger("insertOne insert result:", "Client");
+            SuperCamoLogger(result, "Client");
             let tempInstanceData = await tempInstance.getData(false);
-            console.log("insertOne tempInstance result:");
-            console.log(tempInstance);
+            SuperCamoLogger("insertOne tempInstance result:", "Client");
+            SuperCamoLogger(tempInstance, "Client");
             return await this.findOneDocument(collectionName, {_id: result._id});
         } catch (error) {
             throw error;
@@ -358,7 +358,7 @@ module.exports = class NedbClient {
 
         let tempInstances = await Promise.all(dataObjects.map(async (dataObject) => {
             try {
-                console.log("Making temp instance for validation purposes...");
+                SuperCamoLogger("Making temp instance for validation purposes...", "Client");
                 let tempInstance = await accessor.model.create(dataObject, this.databaseName, collectionName);
                 return await tempInstance.getData(false);
             } catch (error) {
