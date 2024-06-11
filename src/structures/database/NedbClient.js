@@ -50,6 +50,8 @@ const getCollection = function(name, collections, path) {
 module.exports = class NedbClient {
     #rootPath = "";
     #collections = [];
+    #documentsList = [];
+    #subdocumentsList = [];
 
 	/**
      * Creates an instance of NedbClient.
@@ -70,7 +72,7 @@ module.exports = class NedbClient {
      * );
      * 
      */
-    constructor(dbDirectoryPath, dbName, collectionsList = []){
+    constructor(dbDirectoryPath, dbName, collectionsList = [], subdocumentsList = []){
 
 
 		this.#rootPath = dbDirectoryPath;
@@ -80,6 +82,12 @@ module.exports = class NedbClient {
         });
 
         this.databaseName = dbName;
+
+        this.#documentsList = [...new Set(collectionsList.map((kvp) => {
+            return kvp.model
+        }))];
+
+        this.#subdocumentsList = subdocumentsList;
 
 	}
 
@@ -110,6 +118,20 @@ module.exports = class NedbClient {
      */
     collectionExistsInInstance = (collectionName) => {
         return this.collections.some((collection) => collection.name === collectionName);
+    }
+
+    
+    /**
+     * Retrieve a distinct list of models used in the collections of this NedbClient.
+     * @author BigfootDS
+     * @return {[Object]} Array of classes that inherit from NedbDocument.
+     */
+    getModelsList = () => {
+        SuperCamoLogger("NedbClient model list should be a combined list of these two arrays:", "Client");
+        SuperCamoLogger(this.#documentsList, "Client");
+        SuperCamoLogger(this.#subdocumentsList, "Client");
+        let combinedList = [...this.#documentsList, ...this.#subdocumentsList];
+        return [...new Set(combinedList)];
     }
 
     

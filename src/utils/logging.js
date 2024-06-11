@@ -30,9 +30,9 @@ const log = {
 
 log.verbose("Starting SuperCamo with verbose logging enabled.");
 log.superCamo("Starting SuperCamo with SuperCamo-specific verbose logging enabled.");
-log.superCamoDocument("Starting SuperCamo with SuperCamo \"Document\"-specific verbose logging enabled.");
-log.superCamoEmbeddedDocument("Starting SuperCamo with SuperCamo \"Embedded Document\"-specific verbose logging enabled.");
-log.superCamoBaseDocument("Starting SuperCamo with SuperCamo \"Base Document\"-specific verbose logging enabled.");
+log.superCamoDocument("Starting SuperCamo with SuperCamo 'Document-specific verbose logging enabled.");
+log.superCamoEmbeddedDocument("Starting SuperCamo with SuperCamo 'Embedded Document'-specific verbose logging enabled.");
+log.superCamoBaseDocument("Starting SuperCamo with SuperCamo 'Base Document'-specific verbose logging enabled.");
 log.superCamoClient("Starting SuperCamo with SuperCamo client-specific verbose logging enabled.");
 log.superCamoValidators("Starting SuperCamo with SuperCamo validator-specific verbose logging enabled.");
 

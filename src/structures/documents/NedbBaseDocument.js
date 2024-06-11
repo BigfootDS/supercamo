@@ -117,13 +117,20 @@ module.exports = class NedbBaseDocument {
 
 
 			// Is the key type based on Document, EmbeddedDocument, or not?
-			let keyClassList = getClassInheritanceList(this[key].type);
+			const SuperCamo = require("../../index.js");
+			let typeToCheck = Array.isArray(this[key].type) ? this[key].type[0] : this[key].type;
+			let keyClassList = getClassInheritanceList(typeToCheck, SuperCamo.getRegisteredModels());
+			if (keyClassList.length == 0 || (keyClassList.length == 1 && keyClassList[0] == "")) {
+				keyClassList = [typeof key];
+			}
+			SuperCamoLogger(`Class inheritance list for key ${key} is:`, "BaseDocument");
+			SuperCamoLogger(keyClassList, "BaseDocument");
 			if (keyClassList.includes("NedbDocument")){
 				// If so, validate the ID amongst the collection within the database
 				SuperCamoLogger(`Key of ${key} is expecting this to be an ID referring to a document: \n${JSON.stringify(this.#data[key])}`, "BaseDocument")
 
 				let targetCollectionName = this[key].collection;
-				const SuperCamo = require("../../index.js");
+				
 				let targetCollection = await SuperCamo.activeClients[this.#parentDatabaseName].getCollectionAccessor(targetCollectionName);
 				if (modelPropertyIsRequired || modelInstanceHasData){
 					// If some ID is required or provided, make sure it's for an actual document in the collection that this key needs.
@@ -145,16 +152,16 @@ module.exports = class NedbBaseDocument {
 				}
 			} else if (keyClassList.includes("NedbEmbeddedDocument")) { 
 				// Make new instance of this.#data[key] and let it validate
-				// SuperCamoLogger("~~~~~~~~~~~~~", "BaseDocument");
-				// SuperCamoLogger(this.#data[key], "BaseDocument");
-				// SuperCamoLogger(await this.#data[key].getData(), "BaseDocument");
-				// SuperCamoLogger("~~~~~~~~~~~~~", "BaseDocument");
-
+				SuperCamoLogger("~~~~~~~~~~~~~", "BaseDocument");
+				SuperCamoLogger(this.#data[key], "BaseDocument");
+				SuperCamoLogger(await this.#data[key].getData(), "BaseDocument");
+				SuperCamoLogger("~~~~~~~~~~~~~", "BaseDocument");
+				SuperCamoLogger(`Key of ${key} is an EmbeddedDocument but validation is not implemented for those as properties on Documents just yet, sorry!`);
 
 			} else {
 				let modelInstanceDataMatchesExpectedType = isType(this[key].type, this.#data[key]);
 				if (modelPropertyIsRequired && !modelInstanceDataMatchesExpectedType) {
-					throw new Error(`Property expects a certain data type but did not receive it:\n\tProperty:${key}\n\tType:${key}:${this[key].type.name}\n\tReceived:${this.#data[key]} (${typeof this.#data[key]})`);
+					throw new Error(`Property expects a certain data type but did not receive it:\n\tProperty:${key}\n\tType:${key}:${typeof(this[key].type)}\n\tReceived:${this.#data[key]} (${typeof this.#data[key]})`);
 				}
 			}
 			
@@ -165,7 +172,7 @@ module.exports = class NedbBaseDocument {
 			let modelHasChoices = isArray(this[key].choices);
 			let modelInstanceDataIsInChoices = undefined; 
 			if (modelPropertyIsRequired && modelHasChoices){
-				modelInstanceDataIsInChoices = isInChoices(this[key].choices, [this.#data[key]]);
+				modelInstanceDataIsInChoices = isInChoices(this[key].choices, this.#data[key]);
 
 				if (!modelInstanceDataIsInChoices){
 					throw new Error(`Property limits values to choices, and given value was not one of those allowed choices:\n\tChoices: ${JSON.stringify(this[key].choices)}\n\tReceived: ${this.#data[key]}`);

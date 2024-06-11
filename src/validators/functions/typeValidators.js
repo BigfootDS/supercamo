@@ -1,3 +1,4 @@
+const SuperCamoLogger = require("../../utils/logging");
 const util = require("node:util");
 // const { doesExtendDocument, doesExtendEmbeddedDocument } = require("./doesExtendClass.js");
 
@@ -64,21 +65,47 @@ const isInChoices = (choices, item) => {
 
 // Used in document data validation
 const isType = (typeWanted, valueToCheck) => {
-	switch (typeWanted.name) {
-		case "String":
+	SuperCamoLogger("Checking type of this data now:", "Validators");
+	SuperCamoLogger(valueToCheck, "Validators");
+	SuperCamoLogger("Wanted type should be of this data:", "Validators");
+	SuperCamoLogger(typeWanted, "Validators");
+	SuperCamoLogger(typeWanted.name, "Validators");
+	SuperCamoLogger(typeof(typeWanted), "Validators");
+	SuperCamoLogger(isArray(typeWanted), "Validators");
+
+	if (isArray(typeWanted) && isArray(valueToCheck)){
+		// If all keys found on valueToCheck each exist on typeWanted[0],
+		// then we can assume that valueToCheck is the data obj of typeWanted's "array of XYZ" class
+		let valueToCheckKeys = Object.keys(valueToCheck);
+		let typeWantedCoreKeys = Object.keys(typeWanted[0]);
+
+		return valueToCheckKeys.every(key => typeWantedCoreKeys.includes(key));
+	}
+
+	if (isObject(valueToCheck)){
+		// If all keys found on valueToCheck each exist on typeWanted,
+		// then we can assume that valueToCheck is the data obj of typeWanted's class
+		let valueToCheckKeys = Object.keys(valueToCheck);
+		let typeWantedCoreKeys = Object.keys(typeWanted);
+
+		return valueToCheckKeys.every(key => typeWantedCoreKeys.includes(key));
+	}
+
+	switch (new String(typeWanted.name).toLowerCase()) {
+		case "string":
 			return isString(valueToCheck);
-		case "Number":
+		case "number":
 			return isNumber(valueToCheck);
-		case "Boolean":
+		case "boolean":
 			return isBoolean(valueToCheck);
-		case "Buffer":
+		case "buffer":
 			return isBuffer(valueToCheck);
-		case "Date":
+		case "date":
 			return isDate(valueToCheck);
-		case "Array":
+		case "array":
 		case isArray(typeWanted):
 			return isArray(valueToCheck);
-		case "Object":
+		case "object":
 			return isObject(valueToCheck);
 		// case isDocument(typeWanted):
 		// 	// this feels incorrect, will fix later
@@ -87,7 +114,7 @@ const isType = (typeWanted, valueToCheck) => {
 		// 	// this feels incorrect, will fix later
 		// 	return isEmbeddedDocument(valueToCheck);
 		default:
-			throw new TypeError("Unsupported type set in document:" + typeWanted);
+			throw new TypeError("Unsupported type set in document:" + JSON.stringify({wanted: typeWanted, received: valueToCheck}));
 	}
 }
 
