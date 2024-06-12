@@ -3,39 +3,43 @@ const path = require("node:path");
 const { isObject } = require("../../validators/index.js");
 // const { doesExtendDocument } = require("../../validators/functions/doesExtendClass.js");
 const SuperCamoLogger = require("../../utils/logging.js");
+const { isESClass } = require("../../validators/functions/typeValidators.js");
+const { getClassInheritanceList } = require("../../validators/functions/ancestors.js");
 
-const urlToPath = function(url) {
-    if (url.indexOf('nedb://') > -1) {
-        return url.slice(7, url.length);
-    }
-    return url;
-};
 
-const getCollectionPath = function(dbLocation, collection) {
-    if (dbLocation === 'memory') {
-        return dbLocation;
-    }
-    return path.join(dbLocation, collection) + '.db';
-};
+/**
+ * Process a list of key-value pairs (KVPs) to see which subdocuments are used the models contained in them.
+ * @author BigfootDS
+ *
+ * @param {[Object]} collectionsList Array of objects where each object contains a model and a name.
+ * @returns {[Object]} Array of classes that inherit from NedbEmbeddedDocument.
+ */
+function parseCollectionsListForSubdocuments (collectionsList) {
+    let result = [];
 
-const createCollection = (collectionName, url) => {
-	if (url === 'memory'){
-		return new Datastore({inMemoryOnly: true});
-	}
-	let collectionPath = getCollectionPath(url, collectionName);
-    return new Datastore({filename: collectionPath, autoload: true});
+    collectionsList.forEach((kvp) => {
+        let tempModelInstance = new kvp.model();
+        let docKeys = Object.keys(tempModelInstance);
+         
+        for (const key of docKeys){
+            let propertyIsArray = Array.isArray(tempModelInstance[key].type);
+            let potentialClassRef = propertyIsArray ? tempModelInstance[key].type[0] : tempModelInstance[key].type;
+            let classInheritanceList = [];
+            try {
+                classInheritanceList = getClassInheritanceList(potentialClassRef);
+            } catch {
+                classInheritanceList = [];
+            }
+
+
+            if (isESClass(potentialClassRef) && classInheritanceList.includes("NedbEmbeddedDocument")){
+                result.push(potentialClassRef);
+            }
+        }
+    })
+
+    return [...new Set(result)];
 }
-
-const getCollection = function(name, collections, path) {
-    if (!(name in collections)) {
-        let collection = createCollection(name, path);
-        collections[name] = collection;
-        return collection;
-    }
-    
-    return collections[name];
-};
-
 
 /**
  * @typedef {Object} CollectionAccessor 
@@ -48,15 +52,33 @@ const getCollection = function(name, collections, path) {
 
 
 module.exports = class NedbClient {
+
+    
+    /**
+     * Path to a folder that contains all of this database client's datastore files.
+     * @type {String}
+     * @author BigfootDS
+     */
     #rootPath = "";
+
+    
+    /**
+     * @type {[CollectionAccessor]}
+     * @author BigfootDS
+     */
     #collections = [];
+
+    #documentsList = [];
+
+    #subdocumentsList = [];
 
 	/**
      * Creates an instance of NedbClient.
      * @author BigfootDS
      *
      * @constructor
-     * @param {String} dbDirectoryPath A string representing a resolved path to a directory. This directory will store many ".db" files in it. 
+     * @param {String} dbDirectoryPath A string representing a resolved path to a directory. This directory will store the database client's specific directory - so dbDirectoryPath is not the folder that contains any ".db" files in it.
+     * @param {String} dbName A string used to identify a database. No checks for uniqueness will happen, that's up to you to manage. The directory that is a resolved path from dbDirectoryPath and dbName will contain many ".db" files in it. 
      * @param {[{name: string, model: Object}]} collectionsList An array of objects containing a desired name for a collection as well as the NedbDocument-inheriting model that should be used for that collection. You must provide ALL intended models & collections for the database client in this property - don't leave anything out!
      * 
      * @example
@@ -81,6 +103,12 @@ module.exports = class NedbClient {
 
         this.databaseName = dbName;
 
+        this.#documentsList = [...new Set(collectionsList.map((kvp) => {
+            return kvp.model
+        }))];
+
+        this.#subdocumentsList = parseCollectionsListForSubdocuments(collectionsList);
+
 	}
 
     get rootPath(){
@@ -97,6 +125,9 @@ module.exports = class NedbClient {
         
     }
 
+    
+
+
 
 	// #region Client instance utilities
 
@@ -110,6 +141,22 @@ module.exports = class NedbClient {
      */
     collectionExistsInInstance = (collectionName) => {
         return this.collections.some((collection) => collection.name === collectionName);
+    }
+
+    
+    /**
+     * Retrieve a distinct list of models used in the collections of this NedbClient.
+     * @author BigfootDS
+     * @return {[Object]} Array of classes that inherit from NedbDocument.
+     */
+    getModelsList = () => {
+        SuperCamoLogger("NedbClient model list should be a combined list of these two arrays:", "Client");
+        SuperCamoLogger("Documents list:", "Client");
+        SuperCamoLogger(this.#documentsList, "Client");
+        SuperCamoLogger("Subdocuments list:", "Client");
+        SuperCamoLogger(this.#subdocumentsList, "Client");
+        let combinedList = [...this.#documentsList, ...this.#subdocumentsList];
+        return [...new Set(combinedList)];
     }
 
     
@@ -149,6 +196,20 @@ module.exports = class NedbClient {
     // #endregion
 
     // #region Client database-wide utilities
+
+    
+    /**
+     * Retrieves all documents from all collections, turns them all into objects, and puts them all into an array.
+     * @author BigfootDS
+     *
+     * @async
+     * @returns {[Object]} An array of objects representing all documents in all collections of this database client.
+     */
+    dumpDatabase = async () => {
+        return Promise.all(this.collections.map(collectionObj => {
+            return this.findManyObjects(collectionObj.name, {});
+        }));
+    }
 
 	/**
 	 * Remove all documents from all collections.
@@ -198,7 +259,7 @@ module.exports = class NedbClient {
     }
 
     createCollection = (model, name) => {
-        let newCollectionPath = getCollectionPath(this.rootPath, name)
+        let newCollectionPath = path.join(this.rootPath, name, ".db");
         let newCollectionObj = {
             model: model,
             name: name,
@@ -420,17 +481,60 @@ module.exports = class NedbClient {
      * @async
      * @param {String} collectionName The name of the collection that you wish to search through.
      * @param {Object} query The NeDB query used to find the specific document within the collection. Read more about NeDB queries here: https://github.com/seald/nedb?tab=readme-ov-file#finding-documents
+     * @param {boolean} populate Whether or not the returned object should include nested data for any referenced documents, as objects.
      * @param {Object} projections The NeDB projections used to filter the data returned by the matched query documents. Read more about NeDB projections here: https://github.com/seald/nedb?tab=readme-ov-file#projections
      * @returns {Object}
      */
-    findOneObject = async (collectionName, query, projections = null) => {
+    findOneObject = async (collectionName, query, populate = false, projections = null) => {
         let accessor = this.getCollectionAccessor(collectionName);
+        let result = null;
+
         if (projections){
-            return await accessor.datastore.findOneAsync(query, projections);        
+            result = await accessor.datastore.findOneAsync(query, projections);        
+        } else {
+            result = await accessor.datastore.findOneAsync(query);
         }
 
-        return await accessor.datastore.findOneAsync(query);        
+        if (populate){
+            // loop through all keys on accessor.model
+            let tempModelInstance = new accessor.model();
+            let docKeys = Object.keys(tempModelInstance);
+            SuperCamoLogger("Searching for object, populating based on these keys:", "Client");
+            SuperCamoLogger(accessor.model, "Client");
+            SuperCamoLogger(docKeys, "Client");
+       
+            for await (const key of docKeys){
+                let propertyIsArray = Array.isArray(tempModelInstance[key].type);
+                let potentialClassRef = propertyIsArray ? tempModelInstance[key].type[0] : tempModelInstance[key].type;
+                let classInheritanceList = [];
+                try {
+                    classInheritanceList = getClassInheritanceList(potentialClassRef);
+                } catch {
+                    classInheritanceList = [];
+                }
+                SuperCamoLogger("Potential class ref value:", "Client");
+                SuperCamoLogger(potentialClassRef, "Client");
+                SuperCamoLogger("Class inheritance list of potential class ref value:", "Client");
+                SuperCamoLogger(classInheritanceList, "Client");
 
+                if (isESClass(potentialClassRef) && classInheritanceList.includes("NedbDocument")){
+                    SuperCamoLogger(`Key ${key} is of type ${potentialClassRef.name} which inherits from NedbDocument.`);
+                    SuperCamoLogger(`Key ${key} is in the ${tempModelInstance[key].collection} collection of the database client.`);
+
+                    if (propertyIsArray){
+                        result[key] = await Promise.all(result[key].map((item) => {
+                            SuperCamoLogger(`Searching for data with id of ${item}`);
+                            return this.findOneObject(tempModelInstance[key].collection, {_id: item});
+                        }));
+                    } else {
+                        result[key] = await this.findOneObject(tempModelInstance[key].collection, {_id: result[key]});
+                    }
+                }
+            }
+        }
+
+
+        return result;   
 	}
 
 
@@ -468,9 +572,58 @@ module.exports = class NedbClient {
      * @param {Object} projections The NeDB projections used to filter the data returned by the matched query documents. Read more about NeDB projections here: https://github.com/seald/nedb?tab=readme-ov-file#projections
      * @returns An array of found objects.
      */
-    findManyObjects = async (collectionName, query, projections) => {
+    findManyObjects = async (collectionName, query, populate = false, projections = null) => {
         let accessor = this.getCollectionAccessor(collectionName);
-        return await accessor.datastore.findAsync(query, projections);   
+        let results = null;
+
+        if (projections){
+            results = await accessor.datastore.findAsync(query, projections);       
+        } else {
+            results = await accessor.datastore.findAsync(query);
+        }
+
+        if (populate){
+            for await (let result of results) {
+                // loop through all keys on accessor.model
+            let tempModelInstance = new accessor.model();
+            let docKeys = Object.keys(tempModelInstance);
+            SuperCamoLogger("Searching for object, populating based on these keys:", "Client");
+            SuperCamoLogger(accessor.model, "Client");
+            SuperCamoLogger(docKeys, "Client");
+
+            for await (const key of docKeys){
+                let propertyIsArray = Array.isArray(tempModelInstance[key].type);
+                let potentialClassRef = propertyIsArray ? tempModelInstance[key].type[0] : tempModelInstance[key].type;
+                let classInheritanceList = [];
+                try {
+                    classInheritanceList = getClassInheritanceList(potentialClassRef);
+                } catch {
+                    classInheritanceList = [];
+                }
+                SuperCamoLogger("Potential class ref value:", "Client");
+                SuperCamoLogger(potentialClassRef, "Client");
+                SuperCamoLogger("Class inheritance list of potential class ref value:", "Client");
+                SuperCamoLogger(classInheritanceList, "Client");
+
+                if (isESClass(potentialClassRef) && classInheritanceList.includes("NedbDocument")){
+                    SuperCamoLogger(`Key ${key} is of type ${potentialClassRef.name} which inherits from NedbDocument.`);
+                    SuperCamoLogger(`Key ${key} is in the ${tempModelInstance[key].collection} collection of the database client.`);
+
+                    if (propertyIsArray){
+                        result[key] = await Promise.all(result[key].map((item) => {
+                            SuperCamoLogger(`Searching for data with id of ${item}`);
+                            return this.findOneObject(tempModelInstance[key].collection, {_id: item});
+                        }));
+                    } else {
+                        result[key] = await this.findOneObject(tempModelInstance[key].collection, {_id: result[key]});
+                    }
+                }
+            }
+            }
+        }
+
+
+        return results;   
     } 
     
     /**

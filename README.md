@@ -262,7 +262,7 @@ let existingProfile = await blogDb.findOneDocument("Profiles", {username: "thebe
 console.log(await existingProfile.getData());
 ```
 
-```bash
+```js
 {
   _id: 'UE5t6EzCDTB1f6Ss',
   username: 'thebestalex',
@@ -285,7 +285,7 @@ let existingProfile = await blogDb.findOneDocument("Profiles", {username: "thebe
 console.log(await existingProfile.getData(false));
 ```
 
-```bash
+```js
 {
   _id: 'UE5t6EzCDTB1f6Ss',
   username: 'thebestalex',
@@ -363,7 +363,7 @@ The package may or may not work this way right now, this part is still under dev
 
 Embedded documents are not impacted by populate settings.
 
-```bash
+```js
 {
   _id: 'UE5t6EzCDTB1f6Ss',
   username: 'thebestalex',
@@ -372,7 +372,7 @@ Embedded documents are not impacted by populate settings.
 }
 ```
 
-```bash
+```js
 {
   _id: 'UE5t6EzCDTB1f6Ss',
   username: 'thebestalex',
@@ -397,8 +397,10 @@ Embedded documents are not impacted by populate settings.
 
 Dig through these to see what else can be done with this library, and learn about how it's used in specific types of projects:
 
-- Simple ExpressJS server - NOT YET IMPLEMENTED
-- Simple ElectronJS app - NOT YET IMPLEMENTED
+- [NodeJS terminal app](https://github.com/BigfootDS/supercamo-example-basic)
+- ExpressJS server - NOT YET IMPLEMENTED
+- ElectronJS app - NOT YET IMPLEMENTED
 
+Those repositories are also used to dogfood this library - features needed for those projects will be prioritised. Check their readme files to see what is mapped out on each repository.
 
 

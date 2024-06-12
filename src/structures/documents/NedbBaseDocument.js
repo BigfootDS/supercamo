@@ -48,7 +48,7 @@ module.exports = class NedbBaseDocument {
 		// If you declared with const/"fat arrow" syntax, then 
 		// "this" will refer to the originating class of the method instead.
 		// SuperCamoLogger(this, "BaseDocument");
-
+		SuperCamoLogger(`New document being created based on collection ${incomingCollectionName} in database ${incomingParentDatabaseName}.`, "BaseDocument");
 		let newInstance = new this(dataObj, incomingParentDatabaseName, incomingCollectionName);
 		if (validateOnCreate){
 			try {
@@ -82,7 +82,7 @@ module.exports = class NedbBaseDocument {
 				throw new Error("Unexpected property on model instance: " + key);
 			}
 
-			SuperCamoLogger(`Validating ${key} with value of ${this.#data[key]}.`, "BaseDocument");
+			SuperCamoLogger(`Validating ${key} with value of\n${isObject(this.#data[key]) ? JSON.stringify(this.#data[key]) : this.#data[key]}.`, "BaseDocument");
 			// If no instance data was set, then apply the default value to it.
 			// This is different to regular Camo, where setting a property
 			// to have required & default keys still needs you to provide a value.
@@ -117,44 +117,87 @@ module.exports = class NedbBaseDocument {
 
 
 			// Is the key type based on Document, EmbeddedDocument, or not?
-			let keyClassList = getClassInheritanceList(this[key].type);
+			let typeToCheck = Array.isArray(this[key].type) ? this[key].type[0] : this[key].type;
+			SuperCamoLogger(`Type to check is ${typeToCheck.name}`, "BaseDocument");
+
+			const SuperCamo = require("../../index.js");
+			let keyClassList = getClassInheritanceList(typeToCheck);
+			if (keyClassList.length == 0 || (keyClassList.length == 1 && keyClassList[0] == "")) {
+				keyClassList = [typeof key];
+			}
+			SuperCamoLogger(`Class inheritance list for key ${key} with type of ${typeToCheck.name} is:`, "BaseDocument");
+			SuperCamoLogger(keyClassList, "BaseDocument");
 			if (keyClassList.includes("NedbDocument")){
 				// If so, validate the ID amongst the collection within the database
 				SuperCamoLogger(`Key of ${key} is expecting this to be an ID referring to a document: \n${JSON.stringify(this.#data[key])}`, "BaseDocument")
 
 				let targetCollectionName = this[key].collection;
-				const SuperCamo = require("../../index.js");
+				
 				let targetCollection = await SuperCamo.activeClients[this.#parentDatabaseName].getCollectionAccessor(targetCollectionName);
 				if (modelPropertyIsRequired || modelInstanceHasData){
 					// If some ID is required or provided, make sure it's for an actual document in the collection that this key needs.
 
-					let referencedDoc = await targetCollection.datastore.findOneAsync({_id: this.#data[key]});
-					if (referencedDoc == null){
-						let forgotToCallGetData = null;
-						if (JSON.stringify(this.#data[key]).includes("required")){
-							forgotToCallGetData = true;
-						}
-						let errorToThrow = new Error(`Key expects a reference to a document. ${forgotToCallGetData ? 'Make sure you call ".getData()" before calling _id, otherwise you\'re just accessing the schema in the reference document instead of its data!' : ""}`);
-						errorToThrow.data = {
-							key: key,
-							value: this.#data[key],
-							rule: this[key]
-						}
-						throw errorToThrow;
-					} 
+
+					if (isArray(this[key].type)){
+						let foundDocArray = await Promise.all(this.#data[key].map(async (entry) => {
+
+							let referencedDoc = await targetCollection.datastore.findOneAsync({_id: entry});
+							if (referencedDoc == null){
+								let forgotToCallGetData = null;
+								if (JSON.stringify(this.#data[key]).includes("required")){
+									forgotToCallGetData = true;
+								}
+								let errorToThrow = new Error(`Key expects a reference to a document. ${forgotToCallGetData ? 'Make sure you call ".getData()" before calling _id, otherwise you\'re just accessing the schema in the reference document instead of its data!' : ""}`);
+								errorToThrow.data = {
+									key: key,
+									value: this.#data[key],
+									rule: this[key]
+								}
+								throw errorToThrow;
+							} 
+
+							return referencedDoc;
+						}));
+					} else {
+						let referencedDoc = await targetCollection.datastore.findOneAsync({_id: this.#data[key]});
+						if (referencedDoc == null){
+							let forgotToCallGetData = null;
+							if (JSON.stringify(this.#data[key]).includes("required")){
+								forgotToCallGetData = true;
+							}
+							let errorToThrow = new Error(`Key expects a reference to a document. ${forgotToCallGetData ? 'Make sure you call ".getData()" before calling _id, otherwise you\'re just accessing the schema in the reference document instead of its data!' : ""}`);
+							errorToThrow.data = {
+								key: key,
+								value: this.#data[key],
+								rule: this[key]
+							}
+							throw errorToThrow;
+						} 
+					}
+
+					
 				}
 			} else if (keyClassList.includes("NedbEmbeddedDocument")) { 
 				// Make new instance of this.#data[key] and let it validate
-				// SuperCamoLogger("~~~~~~~~~~~~~", "BaseDocument");
-				// SuperCamoLogger(this.#data[key], "BaseDocument");
-				// SuperCamoLogger(await this.#data[key].getData(), "BaseDocument");
-				// SuperCamoLogger("~~~~~~~~~~~~~", "BaseDocument");
-
+				SuperCamoLogger("~~~~~~~~~~~~~", "BaseDocument");
+				SuperCamoLogger(this.#data[key], "BaseDocument");
+				SuperCamoLogger(this[key].type, "BaseDocument");
+				
+				if (isArray(this[key].type)){
+					let embedDocInstanceArray = await Promise.all(this.#data[key].map(entry => {
+						return this[key].type[0].create(entry)
+					}));
+				} else {
+					// Create instance of the embedded doc and validate it
+					let embedDocInstance = await this[key].type.create(this.#data[key]);
+				}
+				
+				SuperCamoLogger("~~~~~~~~~~~~~", "BaseDocument");
 
 			} else {
 				let modelInstanceDataMatchesExpectedType = isType(this[key].type, this.#data[key]);
 				if (modelPropertyIsRequired && !modelInstanceDataMatchesExpectedType) {
-					throw new Error(`Property expects a certain data type but did not receive it:\n\tProperty:${key}\n\tType:${key}:${this[key].type.name}\n\tReceived:${this.#data[key]} (${typeof this.#data[key]})`);
+					throw new Error(`Property expects a certain data type but did not receive it:\n\tProperty:${key}\n\tType:${key}: ${(typeToCheck.name) ? typeToCheck.name : typeToCheck}\n\tReceived:${isObject(this.#data[key]) ? JSON.stringify(this.#data[key], null, 4) : this.#data[key]} (${typeof this.#data[key]})`);
 				}
 			}
 			
@@ -165,7 +208,7 @@ module.exports = class NedbBaseDocument {
 			let modelHasChoices = isArray(this[key].choices);
 			let modelInstanceDataIsInChoices = undefined; 
 			if (modelPropertyIsRequired && modelHasChoices){
-				modelInstanceDataIsInChoices = isInChoices(this[key].choices, [this.#data[key]]);
+				modelInstanceDataIsInChoices = isInChoices(this[key].choices, this.#data[key]);
 
 				if (!modelInstanceDataIsInChoices){
 					throw new Error(`Property limits values to choices, and given value was not one of those allowed choices:\n\tChoices: ${JSON.stringify(this[key].choices)}\n\tReceived: ${this.#data[key]}`);
