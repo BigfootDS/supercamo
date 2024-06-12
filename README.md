@@ -293,6 +293,12 @@ console.log(await existingProfile.getData(false));
 }
 ```
 
+You can also work with populated query results from these methods on a database client instance:
+
+- findOneObject(collectionName, queryObject, shouldPopulate = false, projections = null)
+- findManyObjects(collectionName, queryObject, shouldPopulate = false, projections = null)
+
+Please note that not all methods will populate by default. If some method parameter with name along the lines of `shouldPopulate` or `populate` is set to false, data will not populate.
 
 ### Embedded Documents
 
@@ -346,22 +352,17 @@ class Profile extends SuperCamo.NedbDocument {
 }
 ```
 
-You need to use the `create()` method of an Embedded Document when inserting or modifying data in a parent document:
+When creating data where the document uses an embedded document, you should use an object matching the schema of the embedded document. Consider the code below:
 
 ```js
 let newProfile = await blogDb.insertOne("Profiles", {
 	username: "thebestalex", 
 	user: existingUserId,
-	profileFlags: await ProfileFlags.create({banned: false, premium: true})
+	profileFlags: {banned: false, premium: true}
 });
 ```
 
-Embedded documents are converted to objects internally most of the time - this is still WIP, but basically:
-- when validating, the data for a property that uses an Embedded Document should be an Embedded Document instance, so that it can run its own hooks & validations & so on.
-- in all other situations, the data for a property that uses an Embedded Document should be a JavaScript object.
-The package may or may not work this way right now, this part is still under development.
-
-Embedded documents are not impacted by populate settings.
+Essentially, an embedded document is a validation tool. The data is still saved as an object in the database, and it's simplest to work with that data as an object in the current state of SuperCamo. But for things like `insertOne` as shown above, the validation of the ProfileFlags embedded document would run before saving the Profile document to the database.
 
 ```js
 {
@@ -371,6 +372,9 @@ Embedded documents are not impacted by populate settings.
   profileFlags: { banned: false, premium: true }
 }
 ```
+
+
+Document population is not tied to embedded document functionality at all - the above code snippet shows the embedded document data in full while the user ID is just an ID. The below code snippet shows the same profile flag data, as well as the populated user data. The embedded document data is fully present regardless of population settings.
 
 ```js
 {
