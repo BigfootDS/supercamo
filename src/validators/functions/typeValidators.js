@@ -63,6 +63,25 @@ const isInChoices = (choices, item) => {
 }
 
 
+/**
+ * Check if a value is an ES6 class. This fails if the codebase is transpiled to ES5 or earlier.
+ * 
+ * Code from this StackOverflow answer licensed with CC BY-SA 4.0:
+ * https://stackoverflow.com/a/75567955
+ * No changes were made to this particular code.
+ * @author Andrea Giammarchi
+ *
+ * @param fn
+ * @returns {boolean}
+ */
+const isESClass = fn => (
+	typeof fn === 'function' &&
+	Object.getOwnPropertyDescriptor(
+	  fn,
+	  'prototype'
+	)?.writable === false
+);
+
 // Used in document data validation
 const isType = (typeWanted, valueToCheck) => {
 	SuperCamoLogger("Checking type of this data now:", "Validators");
@@ -137,5 +156,6 @@ module.exports = {
 	isSupportedType, isSupportedTypeOrInheritsFromADocument,
 	isInChoices,
 	isType,
-	isFunction, isAsyncFunction, isPromise
+	isFunction, isAsyncFunction, isPromise,
+	isESClass
 }

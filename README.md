@@ -134,6 +134,12 @@ let exampleDb = await SuperCamo.connect(
 		{name: "Admins", model: User}, 
 		{name: "Profiles", model: Profile},
 		{name: "Config", model: Settings}
+	],
+	[
+		// Any embedded documents that your database client's documents use must be listed here
+		// eg. if an embedded document exists that is declared as "class LocalizedContent extends NedbEmbeddedDocument {}",
+		// then this array should include:
+		// LocalizedContent
 	]
 );
 ```

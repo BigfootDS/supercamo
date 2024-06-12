@@ -172,6 +172,20 @@ module.exports = class NedbClient {
 
     // #region Client database-wide utilities
 
+    
+    /**
+     * Retrieves all documents from all collections, turns them all into objects, and puts them all into an array.
+     * @author BigfootDS
+     *
+     * @async
+     * @returns {[Object]} An array of objects representing all documents in all collections of this database client.
+     */
+    dumpDatabase = async () => {
+        return Promise.all(this.collections.map(collectionObj => {
+            return this.findManyObjects(collectionObj.name, {});
+        }));
+    }
+
 	/**
 	 * Remove all documents from all collections.
 	 * 
