@@ -6,38 +6,40 @@ const SuperCamoLogger = require("../../utils/logging.js");
 const { isESClass } = require("../../validators/functions/typeValidators.js");
 const { getClassInheritanceList } = require("../../validators/functions/ancestors.js");
 
-const urlToPath = function(url) {
-    if (url.indexOf('nedb://') > -1) {
-        return url.slice(7, url.length);
-    }
-    return url;
-};
 
-const getCollectionPath = function(dbLocation, collection) {
-    if (dbLocation === 'memory') {
-        return dbLocation;
-    }
-    return path.join(dbLocation, collection) + '.db';
-};
+/**
+ * Process a list of key-value pairs (KVPs) to see which subdocuments are used the models contained in them.
+ * @author BigfootDS
+ *
+ * @param {[Object]} collectionsList Array of objects where each object contains a model and a name.
+ * @returns {[Object]} Array of classes that inherit from NedbEmbeddedDocument.
+ */
+function parseCollectionsListForSubdocuments (collectionsList) {
+    let result = [];
 
-const createCollection = (collectionName, url) => {
-	if (url === 'memory'){
-		return new Datastore({inMemoryOnly: true});
-	}
-	let collectionPath = getCollectionPath(url, collectionName);
-    return new Datastore({filename: collectionPath, autoload: true});
+    collectionsList.forEach((kvp) => {
+        let tempModelInstance = new kvp.model();
+        let docKeys = Object.keys(tempModelInstance);
+         
+        for (const key of docKeys){
+            let propertyIsArray = Array.isArray(tempModelInstance[key].type);
+            let potentialClassRef = propertyIsArray ? tempModelInstance[key].type[0] : tempModelInstance[key].type;
+            let classInheritanceList = [];
+            try {
+                classInheritanceList = getClassInheritanceList(potentialClassRef);
+            } catch {
+                classInheritanceList = [];
+            }
+
+
+            if (isESClass(potentialClassRef) && classInheritanceList.includes("NedbEmbeddedDocument")){
+                result.push(potentialClassRef);
+            }
+        }
+    })
+
+    return [...new Set(result)];
 }
-
-const getCollection = function(name, collections, path) {
-    if (!(name in collections)) {
-        let collection = createCollection(name, path);
-        collections[name] = collection;
-        return collection;
-    }
-    
-    return collections[name];
-};
-
 
 /**
  * @typedef {Object} CollectionAccessor 
@@ -50,9 +52,24 @@ const getCollection = function(name, collections, path) {
 
 
 module.exports = class NedbClient {
+
+    
+    /**
+     * Path to a folder that contains all of this database client's datastore files.
+     * @type {String}
+     * @author BigfootDS
+     */
     #rootPath = "";
+
+    
+    /**
+     * @type {[CollectionAccessor]}
+     * @author BigfootDS
+     */
     #collections = [];
+
     #documentsList = [];
+
     #subdocumentsList = [];
 
 	/**
@@ -60,7 +77,8 @@ module.exports = class NedbClient {
      * @author BigfootDS
      *
      * @constructor
-     * @param {String} dbDirectoryPath A string representing a resolved path to a directory. This directory will store many ".db" files in it. 
+     * @param {String} dbDirectoryPath A string representing a resolved path to a directory. This directory will store the database client's specific directory - so dbDirectoryPath is not the folder that contains any ".db" files in it.
+     * @param {String} dbName A string used to identify a database. No checks for uniqueness will happen, that's up to you to manage. The directory that is a resolved path from dbDirectoryPath and dbName will contain many ".db" files in it. 
      * @param {[{name: string, model: Object}]} collectionsList An array of objects containing a desired name for a collection as well as the NedbDocument-inheriting model that should be used for that collection. You must provide ALL intended models & collections for the database client in this property - don't leave anything out!
      * 
      * @example
@@ -74,7 +92,7 @@ module.exports = class NedbClient {
      * );
      * 
      */
-    constructor(dbDirectoryPath, dbName, collectionsList = [], subdocumentsList = []){
+    constructor(dbDirectoryPath, dbName, collectionsList = []){
 
 
 		this.#rootPath = dbDirectoryPath;
@@ -89,7 +107,7 @@ module.exports = class NedbClient {
             return kvp.model
         }))];
 
-        this.#subdocumentsList = subdocumentsList;
+        this.#subdocumentsList = parseCollectionsListForSubdocuments(collectionsList);
 
 	}
 
@@ -106,6 +124,9 @@ module.exports = class NedbClient {
         this.#collections = newValue;
         
     }
+
+    
+
 
 
 	// #region Client instance utilities
@@ -130,7 +151,9 @@ module.exports = class NedbClient {
      */
     getModelsList = () => {
         SuperCamoLogger("NedbClient model list should be a combined list of these two arrays:", "Client");
+        SuperCamoLogger("Documents list:", "Client");
         SuperCamoLogger(this.#documentsList, "Client");
+        SuperCamoLogger("Subdocuments list:", "Client");
         SuperCamoLogger(this.#subdocumentsList, "Client");
         let combinedList = [...this.#documentsList, ...this.#subdocumentsList];
         return [...new Set(combinedList)];
@@ -236,7 +259,7 @@ module.exports = class NedbClient {
     }
 
     createCollection = (model, name) => {
-        let newCollectionPath = getCollectionPath(this.rootPath, name)
+        let newCollectionPath = path.join(this.rootPath, name, ".db");
         let newCollectionObj = {
             model: model,
             name: name,
@@ -479,16 +502,13 @@ module.exports = class NedbClient {
             SuperCamoLogger("Searching for object, populating based on these keys:", "Client");
             SuperCamoLogger(accessor.model, "Client");
             SuperCamoLogger(docKeys, "Client");
-
-            const SuperCamo = require("../../SuperCamo.js");
-            
-
+       
             for await (const key of docKeys){
                 let propertyIsArray = Array.isArray(tempModelInstance[key].type);
                 let potentialClassRef = propertyIsArray ? tempModelInstance[key].type[0] : tempModelInstance[key].type;
                 let classInheritanceList = [];
                 try {
-                    classInheritanceList = getClassInheritanceList(potentialClassRef, SuperCamo.getRegisteredModels());
+                    classInheritanceList = getClassInheritanceList(potentialClassRef);
                 } catch {
                     classInheritanceList = [];
                 }
@@ -571,15 +591,12 @@ module.exports = class NedbClient {
             SuperCamoLogger(accessor.model, "Client");
             SuperCamoLogger(docKeys, "Client");
 
-            const SuperCamo = require("../../SuperCamo.js");
-            
-
             for await (const key of docKeys){
                 let propertyIsArray = Array.isArray(tempModelInstance[key].type);
                 let potentialClassRef = propertyIsArray ? tempModelInstance[key].type[0] : tempModelInstance[key].type;
                 let classInheritanceList = [];
                 try {
-                    classInheritanceList = getClassInheritanceList(potentialClassRef, SuperCamo.getRegisteredModels());
+                    classInheritanceList = getClassInheritanceList(potentialClassRef);
                 } catch {
                     classInheritanceList = [];
                 }

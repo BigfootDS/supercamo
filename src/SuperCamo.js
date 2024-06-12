@@ -1,4 +1,5 @@
 const { NedbClient } = require("./structures/index.js");
+const SuperCamoLogger = require("./utils/logging.js");
 const { isDatabaseConnected_RootHelper } = require("./validators/index.js");
 const path = require("node:path");
 
@@ -98,8 +99,8 @@ module.exports = class SuperCamo {
 				const localClient = SuperCamo.#activeClients[client];
 				
 				let clientModels = localClient.getModelsList();
-				console.log(`Adding this list of models from  ${localClient.databaseName} to the SuperCamo registered models list:`);
-				console.log(clientModels);
+				SuperCamoLogger(`Adding this list of models from  ${localClient.databaseName} to the SuperCamo registered models list:`, "Root");
+				SuperCamoLogger(clientModels, "Root");
 
 				modelList = [...new Set(...modelList, clientModels)];
 			}

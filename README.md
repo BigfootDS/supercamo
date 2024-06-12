@@ -134,12 +134,6 @@ let exampleDb = await SuperCamo.connect(
 		{name: "Admins", model: User}, 
 		{name: "Profiles", model: Profile},
 		{name: "Config", model: Settings}
-	],
-	[
-		// Any embedded documents that your database client's documents use must be listed here
-		// eg. if an embedded document exists that is declared as "class LocalizedContent extends NedbEmbeddedDocument {}",
-		// then this array should include:
-		// LocalizedContent
 	]
 );
 ```
@@ -407,5 +401,6 @@ Dig through these to see what else can be done with this library, and learn abou
 - ExpressJS server - NOT YET IMPLEMENTED
 - ElectronJS app - NOT YET IMPLEMENTED
 
+Those repositories are also used to dogfood this library - features needed for those projects will be prioritised. Check their readme files to see what is mapped out on each repository.
 
 

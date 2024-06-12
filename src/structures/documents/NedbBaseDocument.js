@@ -121,7 +121,7 @@ module.exports = class NedbBaseDocument {
 			SuperCamoLogger(`Type to check is ${typeToCheck.name}`, "BaseDocument");
 
 			const SuperCamo = require("../../index.js");
-			let keyClassList = getClassInheritanceList(typeToCheck, SuperCamo.getRegisteredModels());
+			let keyClassList = getClassInheritanceList(typeToCheck);
 			if (keyClassList.length == 0 || (keyClassList.length == 1 && keyClassList[0] == "")) {
 				keyClassList = [typeof key];
 			}
