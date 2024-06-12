@@ -1,6 +1,3 @@
-const SuperCamo = require("../../SuperCamo.js");
-const SuperCamoLogger = require("../../utils/logging");
-const { isESClass } = require("./typeValidators.js");
 
 /**
  * Gets the root-most class of a given class object.

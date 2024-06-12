@@ -3,6 +3,8 @@ const path = require("node:path");
 const { isObject } = require("../../validators/index.js");
 // const { doesExtendDocument } = require("../../validators/functions/doesExtendClass.js");
 const SuperCamoLogger = require("../../utils/logging.js");
+const { isESClass } = require("../../validators/functions/typeValidators.js");
+const { getClassInheritanceList } = require("../../validators/functions/ancestors.js");
 
 const urlToPath = function(url) {
     if (url.indexOf('nedb://') > -1) {
@@ -456,17 +458,63 @@ module.exports = class NedbClient {
      * @async
      * @param {String} collectionName The name of the collection that you wish to search through.
      * @param {Object} query The NeDB query used to find the specific document within the collection. Read more about NeDB queries here: https://github.com/seald/nedb?tab=readme-ov-file#finding-documents
+     * @param {boolean} populate Whether or not the returned object should include nested data for any referenced documents, as objects.
      * @param {Object} projections The NeDB projections used to filter the data returned by the matched query documents. Read more about NeDB projections here: https://github.com/seald/nedb?tab=readme-ov-file#projections
      * @returns {Object}
      */
-    findOneObject = async (collectionName, query, projections = null) => {
+    findOneObject = async (collectionName, query, populate = false, projections = null) => {
         let accessor = this.getCollectionAccessor(collectionName);
+        let result = null;
+
         if (projections){
-            return await accessor.datastore.findOneAsync(query, projections);        
+            result = await accessor.datastore.findOneAsync(query, projections);        
+        } else {
+            result = await accessor.datastore.findOneAsync(query);
         }
 
-        return await accessor.datastore.findOneAsync(query);        
+        if (populate){
+            // loop through all keys on accessor.model
+            let tempModelInstance = new accessor.model();
+            let docKeys = Object.keys(tempModelInstance);
+            SuperCamoLogger("Searching for object, populating based on these keys:", "Client");
+            SuperCamoLogger(accessor.model, "Client");
+            SuperCamoLogger(docKeys, "Client");
 
+            const SuperCamo = require("../../SuperCamo.js");
+            
+
+            for await (const key of docKeys){
+                let propertyIsArray = Array.isArray(tempModelInstance[key].type);
+                let potentialClassRef = propertyIsArray ? tempModelInstance[key].type[0] : tempModelInstance[key].type;
+                let classInheritanceList = [];
+                try {
+                    classInheritanceList = getClassInheritanceList(potentialClassRef, SuperCamo.getRegisteredModels());
+                } catch {
+                    classInheritanceList = [];
+                }
+                SuperCamoLogger("Potential class ref value:", "Client");
+                SuperCamoLogger(potentialClassRef, "Client");
+                SuperCamoLogger("Class inheritance list of potential class ref value:", "Client");
+                SuperCamoLogger(classInheritanceList, "Client");
+
+                if (isESClass(potentialClassRef) && classInheritanceList.includes("NedbDocument")){
+                    SuperCamoLogger(`Key ${key} is of type ${potentialClassRef.name} which inherits from NedbDocument.`);
+                    SuperCamoLogger(`Key ${key} is in the ${tempModelInstance[key].collection} collection of the database client.`);
+
+                    if (propertyIsArray){
+                        result[key] = await Promise.all(result[key].map((item) => {
+                            SuperCamoLogger(`Searching for data with id of ${item}`);
+                            return this.findOneObject(tempModelInstance[key].collection, {_id: item});
+                        }));
+                    } else {
+                        result[key] = await this.findOneObject(tempModelInstance[key].collection, {_id: result[key]});
+                    }
+                }
+            }
+        }
+
+
+        return result;   
 	}
 
 
@@ -504,9 +552,61 @@ module.exports = class NedbClient {
      * @param {Object} projections The NeDB projections used to filter the data returned by the matched query documents. Read more about NeDB projections here: https://github.com/seald/nedb?tab=readme-ov-file#projections
      * @returns An array of found objects.
      */
-    findManyObjects = async (collectionName, query, projections) => {
+    findManyObjects = async (collectionName, query, populate = false, projections = null) => {
         let accessor = this.getCollectionAccessor(collectionName);
-        return await accessor.datastore.findAsync(query, projections);   
+        let results = null;
+
+        if (projections){
+            results = await accessor.datastore.findAsync(query, projections);       
+        } else {
+            results = await accessor.datastore.findAsync(query);
+        }
+
+        if (populate){
+            for await (let result of results) {
+                // loop through all keys on accessor.model
+            let tempModelInstance = new accessor.model();
+            let docKeys = Object.keys(tempModelInstance);
+            SuperCamoLogger("Searching for object, populating based on these keys:", "Client");
+            SuperCamoLogger(accessor.model, "Client");
+            SuperCamoLogger(docKeys, "Client");
+
+            const SuperCamo = require("../../SuperCamo.js");
+            
+
+            for await (const key of docKeys){
+                let propertyIsArray = Array.isArray(tempModelInstance[key].type);
+                let potentialClassRef = propertyIsArray ? tempModelInstance[key].type[0] : tempModelInstance[key].type;
+                let classInheritanceList = [];
+                try {
+                    classInheritanceList = getClassInheritanceList(potentialClassRef, SuperCamo.getRegisteredModels());
+                } catch {
+                    classInheritanceList = [];
+                }
+                SuperCamoLogger("Potential class ref value:", "Client");
+                SuperCamoLogger(potentialClassRef, "Client");
+                SuperCamoLogger("Class inheritance list of potential class ref value:", "Client");
+                SuperCamoLogger(classInheritanceList, "Client");
+
+                if (isESClass(potentialClassRef) && classInheritanceList.includes("NedbDocument")){
+                    SuperCamoLogger(`Key ${key} is of type ${potentialClassRef.name} which inherits from NedbDocument.`);
+                    SuperCamoLogger(`Key ${key} is in the ${tempModelInstance[key].collection} collection of the database client.`);
+
+                    if (propertyIsArray){
+                        result[key] = await Promise.all(result[key].map((item) => {
+                            SuperCamoLogger(`Searching for data with id of ${item}`);
+                            return this.findOneObject(tempModelInstance[key].collection, {_id: item});
+                        }));
+                    } else {
+                        result[key] = await this.findOneObject(tempModelInstance[key].collection, {_id: result[key]});
+                    }
+                }
+            }
+            }
+        }
+
+
+        return results;   
     } 
     
     /**
