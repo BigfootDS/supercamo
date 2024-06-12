@@ -219,7 +219,7 @@ console.log(foundUsers);
 
 ### Document References
 
-Documents can reference other documents. You would do this by definind a property in one document using the other document as a data type, like so:
+Documents can reference other documents. You would do this by defining a property in one document using the other document as a data type, like so:
 
 ```js
 class Profile extends SuperCamo.NedbDocument {
