@@ -1,4 +1,9 @@
-const {NedbBaseDocument, NedbDocument, NedbEmbeddedDocument} = require("../../structures/index.js");
+/** @module Internal */
+
+
+const NedbBaseDocument = require("../../structures/documents/NedbBaseDocument.js");
+const NedbDocument = require("../../structures/documents/NedbDocument.js");
+const NedbEmbeddedDocument = require("../../structures/documents/NedbEmbeddedDocument.js");
 const SuperCamoLogger = require("../../utils/logging.js");
 
 

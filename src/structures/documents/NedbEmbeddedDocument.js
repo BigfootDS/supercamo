@@ -1,7 +1,7 @@
 const NedbBaseDocument = require("./NedbBaseDocument.js");
 
 
-module.exports = class NedbEmbeddedDocument extends NedbBaseDocument {
+class NedbEmbeddedDocument extends NedbBaseDocument {
 	constructor(incomingData, incomingParentDatabaseName, incomingCollectionName){
 		super(incomingData, incomingParentDatabaseName, incomingCollectionName);
 		
@@ -9,3 +9,5 @@ module.exports = class NedbEmbeddedDocument extends NedbBaseDocument {
 
 
 }
+
+module.exports = NedbEmbeddedDocument;

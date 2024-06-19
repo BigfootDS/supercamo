@@ -5,41 +5,10 @@ const { isObject } = require("../../validators/index.js");
 const SuperCamoLogger = require("../../utils/logging.js");
 const { isESClass } = require("../../validators/functions/typeValidators.js");
 const { getClassInheritanceList } = require("../../validators/functions/ancestors.js");
+const { parseCollectionsListForSubdocuments } = require("../../utils/nedbClientHelper.js");
 
 
-/**
- * Process a list of key-value pairs (KVPs) to see which subdocuments are used the models contained in them.
- * @author BigfootDS
- *
- * @param {[Object]} collectionsList Array of objects where each object contains a model and a name.
- * @returns {[Object]} Array of classes that inherit from NedbEmbeddedDocument.
- */
-function parseCollectionsListForSubdocuments (collectionsList) {
-    let result = [];
 
-    collectionsList.forEach((kvp) => {
-        let tempModelInstance = new kvp.model();
-        let docKeys = Object.keys(tempModelInstance);
-         
-        for (const key of docKeys){
-            let propertyIsArray = Array.isArray(tempModelInstance[key].type);
-            let potentialClassRef = propertyIsArray ? tempModelInstance[key].type[0] : tempModelInstance[key].type;
-            let classInheritanceList = [];
-            try {
-                classInheritanceList = getClassInheritanceList(potentialClassRef);
-            } catch {
-                classInheritanceList = [];
-            }
-
-
-            if (isESClass(potentialClassRef) && classInheritanceList.includes("NedbEmbeddedDocument")){
-                result.push(potentialClassRef);
-            }
-        }
-    })
-
-    return [...new Set(result)];
-}
 
 /**
  * @typedef {Object} CollectionAccessor 
@@ -51,7 +20,7 @@ function parseCollectionsListForSubdocuments (collectionsList) {
  */
 
 
-module.exports = class NedbClient {
+class NedbClient {
 
     
     /**
@@ -208,6 +177,19 @@ module.exports = class NedbClient {
     dumpDatabase = async () => {
         return Promise.all(this.collections.map(collectionObj => {
             return this.findManyObjects(collectionObj.name, {});
+        }));
+    }
+
+        /**
+     * Retrieves all documents from all collections, turns them all into objects, and puts them all into an array.
+     * @author BigfootDS
+     *
+     * @async
+     * @returns {[Object]} An array of objects representing all documents in all collections of this database client.
+     */
+    dumpDatabaseDocuments = async () => {
+        return Promise.all(this.collections.map(collectionObj => {
+            return this.findManyDocuments(collectionObj.name, {});
         }));
     }
 
@@ -754,3 +736,6 @@ module.exports = class NedbClient {
     // #endregion
 
 }
+
+
+module.exports = NedbClient;

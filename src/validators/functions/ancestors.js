@@ -1,3 +1,5 @@
+/** @module Internal */
+
 
 /**
  * Gets the root-most class of a given class object.

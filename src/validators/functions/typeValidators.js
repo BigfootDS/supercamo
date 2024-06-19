@@ -1,3 +1,4 @@
+/** @module Internal */
 const SuperCamoLogger = require("../../utils/logging");
 const util = require("node:util");
 // const { doesExtendDocument, doesExtendEmbeddedDocument } = require("./doesExtendClass.js");
