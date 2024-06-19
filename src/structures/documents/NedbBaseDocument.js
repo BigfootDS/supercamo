@@ -3,6 +3,16 @@ const { getBaseClass, getClassInheritanceList } = require("../../validators/func
 const { isArray, isInChoices, isObject, isType, isFunction, isPromise, isAsyncFunction, isSupportedType } = require("../../validators/functions/typeValidators.js");
 
 
+/**
+ * This is the core class of SuperCamo documents, used to define functionality for both documents and embedded documents.
+ * 
+ * You should never be using this in your own code. You should be using NedbDocument or NedbEmbeddedDocument and inheriting those instead.
+ * 
+ * So, what is this documentation of this class for? Well, this is where common functionality is declared. This is the "D.R.Y" source of what the NedbDocument and NedbEmbeddedDocument classes can do.
+ * @author BigfootDS
+ *
+ * @abstract
+ */
 class NedbBaseDocument {
 	#data = {};
 	#parentDatabaseName = null;

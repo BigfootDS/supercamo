@@ -33,16 +33,16 @@ log.superCamoValidators("Starting SuperCamo with SuperCamo validator-specific ve
  * But if you only want SuperCamo to log, and not any other packages, you may want to set NODE_DEBUG to be or include "supercamo".
  * 
  * @example
- * Running your app with this command would enable logging for anything that uses "verbose" in its util logger:
- * ```bash
- * NODE_DEBUG=verbose node ./index.js	
- * ```
+ * <caption>Running your app with this command would enable logging for anything that uses "verbose" in its util logger:</caption>
  * 
- * @example
- * Running your app with this command would enable logging for just SuperCamo, NodeJS "fs", and NodeJS "network" libraries:
- * ```bash
+ * NODE_DEBUG=verbose node ./index.js	
+ * 
+ * 
+ * @example 
+ * <caption>Running your app with this command would enable logging for just SuperCamo, NodeJS "fs", and NodeJS "network" libraries:</caption>
+ * 
  * NODE_DEBUG=supercamo,fs,network node ./index.js
- * ```
+ * 
  * 
  * @author BigfootDS
  *

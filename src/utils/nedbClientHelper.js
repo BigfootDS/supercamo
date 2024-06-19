@@ -8,7 +8,7 @@ const { isESClass } = require("../validators/functions/typeValidators");
  * 
  * Process a list of key-value pairs (KVPs) to see which subdocuments are used the models contained in them.
  * @author BigfootDS
- *
+ * @ignore 
  * @param {[Object]} collectionsList Array of objects where each object contains a model and a name.
  * @returns {[Object]} Array of classes that inherit from NedbEmbeddedDocument.
  */
