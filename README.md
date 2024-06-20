@@ -10,6 +10,7 @@ Camo-inspired object data modeller (ODM) for NeDB, built specifically for Bigfoo
 
 We've dumped a bunch of info into this readme here for the sake of NPM and GitHub repo "quickly glance at packages to see if they sound cool"-type developers, but we strongly recommend digging into the documentation website. It's nicer!
 
+
 ## The what
 
 - NeDB compatibility
