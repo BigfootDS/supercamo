@@ -11,7 +11,7 @@
     "./NedbBaseDocument": "./src/structures/documents/NedbBaseDocument.js"
   },
   "scripts": {
-    "build:docs": "jsdoc ./src -r -c ./jsdoc.json -R ./README.md",
+    "build:docs": "jsdoc ./src -r -c ./jsdoc.json",
     "build:tstypes": "npx tsc"
   },
   "repository": {

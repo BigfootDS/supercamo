@@ -1,9 +1,3 @@
-SuperCamo is a package built as a wrapper around NeDB. It contains several key parts that you need to understand to really make good use of this package, and you would benefit from also digging around in NeDB package documentation - but we'll point that out when it's necessary in the other documentation pages.
-
-This page will walk you through the key components of this package and briefly explain what they are, as well as when you need to use them.
-
-## The SuperCamo singleton
-
 This package is all about making it easier to manage multiple NeDB database connections within a single app's lifetime. The SuperCamo singleton is how that happens.
 
 Essentially, you should connect to a database via the SuperCamo singleton. The `SuperCamo.connect()` function returns a reference to the database client instance, and that same instance can be retrieved again in any file that uses the SuperCamo singleton too.
@@ -50,11 +44,3 @@ router.get("/all", async (request, response) => {
 	response.json(availableArticles);
 });
 ```
-
-## Documents
-
-
-## Subdocuments or Embedded Documents
-
-
-## Database Client
