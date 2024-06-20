@@ -1,0 +1,232 @@
+<!DOCTYPE html><html lang="en" style="font-size:16px"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="author" content="BigfootDS"><meta name="description" content="Camo-inspired ODM for NeDB, built specifically for BigfootDS' needs."><meta name="keywords" content="es6,odm,nedb,nosql,document,model,schema,database,data,datastore,query,db"><title>SuperCamo by BigfootDS</title><!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]--><script src="scripts/third-party/hljs.js" defer="defer"></script><script src="scripts/third-party/hljs-line-num.js" defer="defer"></script><script src="scripts/third-party/popper.js" defer="defer"></script><script src="scripts/third-party/tippy.js" defer="defer"></script><script src="scripts/third-party/tocbot.min.js"></script><script>var baseURL="/",locationPathname="";baseURL=(locationPathname=document.location.pathname).substr(0,locationPathname.lastIndexOf("/")+1)</script><link rel="stylesheet" href="styles/clean-jsdoc-theme.min.css"><svg aria-hidden="true" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display:none"><defs><symbol id="copy-icon" viewbox="0 0 488.3 488.3"><g><path d="M314.25,85.4h-227c-21.3,0-38.6,17.3-38.6,38.6v325.7c0,21.3,17.3,38.6,38.6,38.6h227c21.3,0,38.6-17.3,38.6-38.6V124    C352.75,102.7,335.45,85.4,314.25,85.4z M325.75,449.6c0,6.4-5.2,11.6-11.6,11.6h-227c-6.4,0-11.6-5.2-11.6-11.6V124    c0-6.4,5.2-11.6,11.6-11.6h227c6.4,0,11.6,5.2,11.6,11.6V449.6z"/><path d="M401.05,0h-227c-21.3,0-38.6,17.3-38.6,38.6c0,7.5,6,13.5,13.5,13.5s13.5-6,13.5-13.5c0-6.4,5.2-11.6,11.6-11.6h227    c6.4,0,11.6,5.2,11.6,11.6v325.7c0,6.4-5.2,11.6-11.6,11.6c-7.5,0-13.5,6-13.5,13.5s6,13.5,13.5,13.5c21.3,0,38.6-17.3,38.6-38.6    V38.6C439.65,17.3,422.35,0,401.05,0z"/></g></symbol><symbol id="search-icon" viewBox="0 0 512 512"><g><g><path d="M225.474,0C101.151,0,0,101.151,0,225.474c0,124.33,101.151,225.474,225.474,225.474    c124.33,0,225.474-101.144,225.474-225.474C450.948,101.151,349.804,0,225.474,0z M225.474,409.323    c-101.373,0-183.848-82.475-183.848-183.848S124.101,41.626,225.474,41.626s183.848,82.475,183.848,183.848    S326.847,409.323,225.474,409.323z"/></g></g><g><g><path d="M505.902,476.472L386.574,357.144c-8.131-8.131-21.299-8.131-29.43,0c-8.131,8.124-8.131,21.306,0,29.43l119.328,119.328    c4.065,4.065,9.387,6.098,14.715,6.098c5.321,0,10.649-2.033,14.715-6.098C514.033,497.778,514.033,484.596,505.902,476.472z"/></g></g></symbol><symbol id="font-size-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M11.246 15H4.754l-2 5H.6L7 4h2l6.4 16h-2.154l-2-5zm-.8-2L8 6.885 5.554 13h4.892zM21 12.535V12h2v8h-2v-.535a4 4 0 1 1 0-6.93zM19 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></symbol><symbol id="add-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z"/></symbol><symbol id="minus-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M5 11h14v2H5z"/></symbol><symbol id="dark-theme-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M10 7a7 7 0 0 0 12 4.9v.1c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2h.1A6.979 6.979 0 0 0 10 7zm-6 5a8 8 0 0 0 15.062 3.762A9 9 0 0 1 8.238 4.938 7.999 7.999 0 0 0 4 12z"/></symbol><symbol id="light-theme-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 18a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm0-2a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM11 1h2v3h-2V1zm0 19h2v3h-2v-3zM3.515 4.929l1.414-1.414L7.05 5.636 5.636 7.05 3.515 4.93zM16.95 18.364l1.414-1.414 2.121 2.121-1.414 1.414-2.121-2.121zm2.121-14.85l1.414 1.415-2.121 2.121-1.414-1.414 2.121-2.121zM5.636 16.95l1.414 1.414-2.121 2.121-1.414-1.414 2.121-2.121zM23 11v2h-3v-2h3zM4 11v2H1v-2h3z"/></symbol><symbol id="reset-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M18.537 19.567A9.961 9.961 0 0 1 12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10c0 2.136-.67 4.116-1.81 5.74L17 12h3a8 8 0 1 0-2.46 5.772l.997 1.795z"/></symbol><symbol id="down-icon" viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.7803 6.21967C13.0732 6.51256 13.0732 6.98744 12.7803 7.28033L8.53033 11.5303C8.23744 11.8232 7.76256 11.8232 7.46967 11.5303L3.21967 7.28033C2.92678 6.98744 2.92678 6.51256 3.21967 6.21967C3.51256 5.92678 3.98744 5.92678 4.28033 6.21967L8 9.93934L11.7197 6.21967C12.0126 5.92678 12.4874 5.92678 12.7803 6.21967Z"></path></symbol><symbol id="codepen-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M16.5 13.202L13 15.535v3.596L19.197 15 16.5 13.202zM14.697 12L12 10.202 9.303 12 12 13.798 14.697 12zM20 10.869L18.303 12 20 13.131V10.87zM19.197 9L13 4.869v3.596l3.5 2.333L19.197 9zM7.5 10.798L11 8.465V4.869L4.803 9 7.5 10.798zM4.803 15L11 19.131v-3.596l-3.5-2.333L4.803 15zM4 13.131L5.697 12 4 10.869v2.262zM2 9a1 1 0 0 1 .445-.832l9-6a1 1 0 0 1 1.11 0l9 6A1 1 0 0 1 22 9v6a1 1 0 0 1-.445.832l-9 6a1 1 0 0 1-1.11 0l-9-6A1 1 0 0 1 2 15V9z"/></symbol><symbol id="close-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/></symbol><symbol id="menu-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z"/></symbol></defs></svg></head><body data-theme="dark"><div class="sidebar-container"><div class="sidebar" id="sidebar"><a href="/" class="sidebar-title sidebar-title-anchor">SuperCamo</a><div class="sidebar-items-container"><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-tutorials"><div>Tutorials</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="tutorial-00-understandingthispackage.html">00: Understanding This Package</a></div><div class="sidebar-section-children"><a href="tutorial-01-gettingstarted.html">01: Getting Started</a></div></div><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-classes"><div>Classes</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="NedbBaseDocument.html">NedbBaseDocument</a></div><div class="sidebar-section-children"><a href="NedbClient.html">NedbClient</a></div><div class="sidebar-section-children"><a href="NedbDocument.html">NedbDocument</a></div><div class="sidebar-section-children"><a href="NedbEmbeddedDocument.html">NedbEmbeddedDocument</a></div><div class="sidebar-section-children"><a href="SuperCamo.html">SuperCamo</a></div></div><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-global"><div>Global</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="global.html#SuperCamoLogger">SuperCamoLogger</a></div></div></div></div></div><div class="navbar-container" id="VuAckcnZhf"><nav class="navbar"><div class="navbar-left-items"><div class="navbar-item navbar-item"><a id="" href="." target="">Home</a></div><div class="navbar-item navbar-item"><a id="" href="./SuperCamo.html" target="">SuperCamo Static Class</a></div><div class="navbar-item navbar-item"><a id="" href="./NedbClient.html" target="">Database Clients</a></div><div class="navbar-item navbar-item"><a id="" href="./NedbDocument.html" target="">Documents</a></div><div class="navbar-item navbar-item"><a id="" href="./NedbEmbeddedDocument.html" target="">Embedded Documents</a></div></div><div class="navbar-right-items"><div class="navbar-right-item"><button class="icon-button search-button" aria-label="open-search"><svg><use xlink:href="#search-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button theme-toggle" aria-label="toggle-theme"><svg><use class="theme-svg-use" xlink:href="#light-theme-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button font-size" aria-label="change-font-size"><svg><use xlink:href="#font-size-icon"></use></svg></button></div></div><nav></nav></nav></div><div class="toc-container"><div class="toc-content"><span class="bold">On this page</span><div id="eed4d2a0bfd64539bb9df78095dec881"></div></div></div><div class="body-wrapper"><div class="main-content"><div class="main-wrapper"><section class="readme"><article><h1 id="%40bigfootds%2Fsupercamo">@bigfootds/supercamo</h1><p>Camo-inspired object data modeller (ODM) for NeDB, built specifically for BigfootDS' needs.</p><h2 id="the-urls">The URLs</h2><ul><li><a href="https://www.npmjs.com/package/@bigfootds/supercamo">NPM package</a></li><li><a href="https://github.com/BigfootDS/supercamo">GitHub repository</a></li><li><a href="">Documentation website coming soon</a></li></ul><h2 id="the-what">The what</h2><ul><li>NeDB compatibility</li><li>Treat multiple NeDB datastores as a singular database</li><li>Allow concurrent connections to multiple databases</li><li>ODM-style wrapping around NeDB datastores</li><li>Modern JavaScript implementations</li><li>Leaning on standard NodeJS functions and APIs more than ever before to minimize production dependencies</li></ul><h2 id="the-nitty-gritty">The nitty-gritty</h2><ul><li>Built using NodeJS version 20, looking <em>forward</em> only.</li><li>Built to depend on this particular flavour of NeDB:<ul><li><a href="https://github.com/seald/nedb">@seald-io/nedb</a></li></ul></li></ul><h2 id="the-installation">The installation</h2><p>Run this command:</p><pre class="prettyprint source lang-bash"><code>npm install @bigfootds/supercamo
+</code></pre><h2 id="the-usage">The usage</h2><p>This package is intended for usage in back-end JavaScript systems - anything that is built with <em>and runs on</em> NodeJS, not the browser. Might work in the browser, but it is not supported by BigfootDS at all. We're more after ExpressJS server usage and ElectronJS &quot;main&quot; process usage.</p><h3 id="concepts">Concepts</h3><p>SuperCamo is an object document manager (ODM) for NeDB. This means it's essentially a NoSQL database wrapper.</p><p>Since SuperCamo facilitates concurrent connections of multiple databases, it's got some fundamental differences in how it works compared to ye olde Camo and other NeDB-compatible ODMs.</p><p>Essentially:</p><ul><li>This library lets you create custom NedbClients.</li><li>Each custom NedbClient that you create must include a list of Documents allowed to exist in that database client's database.<ul><li>EmbeddedDocuments do not need specifying, as they can only be used within Documents anyway.</li></ul></li><li>When performing queries on Documents, you must instead perform queries on a specific database client's reference to the Document. eg. no more <code>Document.findOne();</code>, but instead <code>SomeClient.findOne(&quot;CollectionName&quot;, query);</code>.</li></ul><h3 id="declare-your-models">Declare Your Models</h3><p>First, you should create some models or documents.</p><pre class="prettyprint source lang-js"><code>const {NedbDocument} = require(&quot;@bigfootds/supercamo&quot;);
+
+module.exports = class User extends NedbDocument {
+	constructor(data, databaseName, collectionName){
+		super(data, databaseName, collectionName);
+
+		this.name = {
+			type: String,
+			required: true
+		}
+
+		this.email = {
+			type: String,
+			required: true
+		}
+
+		this.company = {
+			type: String,
+			required: true,
+			default: &quot;BigfootDS&quot;
+		}
+
+		this.luckyNumber = {
+			type: Number,
+			required: false,
+			default: () => {
+				return Math.floor(Math.random() * 100) 
+			}
+		}
+
+		this.assignedPokemonOne = {
+			type: String,
+			required: true,
+			default: async () => {
+				let pokemonNumber = Math.floor(Math.random() * 1025);
+				let response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonNumber}`);
+				let data = await response.json();
+				return data.name;
+			}
+		}
+
+		this.assignedPokemonTwo = {
+			type: String,
+			required: false,
+			default: new Promise((resolve, reject) => {
+				let pokemonNumber = Math.floor(Math.random() * 1025);
+				fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonNumber}`).then(response => response.json()).then((data) => {
+					resolve(data.name);
+				}).catch((error) => {
+					// No reject() since we want this fallback data to be accepted if the fetch fails.
+					resolve(&quot;pikachu&quot;);
+				})
+			})
+		}
+	}
+}
+</code></pre><p>Some points of difference here, compared to the original Camo library:</p><ul><li>We do allow a document property to be both required <strong>and</strong> have a default value. So if no value is provided for <code>company</code> when making instances of the model shown above, it will not throw an error - it will just set the value to <code>&quot;BigfootDS&quot;</code> and move on.</li><li>Whatever value <code>default</code> has must evaluate into a supported data type. This means that <code>default</code> can be a value, a function, an async function, or promise.</li></ul><pre class="prettyprint source"><code>HEY!
+
+We're still working on this package. Pretty sure Document references and EmbeddedDocuments do nothing right now, as we haven't touched those yet. This package will actively change a lot in 2024!
+</code></pre><h3 id="instantiating-a-database-client">Instantiating a Database Client</h3><p>Once you have a model created, you can create an instance of a database client.</p><p>Essentially, we must tell each database client instance which models they're allowed to use. We do this by specifying a key-value pair list of collections and their models.</p><pre class="prettyprint source lang-js"><code>const SuperCamo = require(&quot;@bigfootds/supercamo&quot;);
+
+let exampleDb = await SuperCamo.connect(
+	&quot;SomeDatabaseName&quot;, 
+	path.join(process.cwd(), &quot;databases&quot;),
+	[
+		{name: &quot;Users&quot;, model: User}, 
+		{name: &quot;Admins&quot;, model: User}, 
+		{name: &quot;Profiles&quot;, model: Profile},
+		{name: &quot;Config&quot;, model: Settings}
+	]
+);
+</code></pre><p>As you can see in the code above, we can use a model in multiple collections in a single database.</p><p>Since these database client instances are entirely self contained, we can create more and more of them.</p><pre class="prettyprint source lang-js"><code>const SuperCamo = require(&quot;@bigfootds/supercamo&quot;);
+
+let exampleDb = await SuperCamo.connect(
+	&quot;SomeDatabaseName&quot;, 
+	path.join(process.cwd(), &quot;databases&quot;),
+	[
+		{name: &quot;Users&quot;, model: User}, 
+		{name: &quot;Admins&quot;, model: User}, 
+		{name: &quot;Profiles&quot;, model: Profile},
+		{name: &quot;Config&quot;, model: Settings}
+	]
+);
+
+let anotherDb = await SuperCamo.connect(
+	&quot;SomeOtherDatabaseName&quot;, 
+	path.join(process.cwd(), &quot;databases&quot;),
+	[
+		{name: &quot;Users&quot;, model: User}, 
+		{name: &quot;Admins&quot;, model: User}, 
+		{name: &quot;Profiles&quot;, model: Profile},
+		{name: &quot;Config&quot;, model: Settings}
+	]
+);
+</code></pre><h3 id="using-a-database-client">Using a Database Client</h3><p>Each database client has its own set of data, so any queries run from that client instance will only find its data. No crossover between database clients!</p><pre class="prettyprint source lang-js"><code>let newUser = await exampleDb.insertOne(&quot;Users&quot;, {name:&quot;Alex&quot;, email:&quot;test@email.com&quot;})
+console.log(newUser.toString());
+
+let newUsers = await anotherDb.insertMany(&quot;Users&quot;, [
+	{name:&quot;Not Alex&quot;, email:&quot;test@email.com&quot;},
+	{name:&quot;Definitely Not Alex&quot;, email:&quot;test@email.com&quot;},
+	{name:&quot;Could be Alex, but probably not&quot;, email:&quot;test@email.com&quot;},
+]);
+console.log(newUsers.toString());
+
+</code></pre><p>We also provide a distinction between model instances and raw data objects. NeDB works in raw data objects.</p><pre class="prettyprint source lang-js"><code>let foundUsers = await exampleDb.findManyDocuments(&quot;Users&quot;, {});
+console.log(foundUsers);
+
+let foundUsers2 = await anotherDb.findManyObjects(&quot;Users&quot;, {});
+console.log(foundUsers2);
+</code></pre><p>Raw data objects are good for simplifying API logic (eg. retrieve data, send it in the response, nothing more), but document instances make it easier to do more things with the retrieved data such as update and validate the content.</p><h3 id="supercamo-static-object">SuperCamo static object</h3><p>This package stores all database client instances on a static class. Clients exist during the code's runtime, and can be created via the <code>connect</code> static method on SuperCamo as well as disconnected or dropped too.</p><p>Basically, you should be able to create your database clients in File A and continue using them in File B solely through the <code>SuperCamo</code> import variable.</p><pre class="prettyprint source lang-js"><code>
+const SuperCamo = require(&quot;@bigfootds/supercamo&quot;);
+
+console.log(SuperCamo.getClientList());
+
+let dbInstance = SuperCamo.getClientByName(&quot;SomeDatabaseName&quot;);
+
+let foundUsers = await dbInstance.findManyDocuments(&quot;Users&quot;, {});
+console.log(foundUsers);
+
+</code></pre><h3 id="document-references">Document References</h3><p>Documents can reference other documents. You would do this by defining a property in one document using the other document as a data type, like so:</p><pre class="prettyprint source lang-js"><code>class Profile extends SuperCamo.NedbDocument {
+	constructor(data, databaseName, collectionName){
+		super(data, databaseName, collectionName);
+
+		this.username = {
+			type: String,
+			required: true
+		}
+
+		this.user = {
+			type: User,
+			collection: &quot;Users&quot;,
+			required: true
+		}
+
+	}
+}
+</code></pre><p>Please note that you must specify the <code>collection</code> as well as the <code>type</code> when using a document reference.</p><p>You would then work with that data like so:</p><pre class="prettyprint source lang-js"><code>let existingUser = await exampleDb.findOneDocument(&quot;Users&quot;, {email:&quot;alex@bigfootds.com&quot;});
+let existingUserData = await existingUser.getData();
+let existingUserId = existingUserData._id;
+let newProfile = await exampleDb.insertOne(&quot;Profiles&quot;, {
+	username: &quot;thebestalex&quot;, 
+	user: existingUserId,
+});
+</code></pre><p>When retrieving data, the query will populate all referenced documents by default.</p><pre class="prettyprint source lang-js"><code>let existingProfile = await blogDb.findOneDocument(&quot;Profiles&quot;, {username: &quot;thebestalex&quot;});
+console.log(await existingProfile.getData());
+</code></pre><pre class="prettyprint source lang-js"><code>{
+  _id: 'UE5t6EzCDTB1f6Ss',
+  username: 'thebestalex',
+  user: {
+    _id: 'lX2uQosLgGPdHpbU',
+    name: 'Alex',
+    email: 'alex@bigfootds.com',
+    company: 'BigfootDS',
+    luckyNumber: 11,
+    assignedPokemonOne: 'magmortar',
+    assignedPokemonTwo: 'dragonite'
+  }
+}
+</code></pre><p>You can prevent document population by passing <code>false</code> to the <code>getData()</code> method:</p><pre class="prettyprint source lang-js"><code>let existingProfile = await blogDb.findOneDocument(&quot;Profiles&quot;, {username: &quot;thebestalex&quot;});
+console.log(await existingProfile.getData(false));
+</code></pre><pre class="prettyprint source lang-js"><code>{
+  _id: 'UE5t6EzCDTB1f6Ss',
+  username: 'thebestalex',
+  user: 'lX2uQosLgGPdHpbU',
+}
+</code></pre><p>You can also work with populated query results from these methods on a database client instance:</p><ul><li>findOneObject(collectionName, queryObject, shouldPopulate = false, projections = null)</li><li>findManyObjects(collectionName, queryObject, shouldPopulate = false, projections = null)</li></ul><p>Please note that not all methods will populate by default. If some method parameter with name along the lines of <code>shouldPopulate</code> or <code>populate</code> is set to false, data will not populate.</p><h3 id="embedded-documents">Embedded Documents</h3><p>Embedded documents (a.k.a &quot;subdocuments&quot;) are a way to give a schema and validation to a set of properties. They're like Documents, but cannot exist on their own.</p><p>Create them like so:</p><pre class="prettyprint source lang-js"><code>class ProfileFlags extends SuperCamo.NedbEmbeddedDocument {
+	constructor(data, databaseName, collectionName){
+		super(data, databaseName, collectionName);
+
+		this.banned = {
+			type: Boolean,
+			required: true,
+			default: false
+		}
+
+		this.premium = {
+			type: Boolean,
+			required: true,
+			default: false
+		}
+	}
+}
+</code></pre><p>You would then use them in another document's schema as if they were a data type, like so:</p><pre class="prettyprint source lang-js"><code>class Profile extends SuperCamo.NedbDocument {
+	constructor(data, databaseName, collectionName){
+		super(data, databaseName, collectionName);
+
+		this.username = {
+			type: String,
+			required: true
+		}
+
+		this.user = {
+			type: User,
+			collection: &quot;Users&quot;,
+			required: true
+		}
+
+		this.profileFlags = {
+			type: ProfileFlags,
+			required: false
+		}
+	}
+}
+</code></pre><p>When creating data where the document uses an embedded document, you should use an object matching the schema of the embedded document. Consider the code below:</p><pre class="prettyprint source lang-js"><code>let newProfile = await blogDb.insertOne(&quot;Profiles&quot;, {
+	username: &quot;thebestalex&quot;, 
+	user: existingUserId,
+	profileFlags: {banned: false, premium: true}
+});
+</code></pre><p>Essentially, an embedded document is a validation tool. The data is still saved as an object in the database, and it's simplest to work with that data as an object in the current state of SuperCamo. But for things like <code>insertOne</code> as shown above, the validation of the ProfileFlags embedded document would run before saving the Profile document to the database.</p><pre class="prettyprint source lang-js"><code>{
+  _id: 'UE5t6EzCDTB1f6Ss',
+  username: 'thebestalex',
+  user: 'lX2uQosLgGPdHpbU',
+  profileFlags: { banned: false, premium: true }
+}
+</code></pre><p>Document population is not tied to embedded document functionality at all - the above code snippet shows the embedded document data in full while the user ID is just an ID. The below code snippet shows the same profile flag data, as well as the populated user data. The embedded document data is fully present regardless of population settings.</p><pre class="prettyprint source lang-js"><code>{
+  _id: 'UE5t6EzCDTB1f6Ss',
+  username: 'thebestalex',
+  user: {
+    _id: 'lX2uQosLgGPdHpbU',
+    name: 'Alex',
+    email: 'alex@bigfootds.com',
+    company: 'BigfootDS',
+    luckyNumber: 11,
+    assignedPokemonOne: 'magmortar',
+    assignedPokemonTwo: 'dragonite'
+  },
+  profileFlags: { banned: false, premium: true }
+}
+</code></pre><h2 id="example-projects">Example Projects</h2><p>Dig through these to see what else can be done with this library, and learn about how it's used in specific types of projects:</p><ul><li><a href="https://github.com/BigfootDS/supercamo-example-basic">NodeJS terminal app</a></li><li>ExpressJS server - NOT YET IMPLEMENTED</li><li>ElectronJS app - NOT YET IMPLEMENTED</li></ul><p>Those repositories are also used to dogfood this library - features needed for those projects will be prioritised. Check their readme files to see what is mapped out on each repository.</p></article></section></div></div></div><div class="search-container" id="PkfLWpAbet" style="display:none"><div class="wrapper" id="iCxFxjkHbP"><button class="icon-button search-close-button" id="VjLlGakifb" aria-label="close search"><svg><use xlink:href="#close-icon"></use></svg></button><div class="search-box-c"><svg><use xlink:href="#search-icon"></use></svg> <input type="text" id="vpcKVYIppa" class="search-input" placeholder="Search..." autofocus></div><div class="search-result-c" id="fWwVHRuDuN"><span class="search-result-c-text">Type anything to view search result</span></div></div></div><div class="mobile-menu-icon-container"><button class="icon-button" id="mobile-menu" data-isopen="false" aria-label="menu"><svg><use xlink:href="#menu-icon"></use></svg></button></div><div id="mobile-sidebar" class="mobile-sidebar-container"><div class="mobile-sidebar-wrapper"><a href="/" class="sidebar-title sidebar-title-anchor">SuperCamo</a><div class="mobile-nav-links"><div class="navbar-item navbar-item"><a id="" href="." target="">Home</a></div><div class="navbar-item navbar-item"><a id="" href="./SuperCamo.html" target="">SuperCamo Static Class</a></div><div class="navbar-item navbar-item"><a id="" href="./NedbClient.html" target="">Database Clients</a></div><div class="navbar-item navbar-item"><a id="" href="./NedbDocument.html" target="">Documents</a></div><div class="navbar-item navbar-item"><a id="" href="./NedbEmbeddedDocument.html" target="">Embedded Documents</a></div></div><div class="mobile-sidebar-items-c"><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-tutorials"><div>Tutorials</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="tutorial-00-understandingthispackage.html">00: Understanding This Package</a></div><div class="sidebar-section-children"><a href="tutorial-01-gettingstarted.html">01: Getting Started</a></div></div><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-classes"><div>Classes</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="NedbBaseDocument.html">NedbBaseDocument</a></div><div class="sidebar-section-children"><a href="NedbClient.html">NedbClient</a></div><div class="sidebar-section-children"><a href="NedbDocument.html">NedbDocument</a></div><div class="sidebar-section-children"><a href="NedbEmbeddedDocument.html">NedbEmbeddedDocument</a></div><div class="sidebar-section-children"><a href="SuperCamo.html">SuperCamo</a></div></div><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-global"><div>Global</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="global.html#SuperCamoLogger">SuperCamoLogger</a></div></div></div><div class="mobile-navbar-actions"><div class="navbar-right-item"><button class="icon-button search-button" aria-label="open-search"><svg><use xlink:href="#search-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button theme-toggle" aria-label="toggle-theme"><svg><use class="theme-svg-use" xlink:href="#light-theme-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button font-size" aria-label="change-font-size"><svg><use xlink:href="#font-size-icon"></use></svg></button></div></div></div></div><script type="text/javascript" src="scripts/core.min.js"></script><script src="scripts/search.min.js" defer="defer"></script><script src="scripts/third-party/fuse.js" defer="defer"></script><script type="text/javascript">var tocbotInstance=tocbot.init({tocSelector:"#eed4d2a0bfd64539bb9df78095dec881",contentSelector:".main-content",headingSelector:"h1, h2, h3",hasInnerContainers:!0,scrollContainer:".main-content",headingsOffset:130,onClick:bringLinkToView})</script></body></html>
