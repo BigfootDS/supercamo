@@ -17,13 +17,15 @@
         "cleverLinks": false,
         "monospaceLinks": false,
 		"default": {
-			"includeDate": false
+			"includeDate": false,
+			"outputSourceFiles": false
 		}
     },
 	"opts":{
+		"tutorials":"./docs",
 		"template":"node_modules/clean-jsdoc-theme",
 		"theme_opts": {
-			"sections": ["Classes", "Global"],
+			"sections": ["Tutorials","Classes", "Global"],
 			"homepageTitle": "SuperCamo by BigfootDS",
 			"title": "SuperCamo",
 			"menu":[

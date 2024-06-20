@@ -7,7 +7,7 @@ const { isESClass } = require("../../validators/functions/typeValidators.js");
 const { getClassInheritanceList } = require("../../validators/functions/ancestors.js");
 const { parseCollectionsListForSubdocuments } = require("../../utils/nedbClientHelper.js");
 
-const {CollectionAccessor} = require("../../utils/miscTypes.js");
+require("../../utils/miscTypes.js");
 
 
 
@@ -25,7 +25,7 @@ class NedbClient {
 
     
     /**
-     * @type {[CollectionAccessor]}
+     * @type {CollectionAccessor[]}
      * @author BigfootDS
      */
     #collections = [];
@@ -41,7 +41,7 @@ class NedbClient {
      * @constructor
      * @param {String} dbDirectoryPath A string representing a resolved path to a directory. This directory will store the database client's specific directory - so dbDirectoryPath is not the folder that contains any ".db" files in it.
      * @param {String} dbName A string used to identify a database. No checks for uniqueness will happen, that's up to you to manage. The directory that is a resolved path from dbDirectoryPath and dbName will contain many ".db" files in it. 
-     * @param {[{name: string, model: Object}]} collectionsList An array of objects containing a desired name for a collection as well as the NedbDocument-inheriting model that should be used for that collection. You must provide ALL intended models & collections for the database client in this property - don't leave anything out!
+     * @param {CollectionsList[]} collectionsList An array of objects containing a desired name for a collection as well as the NedbDocument-inheriting model that should be used for that collection. You must provide ALL intended models & collections for the database client in this property - don't leave anything out!
      * 
      * @example
      * let settingsDb = new NedbClient(
@@ -109,7 +109,7 @@ class NedbClient {
     /**
      * Retrieve a distinct list of models used in the collections of this NedbClient.
      * @author BigfootDS
-     * @return {[Object]} Array of classes that inherit from NedbDocument.
+     * @return {Object[]} Array of classes that inherit from NedbDocument.
      */
     getModelsList = () => {
         SuperCamoLogger("NedbClient model list should be a combined list of these two arrays:", "Client");
@@ -165,7 +165,7 @@ class NedbClient {
      * @author BigfootDS
      *
      * @async
-     * @returns {[Object]} An array of objects representing all documents in all collections of this database client.
+     * @returns {Object[]} An array of objects representing all documents in all collections of this database client.
      */
     dumpDatabase = async () => {
         return Promise.all(this.collections.map(collectionObj => {
@@ -178,7 +178,7 @@ class NedbClient {
      * @author BigfootDS
      *
      * @async
-     * @returns {[Object]} An array of objects representing all documents in all collections of this database client.
+     * @returns {Object[]} An array of objects representing all documents in all collections of this database client.
      */
     dumpDatabaseDocuments = async () => {
         return Promise.all(this.collections.map(collectionObj => {
@@ -367,8 +367,8 @@ class NedbClient {
      *
      * @async
      * @param {String} collectionName The name of the collection that you wish to insert documents into.
-     * @param {[Object]} dataObject The object of data you wish to save as documents in the specified collection.
-     * @returns
+     * @param {Object[]} dataObject The object of data you wish to save as documents in the specified collection.
+     * @returns {Object[]} Array of successfully-created data, reflecting what is now in the database from this operation.
      */
     insertMany = async (collectionName, dataObjects) => {
         if (!Array.isArray(dataObjects)){
@@ -666,7 +666,7 @@ class NedbClient {
      * @param {Object} query The NeDB query used to find the specific document within the collection.
      * @param {Object} update The updated data to apply to the found document.
      * @param {Boolean} returnDocuments If true, this function returns the updated documents as document instances. Otherwise, the data is returned as an array of plain objects.
-     * @returns {{numAffected: Number, upsert: Boolean, affectedDocuments: [BaseDocument]}}
+     * @returns {{numAffected: Number, upsert: Boolean, affectedDocuments: BaseDocument[]}}
      */
     findAndUpdateMany = async (collectionName, query, update, upsert = false, returnDocuments = true) => {
         let options = {

@@ -1,4 +1,4 @@
-/** @module Internal */
+/** @module JSDocTypes */
 /**
  * @typedef {Object} CollectionAccessor 
  * @property {String} name Name of the collection.
@@ -10,6 +10,12 @@
  * @ignore
  */
 
+
+/**
+ * @typedef {Object} CollectionsList 
+ * @property {String} name Name of the collection.
+ * @property {Object} model Reference to the NedbDocument-inheriting class used to define the collection's data structure.
+ */
 
 
 module.exports = {};

@@ -2,6 +2,12 @@
 
 Camo-inspired object data modeller (ODM) for NeDB, built specifically for BigfootDS' needs.
 
+## The URLs
+
+- [NPM package](https://www.npmjs.com/package/@bigfootds/supercamo)
+- [GitHub repository](https://github.com/BigfootDS/supercamo)
+- [Documentation website coming soon]()
+
 ## The what
 
 - NeDB compatibility
@@ -9,7 +15,7 @@ Camo-inspired object data modeller (ODM) for NeDB, built specifically for Bigfoo
 - Allow concurrent connections to multiple databases
 - ODM-style wrapping around NeDB datastores
 - Modern JavaScript implementations
-- Leaning on standard NodeJS functions and APIs more than ever before
+- Leaning on standard NodeJS functions and APIs more than ever before to minimize production dependencies
 
 ## The nitty-gritty
 
