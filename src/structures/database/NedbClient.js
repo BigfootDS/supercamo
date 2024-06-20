@@ -5,53 +5,15 @@ const { isObject } = require("../../validators/index.js");
 const SuperCamoLogger = require("../../utils/logging.js");
 const { isESClass } = require("../../validators/functions/typeValidators.js");
 const { getClassInheritanceList } = require("../../validators/functions/ancestors.js");
+const { parseCollectionsListForSubdocuments } = require("../../utils/nedbClientHelper.js");
+
+require("../../utils/miscTypes.js");
 
 
-/**
- * Process a list of key-value pairs (KVPs) to see which subdocuments are used the models contained in them.
- * @author BigfootDS
- *
- * @param {[Object]} collectionsList Array of objects where each object contains a model and a name.
- * @returns {[Object]} Array of classes that inherit from NedbEmbeddedDocument.
- */
-function parseCollectionsListForSubdocuments (collectionsList) {
-    let result = [];
-
-    collectionsList.forEach((kvp) => {
-        let tempModelInstance = new kvp.model();
-        let docKeys = Object.keys(tempModelInstance);
-         
-        for (const key of docKeys){
-            let propertyIsArray = Array.isArray(tempModelInstance[key].type);
-            let potentialClassRef = propertyIsArray ? tempModelInstance[key].type[0] : tempModelInstance[key].type;
-            let classInheritanceList = [];
-            try {
-                classInheritanceList = getClassInheritanceList(potentialClassRef);
-            } catch {
-                classInheritanceList = [];
-            }
 
 
-            if (isESClass(potentialClassRef) && classInheritanceList.includes("NedbEmbeddedDocument")){
-                result.push(potentialClassRef);
-            }
-        }
-    })
 
-    return [...new Set(result)];
-}
-
-/**
- * @typedef {Object} CollectionAccessor 
- * @property {String} name Name of the collection.
- * @property {Object} model Reference to the NedbDocument-inheriting class used to define the collection's data structure.
- * @property {String} path Path to its ".db" NeDB file.
- * @property {Datastore} datastore Reference to the NeDB Datastore object for this collection.
- * 
- */
-
-
-module.exports = class NedbClient {
+class NedbClient {
 
     
     /**
@@ -63,7 +25,7 @@ module.exports = class NedbClient {
 
     
     /**
-     * @type {[CollectionAccessor]}
+     * @type {CollectionAccessor[]}
      * @author BigfootDS
      */
     #collections = [];
@@ -79,7 +41,7 @@ module.exports = class NedbClient {
      * @constructor
      * @param {String} dbDirectoryPath A string representing a resolved path to a directory. This directory will store the database client's specific directory - so dbDirectoryPath is not the folder that contains any ".db" files in it.
      * @param {String} dbName A string used to identify a database. No checks for uniqueness will happen, that's up to you to manage. The directory that is a resolved path from dbDirectoryPath and dbName will contain many ".db" files in it. 
-     * @param {[{name: string, model: Object}]} collectionsList An array of objects containing a desired name for a collection as well as the NedbDocument-inheriting model that should be used for that collection. You must provide ALL intended models & collections for the database client in this property - don't leave anything out!
+     * @param {CollectionsList[]} collectionsList An array of objects containing a desired name for a collection as well as the NedbDocument-inheriting model that should be used for that collection. You must provide ALL intended models & collections for the database client in this property - don't leave anything out!
      * 
      * @example
      * let settingsDb = new NedbClient(
@@ -147,7 +109,7 @@ module.exports = class NedbClient {
     /**
      * Retrieve a distinct list of models used in the collections of this NedbClient.
      * @author BigfootDS
-     * @return {[Object]} Array of classes that inherit from NedbDocument.
+     * @return {Object[]} Array of classes that inherit from NedbDocument.
      */
     getModelsList = () => {
         SuperCamoLogger("NedbClient model list should be a combined list of these two arrays:", "Client");
@@ -203,11 +165,24 @@ module.exports = class NedbClient {
      * @author BigfootDS
      *
      * @async
-     * @returns {[Object]} An array of objects representing all documents in all collections of this database client.
+     * @returns {Object[]} An array of objects representing all documents in all collections of this database client.
      */
     dumpDatabase = async () => {
         return Promise.all(this.collections.map(collectionObj => {
             return this.findManyObjects(collectionObj.name, {});
+        }));
+    }
+
+        /**
+     * Retrieves all documents from all collections, turns them all into objects, and puts them all into an array.
+     * @author BigfootDS
+     *
+     * @async
+     * @returns {Object[]} An array of objects representing all documents in all collections of this database client.
+     */
+    dumpDatabaseDocuments = async () => {
+        return Promise.all(this.collections.map(collectionObj => {
+            return this.findManyDocuments(collectionObj.name, {});
         }));
     }
 
@@ -392,8 +367,8 @@ module.exports = class NedbClient {
      *
      * @async
      * @param {String} collectionName The name of the collection that you wish to insert documents into.
-     * @param {[Object]} dataObject The object of data you wish to save as documents in the specified collection.
-     * @returns
+     * @param {Object[]} dataObject The object of data you wish to save as documents in the specified collection.
+     * @returns {Object[]} Array of successfully-created data, reflecting what is now in the database from this operation.
      */
     insertMany = async (collectionName, dataObjects) => {
         if (!Array.isArray(dataObjects)){
@@ -691,7 +666,7 @@ module.exports = class NedbClient {
      * @param {Object} query The NeDB query used to find the specific document within the collection.
      * @param {Object} update The updated data to apply to the found document.
      * @param {Boolean} returnDocuments If true, this function returns the updated documents as document instances. Otherwise, the data is returned as an array of plain objects.
-     * @returns {{numAffected: Number, upsert: Boolean, affectedDocuments: [BaseDocument]}}
+     * @returns {{numAffected: Number, upsert: Boolean, affectedDocuments: BaseDocument[]}}
      */
     findAndUpdateMany = async (collectionName, query, update, upsert = false, returnDocuments = true) => {
         let options = {
@@ -754,3 +729,6 @@ module.exports = class NedbClient {
     // #endregion
 
 }
+
+
+module.exports = NedbClient;

@@ -1,3 +1,4 @@
+/** @module Internal */
 const SuperCamoLogger = require("../../utils/logging");
 const util = require("node:util");
 // const { doesExtendDocument, doesExtendEmbeddedDocument } = require("./doesExtendClass.js");
@@ -70,7 +71,7 @@ const isInChoices = (choices, item) => {
  * https://stackoverflow.com/a/75567955
  * No changes were made to this particular code.
  * @author Andrea Giammarchi
- *
+ * @ignore 
  * @param fn
  * @returns {boolean}
  */

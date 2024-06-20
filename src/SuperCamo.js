@@ -1,16 +1,23 @@
-const { NedbClient } = require("./structures/index.js");
+const NedbClient = require("./structures/database/NedbClient.js");
 const SuperCamoLogger = require("./utils/logging.js");
 const { isDatabaseConnected_RootHelper } = require("./validators/index.js");
 const path = require("node:path");
+require("./utils/miscTypes.js");
 
 /**
- * Main interface of the SuperCamo system.
+ * Main interface of the SuperCamo system. The functionality of SuperCamo is declared as static items on ths SuperCamo class.
+ * So, use expressions like:
+ * 
+ * @example
+ * let myDatabase = await SuperCamo.connect(
+ * 	// Read documentation to see what properties go into the SuperCamo.connect() method!
+ * );
+ * 
  * @author BigfootDS
  *
- * @export
  * @class
  */
-module.exports = class SuperCamo {
+class SuperCamo {
 	// No constructor! Only statics!
 	// Use this library like: 
 	// SuperCamo.connect(clientClass, databaseName, databaseDirectory);
@@ -46,10 +53,10 @@ module.exports = class SuperCamo {
 	 * @author BigfootDS
 	 *
 	 * @async
-	 * @param databaseName A string that follows JavaScript variable naming rules. This will be the key needed to access this database from the SuperCamo.activeClients object, and doesn't need to have any commonality with the database directory path.
+	 * @param {String} databaseName A string that follows JavaScript variable naming rules. This will be the key needed to access this database from the SuperCamo.activeClients object, and doesn't need to have any commonality with the database directory path.
 	 * @param databaseDirectory A path to a directory to store all NeDB files.
-	 * @param {[{name: string, model: any}]} collectionsList An array of objects containing a desired name for a collection as well as the Document-inheriting model that should be used for that collection. You must provide ALL intended models & collections for the database client in this property - don't leave anything out!
-	 * @param {[any]} subdocumentsList An array of classes that inherit from NedbEmbeddedDocument. Do not leave this out if you're using subdocs/embedded docs! This is required for validation.
+	 * @param {CollectionsList[]} collectionsList An array of objects containing a desired name for a collection as well as the Document-inheriting model that should be used for that collection. You must provide ALL intended models & collections for the database client in this property - don't leave anything out!
+	 * @param {Object[]} subdocumentsList An array of classes that inherit from NedbEmbeddedDocument. Do not leave this out if you're using subdocs/embedded docs! This is required for validation.
 	 * @returns {NedbClient} An instance of a NeDB database client.
 	 */
 	static connect = async (databaseName, databaseDirectory = "", collectionsList = [], subdocumentsList = []) => {
@@ -74,6 +81,13 @@ module.exports = class SuperCamo {
 		return SuperCamo.#activeClients[name];
 	}
 
+	
+	/**
+	 * Retrieve the list of database names registered to SuperCamo within this app's current lifetime.
+	 * @author BigfootDS
+	 *
+	 * @returns {String[]} Array of database names registered in this app's lifetime to SuperCamo.
+	 */
 	static getClientList = () => {
 		return Object.keys(SuperCamo.#activeClients);
 	}
@@ -83,7 +97,7 @@ module.exports = class SuperCamo {
 	 * Return an array of all NedbDocuments and NedbEmbeddedDocuments registered in this app's current session usage of SuperCamo. Should be a unique list, no duplicate models.
 	 * @author BigfootDS
 	 *
-	 * @returns
+	 * @returns {Object[]} Array of models, no duplicates.
 	 */
 	static getRegisteredModels = () => {
 		let modelList = [];
@@ -109,3 +123,6 @@ module.exports = class SuperCamo {
 		return modelList;
 	}
 }
+
+
+module.exports = SuperCamo;

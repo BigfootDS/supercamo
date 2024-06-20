@@ -1,0 +1,74 @@
+{
+	"plugins": ["plugins/markdown"],
+	"markdown": {
+		"idInHeadings": true
+	},
+    "recurseDepth": 10,
+    "source": {
+        "includePattern": ".+\\.js(doc|x)?$",
+        "excludePattern": "(^|\\/|\\\\)_"
+    },
+    "sourceType": "module",
+    "tags": {
+        "allowUnknownTags": true,
+        "dictionaries": ["jsdoc","closure"]
+    },
+    "templates": {
+        "cleverLinks": false,
+        "monospaceLinks": false,
+		"default": {
+			"includeDate": false,
+			"outputSourceFiles": false
+		}
+    },
+	"opts":{
+		"tutorials":"./docs",
+		"template":"node_modules/clean-jsdoc-theme",
+		"theme_opts": {
+			"sections": ["Tutorials","Classes", "Global"],
+			"homepageTitle": "SuperCamo by BigfootDS",
+			"title": "SuperCamo",
+			"menu":[
+				{
+					"title":"Home",
+					"link":".",
+					"class":"navbar-item"
+				},
+				{
+					"title":"SuperCamo Static Class",
+					"link":"./SuperCamo.html",
+					"class":"navbar-item"
+				},
+				{
+					"title":"Database Clients",
+					"link":"./NedbClient.html",
+					"class":"navbar-item"
+				},
+				{
+					"title":"Documents",
+					"link":"./NedbDocument.html",
+					"class":"navbar-item"
+				},
+				{
+					"title":"Embedded Documents",
+					"link":"./NedbEmbeddedDocument.html",
+					"class":"navbar-item"
+				}
+			],
+			"meta": [
+				{
+				  "name": "author",
+				  "content": "BigfootDS"
+				},
+				{
+				  "name": "description",
+				  "content": "Camo-inspired ODM for NeDB, built specifically for BigfootDS' needs."
+				},
+				{
+					"name":"keywords",
+					"content": "es6,odm,nedb,nosql,document,model,schema,database,data,datastore,query,db"
+				}
+			  ]
+		}
+	}
+}

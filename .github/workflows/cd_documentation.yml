@@ -1,0 +1,48 @@
+name: Update Documentation Website
+
+# Not useful unless we replace "secrets.GITHUB_TOKEN" with a custom "secrets.Some_GitHub_PAT"
+# since the default GitHub Token doesn't trigger new workflow events.
+# on:
+#   release:
+#     types: [released]
+
+# Instead, we can specify that we want this action to run when
+# the release/changelog generator action has completed:
+on:
+  workflow_run:
+    workflows: ["Build & Release to NPM"]
+    types: [completed]
+  workflow_dispatch:
+
+
+jobs:
+  convert_jsdoc_to_website:
+    name: Convert JSDoc to Website
+    runs-on: ubuntu-latest
+    steps:
+    - run: |
+        echo Running jsdoc now...
+
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        ref: main
+    
+    - name: Set up NodeJS
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+    
+    - name: Install dependencies
+      run: npm install
+    
+    - name: Generate website
+      run: npm run build:docs
+
+    - name: Deploy
+      uses: s0/git-publish-subdir-action@develop
+      env:
+        REPO: self
+        BRANCH: gh-pages
+        FOLDER: out
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

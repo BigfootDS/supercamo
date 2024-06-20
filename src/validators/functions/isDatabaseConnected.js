@@ -1,4 +1,6 @@
-const SuperCamo = require("../../index.js")
+/** @module Internal */
+
+const SuperCamo = require("../../SuperCamo.js");
 
 
 const isDatabaseConnected = (databaseName) => {

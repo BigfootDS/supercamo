@@ -3,7 +3,17 @@ const { getBaseClass, getClassInheritanceList } = require("../../validators/func
 const { isArray, isInChoices, isObject, isType, isFunction, isPromise, isAsyncFunction, isSupportedType } = require("../../validators/functions/typeValidators.js");
 
 
-module.exports = class NedbBaseDocument {
+/**
+ * This is the core class of SuperCamo documents, used to define functionality for both documents and embedded documents.
+ * 
+ * You should never be using this in your own code. You should be using NedbDocument or NedbEmbeddedDocument and inheriting those instead.
+ * 
+ * So, what is this documentation of this class for? Well, this is where common functionality is declared. This is the "D.R.Y" source of what the NedbDocument and NedbEmbeddedDocument classes can do.
+ * @author BigfootDS
+ *
+ * @abstract
+ */
+class NedbBaseDocument {
 	#data = {};
 	#parentDatabaseName = null;
 	#collectionName = null;
@@ -120,7 +130,7 @@ module.exports = class NedbBaseDocument {
 			let typeToCheck = Array.isArray(this[key].type) ? this[key].type[0] : this[key].type;
 			SuperCamoLogger(`Type to check is ${typeToCheck.name}`, "BaseDocument");
 
-			const SuperCamo = require("../../index.js");
+			const {SuperCamo} = require("../../index.js");
 			let keyClassList = getClassInheritanceList(typeToCheck);
 			if (keyClassList.length == 0 || (keyClassList.length == 1 && keyClassList[0] == "")) {
 				keyClassList = [typeof key];
@@ -217,7 +227,7 @@ module.exports = class NedbBaseDocument {
 
 			let modelExpectsUniqueValue = this[key].unique == true;
 			if (modelExpectsUniqueValue){
-				const SuperCamo = require("../../index.js");
+				const {SuperCamo} = require("../../index.js");
 				await SuperCamo.activeClients[this.#parentDatabaseName].getCollectionAccessor(this.#collectionName).datastore.ensureIndexAsync({fieldName: key, unique: true});
 				// Using NeDB indexes will not actively do a unique validation here, 
 				// but it sets up any unique-failing documents to fail when they are about to get written into the datastore.
@@ -363,3 +373,5 @@ module.exports = class NedbBaseDocument {
 
 
 }
+
+module.exports = NedbBaseDocument;

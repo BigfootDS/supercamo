@@ -1,3 +1,7 @@
+/** @module Internal
+  * @ignore 
+ */
+
 
 /**
  * Gets the root-most class of a given class object.
@@ -8,7 +12,7 @@
  * https://stackoverflow.com/a/40393932
  * 
  * @author BigfootDS
- *
+ * @ignore 
  * @param targetClass A class object. Not an instance, but the actual object declared with the `class` keyword.
  * @returns {class} The full class object of the root-most class in the inheritance tree of the provided targetClass.
  */
