@@ -22,7 +22,8 @@
 		}
     },
 	"opts":{
-		"tutorials":"./docs",
+		"readme":"./docs/homepage.md",
+		"tutorials":"./docs/tutorials/",
 		"template":"node_modules/clean-jsdoc-theme",
 		"theme_opts": {
 			"sections": ["Tutorials","Classes", "Global"],
