@@ -338,16 +338,17 @@ class NedbClient {
         let tempInstance = null;
         try {
             tempInstance = await accessor.model.create(localDataObj, this.databaseName, collectionName);
+            tempInstance.save();
         } catch (error) {
             throw error;
         }
 
         let result = null;
         try {
-            let result = await accessor.datastore.insertAsync(await tempInstance.getData(false));
+            let tempInstanceData = await tempInstance.getData(false);
+            let result = await accessor.datastore.insertAsync(tempInstanceData);
             SuperCamoLogger("insertOne insert result:", "Client");
             SuperCamoLogger(result, "Client");
-            let tempInstanceData = await tempInstance.getData(false);
             SuperCamoLogger("insertOne tempInstance result:", "Client");
             SuperCamoLogger(tempInstance, "Client");
             return await this.findOneDocument(collectionName, {_id: result._id});

@@ -280,6 +280,22 @@ class NedbBaseDocument {
 
 	}
 
+	async save(){
+		let passedPreSave = await this.preSave().catch(error => error);
+		if (Error.isPrototypeOf(passedPreSave)){
+			throw passedPreSave;
+		}
+
+
+		
+
+
+		let passedPostSave = await this.postSave().catch(error => error);
+		if (Error.isPrototypeOf(passedPostSave)){
+			throw passedPostSave;
+		}
+	}
+
 	async postSave(){
 
 	}
