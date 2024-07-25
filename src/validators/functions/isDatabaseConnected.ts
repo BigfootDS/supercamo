@@ -3,11 +3,11 @@
 const SuperCamo = require("../../SuperCamo.js");
 
 
-const isDatabaseConnected = (databaseName) => {
+const isDatabaseConnected = (databaseName: string) => {
 	return Object.keys(SuperCamo.activeClients).includes(databaseName);
 }
 
-const isDatabaseConnected_RootHelper = (databaseName, activeClientList) => {
+const isDatabaseConnected_RootHelper = (databaseName: string, activeClientList: Array<string>) => {
 	return Object.keys(activeClientList).includes(databaseName);
 }
 

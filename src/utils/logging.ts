@@ -49,7 +49,7 @@ log.superCamoValidators("Starting SuperCamo with SuperCamo validator-specific ve
  * @param {String} message The string to log.
  * @param {("Client"|"BaseDocument"|"Document"|"EmbeddedDocument"|"Validators"|"Root"|"")} caller Specific string to help with conditional logging, eg. "Client" to allow the SuperCamoClient logger to log. Defaults to "", which will allow the SuperCamo catch-all logger and Verbose generic logger to log.
  */
-function SuperCamoLogger(message, caller = "") {
+export function SuperCamoLogger(message: string, caller: ("Client" | "BaseDocument" | "Document" | "EmbeddedDocument" | "Validators" | "Root" | "") = "") {
 	
 	if (log.superCamo.enabled){
 		log.superCamo(message);
@@ -81,4 +81,3 @@ function SuperCamoLogger(message, caller = "") {
 	}
 }
 
-module.exports = SuperCamoLogger;

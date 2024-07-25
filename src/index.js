@@ -1,8 +1,5 @@
-const SuperCamo = require("./SuperCamo.js");
+import { SuperCamo } from "./SuperCamo";
 
-
-
-
-module.exports = {
+export {
 	SuperCamo
-};
+}

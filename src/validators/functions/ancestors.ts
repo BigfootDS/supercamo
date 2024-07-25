@@ -16,7 +16,7 @@
  * @param targetClass A class object. Not an instance, but the actual object declared with the `class` keyword.
  * @returns {class} The full class object of the root-most class in the inheritance tree of the provided targetClass.
  */
-function getBaseClass(targetClass) {
+export function getBaseClass(targetClass: any): any {
 	if (targetClass instanceof Function) {
 		let baseClass = targetClass;
 
@@ -35,7 +35,7 @@ function getBaseClass(targetClass) {
 }
 
 
-function getClassInheritanceList(targetClass) {
+export function getClassInheritanceList(targetClass: any): any {
 	let classList = [];
 
 	let targetClassParent = Object.getPrototypeOf(targetClass);
@@ -50,9 +50,4 @@ function getClassInheritanceList(targetClass) {
 	}
 
 	return classList;
-}
-
-module.exports = {
-	getBaseClass,
-	getClassInheritanceList
 }

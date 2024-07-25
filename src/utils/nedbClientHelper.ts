@@ -1,7 +1,8 @@
 /** @module Internal */
 
-const { getClassInheritanceList } = require("../validators/functions/ancestors");
-const { isESClass } = require("../validators/functions/typeValidators");
+import { getClassInheritanceList } from "../validators/functions/ancestors";
+import { isESClass } from "../validators/functions/typeValidators";
+
 
 
 /**
