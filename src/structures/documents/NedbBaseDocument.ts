@@ -1,6 +1,6 @@
-const SuperCamoLogger = require("../../utils/logging.js");
-const { getBaseClass, getClassInheritanceList } = require("../../validators/functions/ancestors.js");
-const { isArray, isInChoices, isObject, isType, isFunction, isPromise, isAsyncFunction, isSupportedType } = require("../../validators/functions/typeValidators.js");
+import {SuperCamoLogger} from "../../utils/logging.js";
+import { getBaseClass, getClassInheritanceList } from "../../validators/functions/ancestors.js";
+import { isArray, isInChoices, isObject, isType, isFunction, isPromise, isAsyncFunction, isSupportedType } from "../../validators/functions/typeValidators.js";
 
 
 /**
@@ -13,12 +13,13 @@ const { isArray, isInChoices, isObject, isType, isFunction, isPromise, isAsyncFu
  *
  * @abstract
  */
-class NedbBaseDocument {
-	#data = {};
-	#parentDatabaseName = null;
-	#collectionName = null;
+export class NedbBaseDocument {
+	#data: object = {};
+	#parentDatabaseName: string|null = null;
+	#collectionName: string|null = null;
+	_id: object;
 
-	constructor(incomingData, incomingParentDatabaseName = null, incomingCollectionName = null){
+	constructor(incomingData: object, incomingParentDatabaseName: string|null = null, incomingCollectionName: string|null = null){
 		// This _id value comes from NeDB datastores, the dev or user should never be editing this.
 		this._id = {
 			type: String,
@@ -50,7 +51,7 @@ class NedbBaseDocument {
 	 * @param {Boolean} [validateOnCreate=false] If you want the instance data to be validated when this function runs, set this to true. Otherwise, you have to save the instance into the database to trigger the validation step.
 	 * @returns {this} An instance of the model.
 	 */
-	static async create (dataObj, incomingParentDatabaseName, incomingCollectionName, validateOnCreate = true) {
+	static async create (dataObj: object, incomingParentDatabaseName: string, incomingCollectionName: string, validateOnCreate: boolean = true): Promise<any> {
 		// For educational notes:
 		// The "this" reference below correctly points to an inheriting class
 		// ONLY when the function is declared with function syntax
@@ -65,7 +66,7 @@ class NedbBaseDocument {
 				let isValid = await newInstance.#validate();
 				let newInstanceData = await newInstance.getData();
 				SuperCamoLogger("This document is valid:", "BaseDocument");
-				SuperCamoLogger(newInstanceData, "BaseDocument");
+				SuperCamoLogger(newInstanceData.toString(), "BaseDocument");
 			} catch (error) {
 				throw error;
 			}
@@ -390,4 +391,3 @@ class NedbBaseDocument {
 
 }
 
-module.exports = NedbBaseDocument;
