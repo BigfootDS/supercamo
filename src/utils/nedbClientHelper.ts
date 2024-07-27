@@ -2,6 +2,8 @@
 
 import { getClassInheritanceList } from "../validators/functions/ancestors";
 import { isESClass } from "../validators/functions/typeValidators";
+import { CollectionsListEntry } from "../structures/interfaces/CollectionsListEntryInterface";
+import { NedbEmbeddedDocument } from "../structures/NedbEmbeddedDocument";
 
 
 
@@ -10,13 +12,13 @@ import { isESClass } from "../validators/functions/typeValidators";
  * Process a list of key-value pairs (KVPs) to see which subdocuments are used the models contained in them.
  * @author BigfootDS
  * @ignore 
- * @param {Object[]} collectionsList Array of objects where each object contains a model and a name.
+ * @param {Array<CollectionsListEntry>} collectionsList Array of objects where each object contains a model and a name.
  * @returns {Object[]} Array of classes that inherit from NedbEmbeddedDocument.
  */
-function parseCollectionsListForSubdocuments (collectionsList) {
-    let result = [];
+function parseCollectionsListForSubdocuments (collectionsList: Array<CollectionsListEntry>) {
+    let result: Array<Type extends NedbEmbeddedDocument> = [];
 
-    collectionsList.forEach((kvp) => {
+    collectionsList.forEach((kvp: CollectionsListEntry) => {
         let tempModelInstance = new kvp.model();
         let docKeys = Object.keys(tempModelInstance);
          

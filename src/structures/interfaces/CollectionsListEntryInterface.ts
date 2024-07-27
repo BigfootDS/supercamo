@@ -1,17 +1,20 @@
+import { NedbDocument } from "../NedbDocument";
 
-export interface CollectionsList {
+
+
+export interface CollectionsListEntry {
 
 	
 	/**
 	 * Name of the collection.
 	 * @author BigfootDS
 	 */
-	name: String,
+	name: string,
 
 	
 	/**
 	 * Reference to the NedbDocument-inheriting class used to define the collection's data structure.
 	 * @author BigfootDS
 	 */
-	model: Object
+	model: Type extends NedbDocument ? Type : never
 }
