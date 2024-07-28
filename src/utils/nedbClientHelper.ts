@@ -4,6 +4,7 @@ import { getClassInheritanceList } from "../validators/functions/ancestors";
 import { isESClass } from "../validators/functions/typeValidators";
 import { CollectionsListEntry } from "../structures/interfaces/CollectionsListEntryInterface";
 import { NedbEmbeddedDocument } from "../structures/NedbEmbeddedDocument";
+import { NedbDocument } from "../structures/NedbDocument";
 
 
 
@@ -13,17 +14,18 @@ import { NedbEmbeddedDocument } from "../structures/NedbEmbeddedDocument";
  * @author BigfootDS
  * @ignore 
  * @param {Array<CollectionsListEntry>} collectionsList Array of objects where each object contains a model and a name.
- * @returns {Object[]} Array of classes that inherit from NedbEmbeddedDocument.
  */
-function parseCollectionsListForSubdocuments (collectionsList: Array<CollectionsListEntry>) {
-    let result: Array<Type extends NedbEmbeddedDocument> = [];
+export function parseCollectionsListForEmbeddeddocuments(collectionsList: Array<CollectionsListEntry>): typeof NedbEmbeddedDocument[] {
+    let result: typeof NedbEmbeddedDocument[] = [];
 
     collectionsList.forEach((kvp: CollectionsListEntry) => {
-        let tempModelInstance = new kvp.model();
+        let tempModelInstance: NedbDocument = new kvp.model({}, null, null);
         let docKeys = Object.keys(tempModelInstance);
          
         for (const key of docKeys){
+            // @ts-ignore
             let propertyIsArray = Array.isArray(tempModelInstance[key].type);
+            // @ts-ignore
             let potentialClassRef = propertyIsArray ? tempModelInstance[key].type[0] : tempModelInstance[key].type;
             let classInheritanceList = [];
             try {
@@ -40,8 +42,4 @@ function parseCollectionsListForSubdocuments (collectionsList: Array<Collections
     })
 
     return [...new Set(result)];
-}
-
-module.exports = {
-	parseCollectionsListForSubdocuments
 }

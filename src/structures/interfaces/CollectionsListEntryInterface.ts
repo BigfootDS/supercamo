@@ -16,5 +16,5 @@ export interface CollectionsListEntry {
 	 * Reference to the NedbDocument-inheriting class used to define the collection's data structure.
 	 * @author BigfootDS
 	 */
-	model: Type extends NedbDocument ? Type : never
+	model: typeof NedbDocument 
 }

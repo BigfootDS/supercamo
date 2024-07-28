@@ -10,7 +10,7 @@ import { NedbBaseDocument } from "./NedbBaseDocument";
  * @class
  * @extends {NedbBaseDocument}
  */
-export abstract class NedbEmbeddedDocument extends NedbBaseDocument {
+export class NedbEmbeddedDocument extends NedbBaseDocument {
 	constructor(
 		newData: object,
 		newParentDatabaseName: string | null,

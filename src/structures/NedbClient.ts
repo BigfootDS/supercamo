@@ -5,14 +5,15 @@ import { NedbClientEntry } from "./interfaces/NedbClientEntryInterface";
 import { NedbDocument } from "./NedbDocument";
 import { NedbEmbeddedDocument } from "./NedbEmbeddedDocument";
 import {default as Datastore} from "@seald-io/nedb";
+import { parseCollectionsListForEmbeddeddocuments } from "../utils/nedbClientHelper";
 
 
 export class NedbClient implements NedbClientEntry {
 	name: string;
 	path: string;
 	collections: CollectionAccessor[];
-	documents: NedbDocument[];
-	embeddedDocuments: NedbEmbeddedDocument[];
+	documents: typeof NedbDocument[];
+	embeddedDocuments: typeof NedbEmbeddedDocument[];
 	
 	constructor(dbDirectoryPath: string, dbName: string, collectionsList: Array<CollectionsListEntry>){
 		this.name = dbName;
@@ -26,12 +27,12 @@ export class NedbClient implements NedbClientEntry {
 			return kvp.model;
 		}))];
 
-		this.embeddedDocuments = parseCollectionsListForEmbeddedDocuments(collectionsList);
+		this.embeddedDocuments = parseCollectionsListForEmbeddeddocuments(collectionsList);
 	}
 
 
 
-	createCollection = (model: NedbDocument, name: string) => {
+	createCollection = (model: typeof NedbDocument, name: string): CollectionAccessor => {
         let newCollectionPath = path.join(this.path, name, ".db");
         let newCollectionObj = {
             model: model,

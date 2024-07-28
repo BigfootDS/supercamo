@@ -30,12 +30,12 @@ export interface NedbClientEntry {
 	 * Array of documents used by the collections within this NeDB client. This should be a smaller array than the collections, since multiple collections could be using the same document.
 	 * @author BigfootDS
 	 */
-	documents: Array<NedbDocument>,
+	documents: typeof NedbDocument[],
 
 	
 	/**
 	 * Array of subdocuments or embedded documents used by the documents within the collections of this NeDB client.
 	 * @author BigfootDS
 	 */
-	embeddedDocuments: Array<NedbEmbeddedDocument>
+	embeddedDocuments: typeof NedbEmbeddedDocument[]
 }

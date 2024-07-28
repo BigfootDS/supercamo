@@ -1,4 +1,4 @@
-import { NedbClientEntry } from "./structures/interfaces/NedbClientEntryInterface";
+import { NedbClient } from "./structures/NedbClient";
 import { SuperCamoLogger } from "./utils/logging";
 import { isDatabaseConnected_RootHelper } from "./validators/functions/isDatabaseConnected";
 import path from "node:path";
@@ -6,7 +6,7 @@ import path from "node:path";
 
 export class SuperCamo {
 
-	static clients: Array<NedbClientEntry>;
+	static clients: typeof NedbClient[];
 
 	static clientConnect(targetClient: string){
 

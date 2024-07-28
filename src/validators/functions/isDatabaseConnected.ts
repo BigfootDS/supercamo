@@ -1,10 +1,10 @@
 /** @module Internal */
 
-import {SuperCamo} from "../../SuperCamo.js";
+import {SuperCamo} from "../../SuperCamo";
 
 
 export const isDatabaseConnected = (databaseName: string) => {
-	return Object.keys(SuperCamo.activeClients).includes(databaseName);
+	return Object.keys(SuperCamo.clients).includes(databaseName);
 }
 
 export const isDatabaseConnected_RootHelper = (databaseName: string, activeClientList: Array<string>) => {
