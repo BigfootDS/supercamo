@@ -32,6 +32,33 @@ export class NedbClient implements NedbClientEntry {
 
 
 
+
+	/**
+	 * Retrieve the collection meta object stored on the NeDB client instance matching a given collection name.
+	 * 
+	 * @author BigfootDS
+	 *
+	 * @param collectionName
+	 * @returns {CollectionAccessor}
+	 */
+	getCollectionAccessor = (collectionName: string): CollectionAccessor => {
+		let foundAccessor = this.collections.find(collection => {
+			return collection.name === collectionName
+		});
+
+		if (foundAccessor){
+			return foundAccessor;
+		} else {
+			throw new Error(`Collection not found in the database client instance:\n\t${collectionName}\nAvailable collections are:\n\t${this.collections.map((obj) => obj.name)}\n`);
+		}
+	}
+
+
+	createIndex = async (collectionName: string, indexOptions: Datastore.EnsureIndexOptions) => {
+		let accessor = this.getCollectionAccessor(collectionName);
+		return await accessor.datastore.ensureIndexAsync(indexOptions);
+	}
+
 	createCollection = (model: typeof NedbDocument, name: string): CollectionAccessor => {
         let newCollectionPath = path.join(this.path, name, ".db");
         let newCollectionObj = {
@@ -50,4 +77,6 @@ export class NedbClient implements NedbClientEntry {
         // Return an object to stick into collections, containing info about the specific collection based on the given model.
         return newCollectionObj;
     }
+
+
 }
