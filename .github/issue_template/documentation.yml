@@ -1,23 +1,15 @@
-name: Bug report
-description: Lodge an issue that you've had with this NodeJS package.
-title: '[Bug]: '
-labels: ["bug"]
+name: Documentation
+description: Request some documentation to help improve this package's usability.
+title: '[Doc]: '
+labels: ["documentation"]
 assignees:
   - alexstormwood
 body:
   - type: input
-    id: packageversion
-    attributes:
-      label: Package Version
-      description: Please enter the version defined in your project's "package.json" file.
-      value: v.X.X.X
-    validations:
-      required: true
-  - type: input
     id: onesentence
     attributes:
       label: One-Sentence Description
-      description: Explain your issue, in brief.
+      description: Explain your request, in brief.
       placeholder: Kinda like an elevator pitch - get my attention real quick!
     validations:
       required: true
@@ -25,7 +17,7 @@ body:
     id: description
     attributes:
       label: Detailed Description
-      description: Explain your issue in depth here.
+      description: Explain your request in depth here.
       placeholder: 'Remember: code examples and console.log outputs are helpful here!'
     validations:
       required: true
@@ -34,7 +26,7 @@ body:
     attributes:
       label: Priority
       description: >-
-        Select how much of a priority this issue is for your usage of this
+        Select how much of a priority this request is for your usage of this
         package.
       options:
         - Quality of Life
