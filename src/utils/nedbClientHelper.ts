@@ -3,8 +3,8 @@
 import { getClassInheritanceList } from "../validators/functions/ancestors";
 import { isESClass } from "../validators/functions/typeValidators";
 import { CollectionsListEntry } from "../structures/interfaces/CollectionsListEntryInterface";
-import { NedbEmbeddedDocument } from "../structures/NedbEmbeddedDocument";
-import { NedbDocument } from "../structures/NedbDocument";
+import { NedbEmbeddedDocument } from "../structures/types/NedbEmbeddedDocument";
+import { NedbDocument } from "../structures/types/NedbDocument";
 
 
 

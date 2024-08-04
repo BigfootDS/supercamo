@@ -1,5 +1,5 @@
-import { SuperCamoLogger } from "../utils/logging";
-import { BaseDocument } from "./interfaces/BaseDocumentInterface";
+import { SuperCamoLogger } from "../../utils/logging";
+import { BaseDocument } from "../interfaces/BaseDocumentInterface";
 
 
 export abstract class NedbBaseDocument implements BaseDocument {

@@ -1,9 +1,12 @@
 /** @module Internal */
 
 
-const NedbBaseDocument = require("../../structures/documents/NedbBaseDocument.js");
-const NedbDocument = require("../../structures/documents/NedbDocument.js");
-const NedbEmbeddedDocument = require("../../structures/documents/NedbEmbeddedDocument.js");
+
+
+
+import { NedbBaseDocument } from "../../structures/types/NedbBaseDocument";
+import { NedbDocument } from "../../structures/types/NedbDocument";
+import { NedbEmbeddedDocument } from "../../structures/types/NedbEmbeddedDocument";
 import { SuperCamoLogger } from "../../utils/logging";
 
 
@@ -13,7 +16,7 @@ const doesExtendBaseDocument = (childClass: any) => {
 
 const doesExtendDocument = (childClass: any) => {
 	SuperCamoLogger("Checking NedbDocument require...", "Validators")
-	SuperCamoLogger(NedbDocument, "Validators");
+	SuperCamoLogger(childClass, "Validators");
 	return NedbDocument.prototype.isPrototypeOf(childClass);
 }
 

@@ -2,6 +2,7 @@
 import * as util from "node:util";
 import { SuperCamoLogger } from "../../utils/logging";
 
+
 export const isString = (data: any) => {
 	return typeof data === "string" || data instanceof String;
 }

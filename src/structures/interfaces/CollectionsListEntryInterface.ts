@@ -1,4 +1,4 @@
-import { NedbDocument } from "../NedbDocument";
+import { NedbDocument } from "../types/NedbDocument";
 
 
 

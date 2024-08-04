@@ -1,6 +1,8 @@
 /** @module Internal */
 
-import {SuperCamo} from "../../SuperCamo";
+import { SuperCamo } from "../../SuperCamo";
+
+
 
 
 export const isDatabaseConnected = (databaseName: string) => {
