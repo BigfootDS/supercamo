@@ -7,12 +7,13 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "default": "./src/SuperCamo.js"
+      "default": "./dist/index.js"
     },
-    "./NedbDocument": "./src/structures/documents/NedbDocument.js",
-    "./NedbEmbeddedDocument": "./src/structures/documents/NedbEmbeddedDocument.js",
-    "./NedbClient": "./src/structures/database/NedbClient.js",
-    "./NedbBaseDocument": "./src/structures/documents/NedbBaseDocument.js"
+    "./SuperCamo":"./dist/SuperCamo.js",
+    "./NedbDocument": "./dist/structures/types/NedbDocument.js",
+    "./NedbEmbeddedDocument": "./dist/structures/types/NedbEmbeddedDocument.js",
+    "./NedbClient": "./dist/structures/types/NedbClient.js",
+    "./NedbBaseDocument": "./dist/structures/types/NedbBaseDocument.js"
   },
   "scripts": {
     "dev": "ts-node ./src/index.ts",

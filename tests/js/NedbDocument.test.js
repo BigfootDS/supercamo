@@ -1,8 +1,5 @@
-
-
-const {NedbDocument} = require("../../dist/index.js");
-
 const {describe, test, expect, beforeAll} = require("@jest/globals");
+const { NedbDocument } = require("../../dist");
 
 class User extends NedbDocument{
 	constructor(newData, newParentDatabaseName, newCollectionName){
