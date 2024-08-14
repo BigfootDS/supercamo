@@ -131,3 +131,6 @@ dist
 
 # Local in-project sandbox stuff
 .sandbox/
+
+# Local testing
+.testing/

@@ -155,12 +155,28 @@ export class NedbClient implements NedbClientEntry {
         return newCollectionObj;
     }
 
+	
+	/**
+	 * Delete collections by name. Can delete multiple collections that use the same name.
+	 * 
+	 * You can also specify whether or not the data within the collection should be deleted, just as a sanity-check. This is enabled by default.
+	 * 
+	 * @author BigfootDS
+	 *
+	 * @async
+	 * @param {string} name The name of the collections to search for.
+	 * @param {boolean} [deleteData=true] Whether or not data within the collection should be deleted. Defaults to true.
+	 * @returns {Promise<number>} The number of collections with a matching name that were deleted.
+	 */
 	deleteCollectionByName = async (name: string, deleteData: boolean = true): Promise<number> => {
 		let numDeleted: number = 0;
 
 		if (deleteData){
-			let accessor = this.getCollectionAccessor(name);
-			await accessor.datastore.dropDatabaseAsync();
+			for await (const collection of this.collections){
+				if (collection.name == name){
+					await collection.datastore.dropDatabaseAsync();
+				}
+			}
 		}
 
 		let tempFiltered = this.collections.filter(collectionObj => collectionObj.name !== name);
@@ -172,16 +188,27 @@ export class NedbClient implements NedbClientEntry {
 		return numDeleted;
 	}
 
+	/**
+	 * Delete collections by model. Can delete multiple collections that use the same model.
+	 * 
+	 * You can also specify whether or not the data within the collection should be deleted, just as a sanity-check. This is enabled by default.
+	 * 
+	 * @author BigfootDS
+	 *
+	 * @async
+	 * @param {typeof NedbDocument} model The model to search for.
+	 * @param {boolean} [deleteData=true] Whether or not data within the collection should be deleted. Defaults to true.
+	 * @returns {Promise<number>} The number of collections with a matching name that were deleted.
+	 */
 	deleteCollectionByModel = async (model: typeof NedbDocument, deleteData: boolean = true): Promise<number> => {
 		let numDeleted: number = 0;
 
 		if (deleteData){
-			let collectionsToDelete = this.collections.filter(collectionObj => collectionObj.model === model);
-			for (const collection of collectionsToDelete){
-				let accessor = this.getCollectionAccessor(collection.name);
-				await accessor.datastore.dropDatabaseAsync();
+			for await (const collection of this.collections){
+				if (collection.model == model){
+					await collection.datastore.dropDatabaseAsync();
+				}
 			}
-			
 		}
 
 		let tempFiltered = this.collections.filter(collectionObj => collectionObj.model !== model);
@@ -215,49 +242,92 @@ export class NedbClient implements NedbClientEntry {
 	//#region Collection-specific Data CREATE Utilities
 
 	
+	
+	
 	/**
-	 * Insert a document instance into the database.
+	 * Insert an object of data into the database, following a document schema, and return the saved object of data.
 	 * @author BigfootDS
 	 *
 	 * @async
-	 * @returns
+	 * @param {string} collectionName The name of the collection to insert the data into.
+	 * @param {object} dataObject The data to be inserted.
+	 * @returns {Promise<object>} The data saved in the database, as an object.
 	 */
-	insertOne = async () => {
+	insertOne = async (collectionName: string, dataObject: object): Promise<object> => {
+		if (Array.isArray(dataObject)){
+			throw new Error("Don't use insertOne to create multiple documents. Use insertMany instead, please!");
+		}
 
+		return await (await this.createOne(collectionName, dataObject)).toPopulatedObject();
 	}
 
 	/**
-	 * Insert multiple document instances into the database.
+	 * Insert an array of objects of data into the database, following a document schema, and return the saved array of objects of data.
 	 * @author BigfootDS
 	 *
 	 * @async
-	 * @returns
+	 * @param {string} collectionName The name of the collection to insert the data into.
+	 * @param {object[]} dataObjectArray The data to be inserted.
+	 * @returns {Promise<object[]>} The data saved in the database, as an object.
 	 */
-	insertMany = async () => {
-		
+	insertMany = async (collectionName: string, dataObjectArray: object[]): Promise<object[]> => {
+		let result: object[] = [];
+		for await (const dataObject of dataObjectArray) {
+			let newInsertion = await this.insertOne(collectionName, dataObject);
+			result.push(newInsertion);
+		}
+
+		return result;
 	}
 
 	
+
 	/**
-	 * Create a document instance, insert it into the database, and return the document instance.
+	 * Create a document instance from a provided object of data, insert the new document instance into the database, and return the new document instance.
 	 * @author BigfootDS
 	 *
 	 * @async
-	 * @returns
+	 * @param {string} collectionName
+	 * @param {object} dataObject
+	 * @returns {Promise<NedbDocument>}
 	 */
-	createOne = async () => {
+	createOne = async (collectionName: string, dataObject: object): Promise<NedbDocument> => {
+		let newInstance: NedbDocument|null = null;
+		let accessor: CollectionAccessor = this.getCollectionAccessor(collectionName);
+		try {
+			newInstance = await accessor.model.create(dataObject, this.name, collectionName);
+
+			let insertedResult = await accessor.datastore.insertAsync(await newInstance.toPopulatedObject());
+
+			let confirmedDatabaseResult = await this.findOneDocument(collectionName, {_id: insertedResult._id});
+
+			if (confirmedDatabaseResult){
+				return confirmedDatabaseResult;
+			} else {
+				throw new Error("Something went wrong when creating data.");
+			}
+		} catch (error) {
+			throw error;
+		}
 		
 	}
 
 	/**
-	 * Create multiple document instaces, insert them into the database, and return the array of document instances.
+	 * Create multiple document instances from a provided array of object data, insert each document instance into the database, and return the array of document instances.
 	 * @author BigfootDS
-	 *
 	 * @async
-	 * @returns
+	 * @param {string} collectionName
+	 * @param {object[]} dataObjectArray
+	 * @returns {Promise<NedbDocument[]>}
 	 */
-	createMany = async () => {
-		
+	createMany = async (collectionName: string,dataObjectArray: object[]): Promise<NedbDocument[]> => {
+		let result: NedbDocument[] = [];
+		for await (const dataObject of dataObjectArray) {
+			let newInsertion = await this.createOne(collectionName, dataObject);
+			result.push(newInsertion);
+		}
+
+		return result;
 	}
 
 	//#endregion
@@ -265,8 +335,26 @@ export class NedbClient implements NedbClientEntry {
 
 	//#region Collection-specific Data READ Utilities
 	
-	findOneDocument = async () => {
-		
+	/**
+     * Query a collection and receive the first document matching that query.
+     * 
+     * This method is NOT compatible with NeDB projections, and thus returns an instance of the document used by the specified collection.
+     * 
+     * @author BigfootDS
+     *
+     * @async
+     * @param {string} collectionName The name of the collection that you wish to search through.
+     * @param {object} query The NeDB query used to find the specific document within the collection. Read more about NeDB queries here: https://github.com/seald/nedb?tab=readme-ov-file#finding-documents
+     * @returns {Promise<NedbDocument | null>} An instance of the collection's model.
+     */
+    findOneDocument = async (collectionName: string, query: object): Promise<NedbDocument | null> => {
+        let accessor = this.getCollectionAccessor(collectionName);
+        let result = await accessor.datastore.findOneAsync(query);
+        if (result) {
+            return await accessor.model.create(result, this.name, collectionName);
+        } else {
+            return null;
+        }
 	}
 
 	findOneObject = async () => {

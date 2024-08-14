@@ -42,7 +42,7 @@ export class SuperCamo {
 	 * @returns The newly-created database client instance.
 	 */
 	static clientConnect(databaseName: string, databaseDirectory: string = "", collectionsList: Array<CollectionsListEntry> = [], clientType: typeof NedbClient = NedbClient){
-		if (SuperCamo.clientList().includes(databaseName)){
+		if (SuperCamo.clientList.includes(databaseName)){
 			throw new Error(`Database name already in use: ${databaseName}`);
 		}
 
@@ -63,8 +63,11 @@ export class SuperCamo {
 	 * @returns Number of clients disconnected.
 	 */
 	static clientDisconnect(targetClient: string): number{
-		let tempFiltered = Object.keys(SuperCamo.clients).filter(client => SuperCamo.clients[targetClient].name !== targetClient);
-		return Object.keys(SuperCamo.clients).length - tempFiltered.length;;
+		let previousClientsListCount = this.clientList.length;
+
+		this.clients = Object.fromEntries(Object.entries(this.clients).filter(([key]) => key !== targetClient));
+
+		return previousClientsListCount - this.clientList.length;
 	}
 
 	
@@ -94,7 +97,7 @@ export class SuperCamo {
 	 * @static
 	 * @returns
 	 */
-	static clientList(): string[]{
+	static get clientList(): string[]{
 		return SuperCamo.clients ? Object.keys(SuperCamo.clients) : [];
 	}
 

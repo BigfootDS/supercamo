@@ -1,4 +1,6 @@
 import { SuperCamoLogger } from "../../utils/logging";
+import { getClassInheritanceList } from "../../validators/functions/ancestors";
+import { isObject } from "../../validators/functions/typeValidators";
 import { BaseDocument } from "../interfaces/BaseDocumentInterface";
 
 
@@ -54,14 +56,15 @@ export abstract class NedbBaseDocument implements BaseDocument {
 	
 	/**
 	 * Create an instance of the document's type.
+	 * This does not write any data to a database.
 	 * @author BigfootDS
 	 *
 	 * @static
 	 * @async
-	 * @param newData Object containing keys of data that the document requires per its schema.
-	 * @param newParentDatabaseName The name of the database/client that is managing this data.
-	 * @param newCollectionName The name of the collection that is using this document as a model for its data.
-	 * @param [validateOnCreate=true] Boolean flag for whether or not a document instance created with this method should be validated ASAP. Default is true.
+	 * @param {object} newData Object containing keys of data that the document requires per its schema.
+	 * @param {string} newParentDatabaseName The name of the database/client that is managing this data.
+	 * @param {string} newCollectionName The name of the collection that is using this document as a model for its data.
+	 * @param {boolean} [validateOnCreate=true] Boolean flag for whether or not a document instance created with this method should be validated ASAP. Default is true.
 	 * @returns
 	 */
 	static async create<Type extends NedbBaseDocument>(
@@ -136,7 +139,50 @@ export abstract class NedbBaseDocument implements BaseDocument {
 	 * @returns Object containing data from the document instance.
 	 */
 	async toPopulatedObject(){
+		let result: object = {};
 
+		for (const [key, value] of Object.entries(this)){
+			//@ts-ignore
+			if (isObject(this[key]) && !(this.#data[key] == null)){
+				// Only add property to output if it
+				// was defined in the model AND
+				// has a value to export
+
+				//@ts-ignore
+				let keyClassList = getClassInheritanceList(this[key].type);
+				if (keyClassList.includes("NedbDocument")) {
+					// Convert referenced doc into object data to bundle into this object data
+					const SuperCamo = require("../../index.js");
+					if (this.#parentDatabaseName){
+						//@ts-ignore
+						let foundDocument = await SuperCamo.activeClients[this.#parentDatabaseName].findOneDocument(this[key].collection, {_id: this.#data[key]});
+						//@ts-ignore
+						result[key] = await foundDocument.getData();
+					}
+					
+				} else if (keyClassList.includes("NedbEmbeddedDocument")){
+					// Convert doc into JS obj
+					// Assume all embedded docs are instances, would simplify things greatly.
+
+					//@ts-ignore
+					if (this.#data[key]['getData']){
+						//@ts-ignore
+						result[key] = await this.#data[key].toPopulatedObject();
+					} else {
+						//@ts-ignore
+						result[key] = this.#data[key];
+					}
+					
+				
+				} else {
+					//@ts-ignore
+					result[key] = this.#data[key];
+				}
+			}
+		}
+
+
+		return result;
 	}
 
 	/**
