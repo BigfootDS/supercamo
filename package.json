@@ -19,10 +19,10 @@
     "dev": "ts-node ./src/index.ts",
     "build:code": "tsc",
     "build:docs": "jsdoc ./src -r -c ./jsdoc.json",
-    "test:ts": "jest ./tests/ts/* --watch --config ./jest-ts.config.js",
-    "test:ts:ci": "jest ./tests/ts/* --config ./jest-ts.config.js",
-    "test:js": "npm run build:code && jest ./tests/js/* --watch --config ./jest-js.config.js",
-    "test:js:ci": "npm run build:code && jest ./tests/js/* --config ./jest-js.config.js"
+    "test:js": "npm run build:code && jest ./tests/js/* --watch --config ./jest-js.config.js --runInBand",
+    "test:js:ci": "npm run build:code && jest ./tests/js/* --config ./jest-js.config.js --runInBand",
+    "test:js:cc": "npm run build:code && jest ./tests/js/* --watch --config ./jest-js.config.js --runInBand --coverage=true"
+
   },
   "repository": {
     "type": "git",

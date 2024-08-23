@@ -5,6 +5,12 @@ const {SuperCamo, CollectionListEntry} = require("../../dist/index.js");
 const {describe, test, expect} = require("@jest/globals");
 const { User } = require("./helpers/TestDocumentDefs.js");
 
+
+afterAll(() => {
+	SuperCamo.clientDelete("SuperCamoClassTestDb");
+});
+
+
 describe("SuperCamo static class...", () => {
 
 	let newClient = SuperCamo.clientConnect(
@@ -29,6 +35,33 @@ describe("SuperCamo static class...", () => {
 		expect(retrievedClient.path).toBe("./.testing/SuperCamoClassTestDb/");
 		expect(retrievedClient.collections.length).toBe(1);
 	});
+
+	test("cannot create another client with an existing client's name.", () => {
+		expect(() => {
+			let newDupeClientOne = SuperCamo.clientConnect(
+				"SuperCamoClassTestDb",
+				"./.testing/SuperCamoClassTestDb/",
+				[
+					new CollectionListEntry("Users", User)
+				]
+			);
+
+			let newDupeClientTwo = SuperCamo.clientConnect(
+				"SuperCamoClassTestDb",
+				"./.testing/SuperCamoClassTestDb/",
+				[
+					new CollectionListEntry("Users", User)
+				]
+			);
+		}).toThrow();
+	})
+
+	test("cannot delete a database client or its data if that database does not exist.", () => {
+
+		let result = SuperCamo.clientDelete("NonexistentDatabase");
+
+		expect(result).toBe(0);
+	})
 
 	test("can disconnect from a database client.", () => {
 		expect(SuperCamo.clientList.length).toBe(1);

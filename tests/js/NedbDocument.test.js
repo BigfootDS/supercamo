@@ -3,6 +3,9 @@ const {SuperCamo, CollectionListEntry} = require("../../dist/index.js");
 const {describe, test, expect} = require("@jest/globals");
 const { User } = require("./helpers/TestDocumentDefs.js");
 
+afterAll(() => {
+	SuperCamo.clientDelete("NedbDocumentClassTestDb");
+});
 
 describe("NedbDocument class...", () => {
 

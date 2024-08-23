@@ -3,7 +3,7 @@ import { NedbClient } from "./structures/types/NedbClient";
 import { SuperCamoLogger } from "./utils/logging";
 import { isDatabaseConnected_RootHelper } from "./validators/functions/isDatabaseConnected";
 import path from "node:path";
-
+import fs from "node:fs";
 
 export class SuperCamo {
 
@@ -72,6 +72,38 @@ export class SuperCamo {
 
 	
 	/**
+	 * Disconnect from the specified database AND delete its files. This is extremely destructive! Be careful!
+	 * @author BigfootDS
+	 *
+	 * @static
+	 * @param targetClient The name of the database that you wish to disconnect from.
+	 * @returns Number of clients disconnected.
+	 */
+	static clientDelete(targetClient: string): number{
+
+		let targetClientInstance: NedbClient|null = SuperCamo.clientGet(targetClient); 
+
+		
+
+		try {
+			if (!targetClientInstance) {
+				throw new Error("No matching target client instance available for deletion.");
+			}
+			fs.rmSync(path.resolve(targetClientInstance.path), { recursive: true});
+
+			let numClientsDisconnected:number = SuperCamo.clientDisconnect(targetClient);
+	
+			return numClientsDisconnected;
+		} catch (error: any) {
+			SuperCamoLogger("Something went wrong deleting a database client. It was...", "Root");
+			SuperCamoLogger(error, "Root");
+			return 0;
+		}
+		
+	}
+
+	
+	/**
 	 * Create an accessor for a database that is connected in the app.
 	 * @author BigfootDS
 	 *
@@ -79,7 +111,7 @@ export class SuperCamo {
 	 * @param targetClient The name of the database that you wish to disconnect from.
 	 * @returns A NedbClient instance.
 	 */
-	static clientGet(targetClient: string): typeof NedbClient|null{
+	static clientGet(targetClient: string): NedbClient|null{
 		if (SuperCamo.clients){
 			// @ts-ignore
 			return SuperCamo.clients[targetClient];

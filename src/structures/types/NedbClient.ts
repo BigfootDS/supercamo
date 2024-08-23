@@ -233,7 +233,9 @@ export class NedbClient implements NedbClientEntry {
 	}
 
 	dropDatabase = async () => {
-
+		for await (const collectionAccessor of this.collections){
+			await this.deleteCollectionByName(collectionAccessor.name);
+		}
 	}
 
 	//#endregion
