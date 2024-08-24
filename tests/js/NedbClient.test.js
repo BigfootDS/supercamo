@@ -1,5 +1,5 @@
-const {SuperCamo, CollectionListEntry} = require("../../dist/index.js");
-const {NedbClient} = require("../../dist/structures/NedbClient.js");
+const {SuperCamo, CollectionListEntry, NedbClient} = require("../../dist/index.js");
+// const {} = require("../../dist/structures/NedbClient.js");
 
 const {describe, test, expect} = require("@jest/globals");
 const { User } = require("./helpers/TestDocumentDefs.js");
@@ -56,7 +56,7 @@ describe("NedbClient class instances...", () => {
 
 	describe("can perform database operations...", () => {
 		test("can retrieve one document.", async () => {
-			let result = await newClient.findOneDocument();
+			let result = await newClient.findOneDocument("Users", {});
 
 			expect(true).toBe(true);
 		});
