@@ -16,7 +16,7 @@ afterAll(async () => {
 });
 
 
-beforeAll(() => {
+beforeAll(async () => {
 	newClient = SuperCamo.clientConnect(
 		"NedbClientClassTestDb",
 		"./.testing/NedbClientClassTestDb/",
@@ -24,6 +24,11 @@ beforeAll(() => {
 			new CollectionListEntry("Users", User)
 		]
 	);
+
+	await newClient.insertOne("Users", {
+		email: "test@email.com",
+		bio: {tagline: "Test user.", blurb: "Super cool test user with a long, descriptive blurb."}
+	})
 })
 
 
@@ -57,8 +62,7 @@ describe("NedbClient class instances...", () => {
 	describe("can perform database operations...", () => {
 		test("can retrieve one document.", async () => {
 			let result = await newClient.findOneDocument("Users", {});
-
-			expect(true).toBe(true);
+			expect(result).toBeTruthy();
 		});
 	})
 })
