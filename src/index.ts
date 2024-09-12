@@ -9,3 +9,4 @@ export { NedbClient } from "./structures/types/NedbClient";
 
 export { SuperCamo } from "./SuperCamo";
 
+export { CollectionAccessError } from "./structures/errors/NedbClientErrors";

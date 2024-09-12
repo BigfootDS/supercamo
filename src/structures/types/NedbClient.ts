@@ -7,6 +7,7 @@ import {default as Datastore} from "@seald-io/nedb";
 import { parseCollectionsListForEmbeddeddocuments } from "../../utils/nedbClientHelper";
 import { CollectionListEntry } from "./CollectionListEntry";
 import { findManyDocumentsOptions, findManyObjectsOptions, findOneObjectOptions } from "../interfaces/QueryOptions";
+import { CollectionAccessError } from "../errors/NedbClientErrors";
 
 
 export class NedbClient implements NedbClientEntry {
@@ -92,7 +93,7 @@ export class NedbClient implements NedbClientEntry {
 		if (foundAccessor){
 			return foundAccessor;
 		} else {
-			throw new Error(`Collection not found in the database client instance:\n\t${collectionName}\nAvailable collections are:\n\t${this.collections.map((obj) => obj.name)}\n`);
+			throw new CollectionAccessError(collectionName);
 		}
 	}
 
