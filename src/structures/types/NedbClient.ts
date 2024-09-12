@@ -6,6 +6,7 @@ import { NedbEmbeddedDocument } from "./NedbEmbeddedDocument";
 import {default as Datastore} from "@seald-io/nedb";
 import { parseCollectionsListForEmbeddeddocuments } from "../../utils/nedbClientHelper";
 import { CollectionListEntry } from "./CollectionListEntry";
+import { findManyDocumentsOptions, findManyObjectsOptions, findOneObjectOptions } from "../interfaces/QueryOptions";
 
 
 export class NedbClient implements NedbClientEntry {
@@ -359,16 +360,46 @@ export class NedbClient implements NedbClientEntry {
         }
 	}
 
-	findOneObject = async () => {
-		
+	findOneObject = async (collectionName: string, query: object, options?: findOneObjectOptions): Promise<object | null> => {
+		let accessor = this.getCollectionAccessor(collectionName);
+        let result = await accessor.datastore.findOneAsync(query, options?.projection);
+        if (result) {
+            return result;
+        } else {
+            return null;
+        }
 	}
 
-	findManyDocuments = async () => {
-		
+	findManyDocuments = async (collectionName: string, query: object, options?: findManyDocumentsOptions): Promise<NedbDocument[]> => {
+		let accessor = this.getCollectionAccessor(collectionName);
+        let result = await accessor.datastore.findAsync(query);
+        if (result) {
+			let tempDocuments: NedbDocument[] = await Promise.all(result.map(async (resultItem: object) => {
+				return await accessor.model.create(resultItem, this.name, collectionName);
+			}));
+
+			if (options?.limit && options.limit < tempDocuments.length){
+				tempDocuments.length = options.limit;
+			}
+
+			return tempDocuments;
+            
+        } else {
+            return [];
+        }
 	}
 
-	findManyObjects = async () => {
-		
+	findManyObjects = async (collectionName: string, query: object, options?: findManyObjectsOptions): Promise<object[]> => {
+		let accessor = this.getCollectionAccessor(collectionName);
+        let result = await accessor.datastore.findAsync(query, options?.projection);
+        if (result) {
+			if (options?.limit && options.limit < result.length){
+				result.length = options.limit;
+			}
+            return result;
+        } else {
+            return [];
+        }
 	}
 
 	/**
