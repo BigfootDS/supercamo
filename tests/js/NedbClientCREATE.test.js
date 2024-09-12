@@ -60,7 +60,7 @@ describe("Database can perform CREATE operations", () => {
 	describe("createOne (document) operations", () => {
 		test("returns an appropriate object when given valid data for database insertion", async () => {
 			let result = await newClient.createOne("Users", secondUserData);
-			console.log(result);
+			console.log(result.data);
 			expect(result.data.email).toBe(secondUserData.email);
 		});
 	});

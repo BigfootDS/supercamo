@@ -92,6 +92,8 @@ export abstract class NedbBaseDocument implements BaseDocument {
 			}
 		}
 
+		
+
 		return newInstance;
 	}
 
@@ -323,6 +325,8 @@ export abstract class NedbBaseDocument implements BaseDocument {
 		});
 
 		// TODO: Actual saving logic
+		// If calling save, assume that this document is part of a DB and collection
+		// Upsert into collection within DB
 
 		await this.postSave().catch(error => {
 			throw new PostSaveFailure(this.data);
@@ -335,6 +339,10 @@ export abstract class NedbBaseDocument implements BaseDocument {
 		});
 
 		// TODO: Actual delete logic
+		// If calling delete, assume that this document is part of a DB and collection
+		// Delete from DB
+		// If the "delete from DB" function returns a 1 (number of docs deleted from datastore),
+		// we know it worked
 
 		await this.postDelete().catch(error => {
 			throw new PostDeleteFailure(this.data);
