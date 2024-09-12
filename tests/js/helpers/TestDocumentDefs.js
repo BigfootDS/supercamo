@@ -1,6 +1,6 @@
 const { NedbEmbeddedDocument, NedbDocument, SuperCamo } = require("../../../dist");
 
-const {scryptSync} = require("node:crypto");
+const {scrypt, timingSafeEqual, randomBytes} = require("node:crypto");
 
 class Bio extends NedbEmbeddedDocument {
 	constructor(newData, newParentDatabaseName, newCollectionName){
@@ -58,23 +58,57 @@ class UserWithPassword extends NedbDocument {
 		}
 	}
 
-	static async hashPassword(password) {
-		return new Promise((resolve, reject) => {
-			const salt = crypto.randomBytes(8).toString("hex")
+	static encryptionKeyLength = 64;
 	
-			crypto.scrypt(password, salt, 64, (err, derivedKey) => {
+	
+	/**
+	 * Zero-dependency password hashing.
+	 * 
+	 * Code based on comments and article content from this article:
+	 * 
+	 * [https://dev.to/farnabaz/hash-your-passwords-with-scrypt-using-nodejs-crypto-module-316k#comment-24a9e](https://dev.to/farnabaz/hash-your-passwords-with-scrypt-using-nodejs-crypto-module-316k)
+	 * @author BigfootDS
+	 *
+	 * @static
+	 * @async
+	 * @param {string} password Raw, unencrypted and vulnerable password. eg. "Password1"
+	 * @returns {Promise<string>}
+	 */
+	static async hashPassword(password) {
+		let result = await new Promise((resolve, reject) => {
+			const salt = randomBytes(16).toString("hex");
+	
+			scrypt(password, salt, UserWithPassword.encryptionKeyLength, (err, derivedKey) => {
 				if (err) reject(err);
-				resolve(salt + ":" + derivedKey.toString('hex'))
+				resolve(`${salt}:${derivedKey.toString('hex')}`);
 			});
-		})
+		});
+		return result;
 	}
 	
+	
+	/**
+	 * Zero-dependency password verification.
+	 * 
+	 * Code based on comments and article content from this article:
+	 * 
+	 * [https://dev.to/farnabaz/hash-your-passwords-with-scrypt-using-nodejs-crypto-module-316k#comment-24a9e](https://dev.to/farnabaz/hash-your-passwords-with-scrypt-using-nodejs-crypto-module-316k)
+	 * @author BigfootDS
+	 *
+	 * @static
+	 * @async
+	 * @param {string} password Raw, unencrypted and vulnerable password. eg. "Password1"
+	 * @param {string} hash Previously-hashed and salted password.
+	 * @returns {boolean}
+	 */
 	static async verifyPassword(password, hash) {
 		return new Promise((resolve, reject) => {
-			const [salt, key] = hash.split(":")
-			crypto.scrypt(password, salt, 64, (err, derivedKey) => {
+			const [salt, key] = hash.split(":");
+			const keyAsBuffer = Buffer.from(key, "hex");
+
+			scrypt(password, salt, UserWithPassword.encryptionKeyLength, (err, derivedKey) => {
 				if (err) reject(err);
-				resolve(key == derivedKey.toString('hex'))
+				resolve(timingSafeEqual(keyAsBuffer, derivedKey));
 			});
 		})
 	}
