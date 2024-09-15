@@ -48,7 +48,7 @@ beforeAll(async () => {
 		]
 	);
 
-})
+});
 
 describe("Database can perform CREATE operations", () => {
 	describe("insertOne (object) operations", () => {

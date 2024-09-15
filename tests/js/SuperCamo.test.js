@@ -6,20 +6,31 @@ const {describe, test, expect} = require("@jest/globals");
 const { User } = require("./helpers/TestDocumentDefs.js");
 
 
-afterAll(() => {
+/**
+ * @type {NedbClient}
+ */
+let newClient;
+
+afterAll(async () => {
+	await newClient.dropDatabase();
 	SuperCamo.clientDelete("SuperCamoClassTestDb");
 });
 
 
-describe("SuperCamo static class...", () => {
-
-	let newClient = SuperCamo.clientConnect(
+beforeAll(async () => {
+	newClient = SuperCamo.clientConnect(
 		"SuperCamoClassTestDb",
 		"./.testing/SuperCamoClassTestDb/",
 		[
 			new CollectionListEntry("Users", User)
 		]
 	);
+
+});
+
+describe("SuperCamo static class...", () => {
+
+
 
 	test("can create a new database client.", () => {
 		
