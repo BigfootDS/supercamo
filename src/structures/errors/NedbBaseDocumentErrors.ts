@@ -43,6 +43,12 @@ export class ValidationFailureMissingValueForReferencedDoc extends Error {
 	}
 }
 
+export class ValidationFailureMinMaxError extends Error {
+	constructor(propertyName: string){
+		super(`Document failed validation since the key rule for ${propertyName} uses invalidateOnMinMaxError, and the document instance's value for ${propertyName} did not respect the property's rule for min, max, minLength, or maxLength.`);
+	}
+}
+
 export class PostValidationFailure extends Error {
 	constructor(documentDataObject: object){
 		super(`Document failed post-validation with this data in itself:\n${JSON.stringify(documentDataObject, null, 4)}`);

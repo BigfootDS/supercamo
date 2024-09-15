@@ -9,11 +9,9 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
-    "./SuperCamo":"./dist/SuperCamo.js",
-    "./NedbDocument": "./dist/structures/types/NedbDocument.js",
-    "./NedbEmbeddedDocument": "./dist/structures/types/NedbEmbeddedDocument.js",
-    "./NedbClient": "./dist/structures/types/NedbClient.js",
-    "./NedbBaseDocument": "./dist/structures/types/NedbBaseDocument.js"
+    "./structures/*": null,
+    "./utils/*": null,
+    "./validators/*": null
   },
   "scripts": {
     "dev": "ts-node ./src/index.ts",

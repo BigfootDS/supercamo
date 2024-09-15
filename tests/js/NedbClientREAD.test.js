@@ -1,4 +1,4 @@
-const {SuperCamo, CollectionListEntry, NedbClient, CollectionAccessError} = require("../../dist/index.js");
+const {SuperCamo, CollectionListEntry, NedbClient, NedbClientErrors} = require("../../dist/index.js");
 // const {} = require("../../dist/structures/NedbClient.js");
 
 const {describe, test, expect} = require("@jest/globals");
@@ -69,7 +69,7 @@ describe("Database can perform READ operations", () => {
 		test("throws an error if attempting to query a collection not found in the database.", async () => {
 			expect.assertions(1);
 			return newClient.findOneDocument("Bananas", {email: firstUserData.email}).catch(error => {
-				expect(error).toBeInstanceOf(CollectionAccessError)
+				expect(error).toBeInstanceOf(NedbClientErrors.CollectionAccessError)
 			});
 		})
 	});
@@ -100,7 +100,7 @@ describe("Database can perform READ operations", () => {
 		test("throws an error if attempting to query a collection not found in the database.", async () => {
 			expect.assertions(1);
 			return newClient.findManyDocuments("Bananas", {email: firstUserData.email}).catch(error => {
-				expect(error).toBeInstanceOf(CollectionAccessError)
+				expect(error).toBeInstanceOf(NedbClientErrors.CollectionAccessError)
 			});
 		})
 	});
@@ -133,7 +133,7 @@ describe("Database can perform READ operations", () => {
 		test("throws an error if attempting to query a collection not found in the database.", async () => {
 			expect.assertions(1);
 			return newClient.findOneObject("Bananas", {email: firstUserData.email}).catch(error => {
-				expect(error).toBeInstanceOf(CollectionAccessError)
+				expect(error).toBeInstanceOf(NedbClientErrors.CollectionAccessError)
 			});
 		});
 		test("returns an object containing specific keys if a projection option is provided for a valid query.", async () => {
@@ -195,7 +195,7 @@ describe("Database can perform READ operations", () => {
 		test("throws an error if attempting to query a collection not found in the database.", async () => {
 			expect.assertions(1);
 			return newClient.findManyObjects("Bananas", {email: firstUserData.email}).catch(error => {
-				expect(error).toBeInstanceOf(CollectionAccessError)
+				expect(error).toBeInstanceOf(NedbClientErrors.CollectionAccessError)
 			});
 		});
 		test("returns an array of object containing specific keys if a projection option is provided for a valid query.", async () => {

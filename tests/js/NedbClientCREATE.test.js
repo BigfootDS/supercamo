@@ -1,4 +1,4 @@
-const {SuperCamo, CollectionListEntry, NedbClient, CollectionAccessError} = require("../../dist/index.js");
+const {SuperCamo, CollectionListEntry, NedbClient, NedbBaseDocumentErrors} = require("../../dist/index.js");
 // const {} = require("../../dist/structures/NedbClient.js");
 
 const {describe, test, expect} = require("@jest/globals");
@@ -21,6 +21,12 @@ const thirdUserData = {
 	password: "Password3",
 	bio: {tagline: "Test user, the third.", blurb: "Another super cool test user with a long, descriptive blurb."}
 };
+
+const invalidUserOne = {
+	email: "a.com",
+	password: "no",
+	bio: {}
+}
 
 /**
  * @type {NedbClient}
@@ -46,7 +52,7 @@ beforeAll(async () => {
 
 describe("Database can perform CREATE operations", () => {
 	describe("insertOne (object) operations", () => {
-		test("returns an appropriate object when given valid data for database insertion", async () => {
+		test("returns an appropriate object when given valid data for database insertion.", async () => {
 			let result = await newClient.insertOne("Users", firstUserData);
 			console.log(result);
 			expect(result.email).toBe(firstUserData.email);
@@ -58,11 +64,18 @@ describe("Database can perform CREATE operations", () => {
 	});
 
 	describe("createOne (document) operations", () => {
-		test("returns an appropriate object when given valid data for database insertion", async () => {
+		test("returns an appropriate object when given valid data for database insertion.", async () => {
 			let result = await newClient.createOne("Users", secondUserData);
 			console.log(result.data);
 			expect(result.data.email).toBe(secondUserData.email);
 		});
+
+		test("throws an error when attempting to make a document with invalid data.", async () => {
+			expect(async () => {
+				let result = await newClient.createOne("Users", invalidUserOne);
+				console.log(result.data);
+			}).rejects.toThrowError(NedbBaseDocumentErrors.ValidationFailureMissingValueForProperty);
+		})
 	});
 
 	describe.skip("createMany (documents) operations", () => {

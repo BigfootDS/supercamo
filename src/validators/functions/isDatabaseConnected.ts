@@ -1,6 +1,6 @@
 /** @module Internal */
 
-import { SuperCamo } from "../../SuperCamo";
+import { SuperCamo } from "../../structures/types/SuperCamo";
 
 
 

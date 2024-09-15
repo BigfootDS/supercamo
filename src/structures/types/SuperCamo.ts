@@ -1,7 +1,7 @@
-import { CollectionsListEntry } from "./structures/interfaces/CollectionsListEntryInterface";
-import { NedbClient } from "./structures/types/NedbClient";
-import { SuperCamoLogger } from "./utils/logging";
-import { isDatabaseConnected_RootHelper } from "./validators/functions/isDatabaseConnected";
+import { CollectionsListEntry } from "../interfaces/CollectionsListEntryInterface";
+import { NedbClient } from "./NedbClient";
+import { SuperCamoLogger } from "../../utils/logging";
+import { isDatabaseConnected_RootHelper } from "../../validators/functions/isDatabaseConnected";
 import path from "node:path";
 import fs from "node:fs";
 

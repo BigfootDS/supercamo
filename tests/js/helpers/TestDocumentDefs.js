@@ -54,7 +54,9 @@ class UserWithPassword extends NedbDocument {
 
 		this.password = {
 			type: String,
-			required: true
+			required: true,
+			minLength: 8,
+			invalidateOnMinMaxError: true
 		}
 	}
 

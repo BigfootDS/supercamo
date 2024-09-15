@@ -1,7 +1,7 @@
 import { SuperCamoLogger } from "../../utils/logging";
 import { getClassInheritanceList } from "../../validators/functions/ancestors";
 import { isArray, isAsyncFunction, isFunction, isInChoices, isObject, isPromise, isType } from "../../validators/functions/typeValidators";
-import { PostDeleteFailure, PostSaveFailure, PostValidationFailure, PreDeleteFailure, PreSaveFailure, PreValidationFailure, ValidationFailure, ValidationFailureMissingValueForProperty, ValidationFailureMissingValueForReferencedDoc, ValidationFailureReferenceWithoutDatabase, ValidationFailureUnexpectedProperty, ValidationFailureValueNotInChoices } from "../errors/NedbBaseDocumentErrors";
+import { PostDeleteFailure, PostSaveFailure, PostValidationFailure, PreDeleteFailure, PreSaveFailure, PreValidationFailure, ValidationFailure, ValidationFailureMinMaxError, ValidationFailureMissingValueForProperty, ValidationFailureMissingValueForReferencedDoc, ValidationFailureReferenceWithoutDatabase, ValidationFailureUnexpectedProperty, ValidationFailureValueNotInChoices } from "../errors/NedbBaseDocumentErrors";
 import { BaseDocument } from "../interfaces/BaseDocumentInterface";
 import { DocumentKeyRule } from "../interfaces/DocumentKeyRuleInterface";
 
@@ -282,15 +282,21 @@ export abstract class NedbBaseDocument implements BaseDocument {
 
 			// #endregion
 
-			// #region Sanitise any properties that are invalid but without triggering a validation failure.
+			// #region Min/Max/MinLength/MaxLength. These can be sanitisation rules OR validation rules.
+
+			//#region Min/Max for Numbers
 			if (
 				(keyRule.min !== null || keyRule.min !== undefined)
 				&&
 				//@ts-ignore
 				(keyRule.min && this.#data[key] < keyRule.min)
 			) {
-				//@ts-ignore
-				this.#data[key] = keyRule.min;
+				if (keyRule.invalidateOnMinMaxError){
+					throw new ValidationFailureMinMaxError(key);
+				} else {
+					//@ts-ignore
+					this.#data[key] = keyRule.min;
+				}
 			}
 
 			if (
@@ -299,9 +305,72 @@ export abstract class NedbBaseDocument implements BaseDocument {
 				//@ts-ignore
 				(keyRule.max && this.#data[key] > keyRule.max)
 			) {
-				//@ts-ignore
-				this.#data[key] = keyRule.max;
+				if (keyRule.invalidateOnMinMaxError){
+					throw new ValidationFailureMinMaxError(key);
+				} else {
+					//@ts-ignore
+					this.#data[key] = keyRule.max;
+				}
 			}
+			//#endregion
+
+			//#region Min/Max for Strings
+			if (
+				(keyRule.minLength !== null || keyRule.minLength !== undefined)
+				&&
+				//@ts-ignore
+				(keyRule.type == String && keyRule.minLength && this.#data[key].length < keyRule.minLength)
+			) {
+				if (keyRule.invalidateOnMinMaxError){
+					throw new ValidationFailureMinMaxError(key);
+				} else {
+					//@ts-ignore
+					this.#data[key].padEnd((keyRule.minLength - this.#data[key].length), (keyRule.padStringValue ? keyRule.padStringValue : " "));
+				}
+			}
+			if (
+				(keyRule.maxLength !== null || keyRule.maxLength !== undefined)
+				&&
+				//@ts-ignore
+				(keyRule.type == String && keyRule.maxLength && this.#data[key].length > keyRule.maxLength)
+			) {
+				if (keyRule.invalidateOnMinMaxError){
+					throw new ValidationFailureMinMaxError(key);
+				} else {
+					//@ts-ignore
+					this.#data[key] = this.#data[key].substring(0, keyRule.maxLength);
+				}
+			}
+			//#endregion
+
+			//#region Min/Max for Arrays
+			if (
+				(keyRule.minLength !== null || keyRule.minLength !== undefined)
+				&&
+				//@ts-ignore
+				(Array.isArray(keyRule.type) && keyRule.minLength && this.#data[key].length < keyRule.minLength)
+			) {
+				if (keyRule.invalidateOnMinMaxError){
+					throw new ValidationFailureMinMaxError(key);
+				} else {
+					//@ts-ignore
+					Object.assign(new Array(keyRule.minLength), this.#data[key]);
+				}
+			}
+			if (
+				(keyRule.maxLength !== null || keyRule.maxLength !== undefined)
+				&&
+				//@ts-ignore
+				(Array.isArray(keyRule.type) && keyRule.maxLength && this.#data[key].length > keyRule.maxLength)
+			) {
+				if (keyRule.invalidateOnMinMaxError){
+					throw new ValidationFailureMinMaxError(key);
+				} else {
+					//@ts-ignore
+					this.#data[key].length = keyRule.maxLength;
+				}
+			}
+			//#endregion
 
 			// #endregion
 			
