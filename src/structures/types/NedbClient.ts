@@ -300,16 +300,21 @@ export class NedbClient implements NedbClientEntry {
 		let accessor: CollectionAccessor = this.getCollectionAccessor(collectionName);
 		try {
 			newInstance = await accessor.model.create(dataObject, this.name, collectionName);
+			await newInstance.save();
+			let insertedResult = await newInstance.toPopulatedObject();
+			
+			if ("_id" in insertedResult){
+				let confirmedDatabaseResult = await this.findOneDocument(collectionName, {_id: insertedResult._id});
 
-			let insertedResult = await accessor.datastore.insertAsync(await newInstance.toPopulatedObject());
-
-			let confirmedDatabaseResult = await this.findOneDocument(collectionName, {_id: insertedResult._id});
-
-			if (confirmedDatabaseResult){
-				return confirmedDatabaseResult;
+				if (confirmedDatabaseResult){
+					return confirmedDatabaseResult;
+				} else {
+					throw new Error("Something went wrong when creating data.");
+				}
 			} else {
 				throw new Error("Something went wrong when creating data.");
 			}
+			
 		} catch (error) {
 			throw error;
 		}

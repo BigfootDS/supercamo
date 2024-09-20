@@ -108,7 +108,7 @@ export class SuperCamo {
 	 * @author BigfootDS
 	 *
 	 * @static
-	 * @param targetClient The name of the database that you wish to disconnect from.
+	 * @param targetClient The name of the database that you wish to connect to.
 	 * @returns A NedbClient instance.
 	 */
 	static clientGet(targetClient: string): NedbClient|null{

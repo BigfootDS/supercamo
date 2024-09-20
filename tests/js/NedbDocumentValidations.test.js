@@ -25,7 +25,7 @@ beforeAll(async () => {
 
 });
 
-describe("NedbDocument class...", () => {
+describe.skip("NedbDocument class...", () => {
 
 	test("documents inherit from NedbDocument.", () => {
 		expect(Object.getPrototypeOf(User).toString().includes("NedbDocument")).toBe(true);

@@ -1,9 +1,10 @@
 import { SuperCamoLogger } from "../../utils/logging";
 import { getClassInheritanceList } from "../../validators/functions/ancestors";
 import { isArray, isAsyncFunction, isFunction, isInChoices, isObject, isPromise, isType } from "../../validators/functions/typeValidators";
-import { PostDeleteFailure, PostSaveFailure, PostValidationFailure, PreDeleteFailure, PreSaveFailure, PreValidationFailure, ValidationFailure, ValidationFailureMinMaxError, ValidationFailureMissingValueForProperty, ValidationFailureMissingValueForReferencedDoc, ValidationFailureReferenceWithoutDatabase, ValidationFailureUnexpectedProperty, ValidationFailureValueNotInChoices } from "../errors/NedbBaseDocumentErrors";
+import { PostDeleteFailure, PostSaveFailure, PostValidationFailure, PreDeleteFailure, PreSaveFailure, PreValidationFailure, SaveFailure, ValidationFailure, ValidationFailureMinMaxError, ValidationFailureMissingValueForProperty, ValidationFailureMissingValueForReferencedDoc, ValidationFailureReferenceWithoutDatabase, ValidationFailureUnexpectedProperty, ValidationFailureValueNotInChoices } from "../errors/NedbBaseDocumentErrors";
 import { BaseDocument } from "../interfaces/BaseDocumentInterface";
 import { DocumentKeyRule } from "../interfaces/DocumentKeyRuleInterface";
+import { SuperCamo } from "./SuperCamo";
 
 
 export abstract class NedbBaseDocument implements BaseDocument {
@@ -396,6 +397,17 @@ export abstract class NedbBaseDocument implements BaseDocument {
 		// TODO: Actual saving logic
 		// If calling save, assume that this document is part of a DB and collection
 		// Upsert into collection within DB
+		if (!this.#parentDatabaseName || !this.#collectionName){
+			throw new SaveFailure({parentDatabaseName: this.#parentDatabaseName, collectionName: this.#collectionName, data: this.data});
+		}
+
+	
+		let collectionAccessor = SuperCamo.clientGet(this.#parentDatabaseName)?.getCollectionAccessor(this.#collectionName);
+		if (collectionAccessor == null){
+			throw new SaveFailure({parentDatabaseName: this.#parentDatabaseName, collectionName: this.#collectionName, data: this.data});
+		}
+		// TODO: Need to make a way to put "_id" on all documents in their ".#data" property
+		await collectionAccessor.datastore.updateAsync({_id: this})
 
 		await this.postSave().catch(error => {
 			throw new PostSaveFailure(this.data);
@@ -452,7 +464,7 @@ export abstract class NedbBaseDocument implements BaseDocument {
 	 * @returns Object containing data from the document instance.
 	 */
 	async toPopulatedObject(){
-		let result: object = {};
+		let result: object = {_id: ""};
 
 		for (const [key, value] of Object.entries(this)){
 			//@ts-ignore

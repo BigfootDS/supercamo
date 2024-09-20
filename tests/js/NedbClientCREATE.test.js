@@ -28,6 +28,24 @@ const invalidUserOne = {
 	bio: {}
 }
 
+const insertManyDataOne = [
+	{
+		email: "testMany1@email.com",
+		password: "Password1",
+		bio: {tagline: "Test user of the many, the first.", blurb: "Another super cool test user with a long, descriptive blurb."}
+	},
+	{
+		email: "testMany2@email.com",
+		password: "Password1",
+		bio: {tagline: "Test user of the many, the second.", blurb: "Another super cool test user with a long, descriptive blurb."}
+	},
+	{
+		email: "testMany3@email.com",
+		password: "Password1",
+		bio: {tagline: "Test user of the many, the third.", blurb: "Another super cool test user with a long, descriptive blurb."}
+	},
+]
+
 /**
  * @type {NedbClient}
  */
@@ -54,26 +72,30 @@ describe("Database can perform CREATE operations", () => {
 	describe("insertOne (object) operations", () => {
 		test("returns an appropriate object when given valid data for database insertion.", async () => {
 			let result = await newClient.insertOne("Users", firstUserData);
-			console.log(result);
+			// console.log(result);
 			expect(result.email).toBe(firstUserData.email);
 		});
 	});
 
-	describe.skip("insertMany (objects) operations", () => {
-
+	describe("insertMany (objects) operations", () => {
+		test("returns an appropriate array of objects when given a valid array of data for database insertion.", async ()=>{
+			let result = await newClient.insertMany("Users", insertManyDataOne);
+			console.log(result);
+			expect(result).toBeTruthy();
+		});
 	});
 
 	describe("createOne (document) operations", () => {
 		test("returns an appropriate object when given valid data for database insertion.", async () => {
 			let result = await newClient.createOne("Users", secondUserData);
-			console.log(result.data);
+			// console.log(result.data);
 			expect(result.data.email).toBe(secondUserData.email);
 		});
 
 		test("throws an error when attempting to make a document with invalid data.", async () => {
 			expect(async () => {
 				let result = await newClient.createOne("Users", invalidUserOne);
-				console.log(result.data);
+				// console.log(result.data);
 			}).rejects.toThrowError(NedbBaseDocumentErrors.ValidationFailureMissingValueForProperty);
 		})
 	});
