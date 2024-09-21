@@ -121,7 +121,7 @@ describe("Database can perform CREATE operations", () => {
 	describe("insertMany (objects) operations", () => {
 		test("returns an appropriate array of objects when given a valid array of data for database insertion.", async ()=>{
 			let result = await newClient.insertMany("Users", insertManyDataOne);
-			console.log(result);
+			// console.log(result);
 			expect(result.length).toBe(3);
 			expect(result.find((entry) => entry.email == insertManyDataOne[0].email)).toBeTruthy();
 			expect(result.find((entry) => entry.email == insertManyDataOne[1].email)).toBeTruthy();
@@ -153,7 +153,7 @@ describe("Database can perform CREATE operations", () => {
 	describe("createMany (documents) operations", () => {
 		test("returns an appropriate array of document instances when given a valid array of data for database insertion.", async ()=>{
 			let result = await newClient.createMany("Users", createManyDataOne);
-			console.log(result);
+			// console.log(result);
 			expect(result.length).toBe(3);
 			expect(result.find((entry) => entry.data.email == createManyDataOne[0].email)).toBeTruthy();
 			expect(result.find((entry) => entry.data.email == createManyDataOne[1].email)).toBeTruthy();

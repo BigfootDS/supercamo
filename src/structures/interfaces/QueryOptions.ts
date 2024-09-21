@@ -19,3 +19,9 @@ export interface findManyDocumentsOptions {
 	limit: number;
 
 }
+
+export interface updateOptions {
+
+	upsert: boolean;
+	
+}
