@@ -121,7 +121,7 @@ class UserWithPassword extends NedbDocument {
 			if (existingDbData?.password != this.data.password){
 				// Password was modified, should re-encrypt it!
 				this.data.password = await UserWithPassword.hashPassword(this.data.password);
-				console.log("Password encrypted!");
+				// console.log("Password encrypted!");
 			}
 		}
 	}

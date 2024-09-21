@@ -4,9 +4,9 @@
 
 
 
-import { NedbBaseDocument } from "../../structures/types/NedbBaseDocument";
-import { NedbDocument } from "../../structures/types/NedbDocument";
-import { NedbEmbeddedDocument } from "../../structures/types/NedbEmbeddedDocument";
+import { NedbBaseDocument } from "../../structures/classes/NedbBaseDocument";
+import { NedbDocument } from "../../structures/classes/NedbDocument";
+import { NedbEmbeddedDocument } from "../../structures/classes/NedbEmbeddedDocument";
 import { SuperCamoLogger } from "../../utils/logging";
 
 

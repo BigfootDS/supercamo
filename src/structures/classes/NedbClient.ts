@@ -305,14 +305,14 @@ export class NedbClient implements NedbClientEntry {
 			
 			if ("_id" in insertedResult){
 				let confirmedDatabaseResult = await this.findOneDocument(collectionName, {_id: insertedResult._id});
-
+				
 				if (confirmedDatabaseResult){
 					return confirmedDatabaseResult;
 				} else {
-					throw new Error("Something went wrong when creating data.");
+					throw new Error("Something went wrong when creating data.\n" + JSON.stringify(insertedResult, null, 4));
 				}
 			} else {
-				throw new Error("Something went wrong when creating data.");
+				throw new Error("No _id in insertedResult.\n" + JSON.stringify(insertedResult, null, 4));
 			}
 			
 		} catch (error) {

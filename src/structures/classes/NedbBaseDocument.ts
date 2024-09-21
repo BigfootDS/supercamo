@@ -1,22 +1,25 @@
 import { SuperCamoLogger } from "../../utils/logging";
 import { getClassInheritanceList } from "../../validators/functions/ancestors";
 import { isArray, isAsyncFunction, isFunction, isInChoices, isObject, isPromise, isType } from "../../validators/functions/typeValidators";
-import { PostDeleteFailure, PostSaveFailure, PostValidationFailure, PreDeleteFailure, PreSaveFailure, PreValidationFailure, SaveFailure, ValidationFailure, ValidationFailureMinMaxError, ValidationFailureMissingValueForProperty, ValidationFailureMissingValueForReferencedDoc, ValidationFailureReferenceWithoutDatabase, ValidationFailureUnexpectedProperty, ValidationFailureValueNotInChoices } from "../errors/NedbBaseDocumentErrors";
+import { DeleteFailure, PostDeleteFailure, PostSaveFailure, PostValidationFailure, PreDeleteFailure, PreSaveFailure, PreValidationFailure, SaveFailure, ValidationFailure, ValidationFailureMinMaxError, ValidationFailureMissingValueForProperty, ValidationFailureMissingValueForReferencedDoc, ValidationFailureReferenceWithoutDatabase, ValidationFailureUnexpectedProperty, ValidationFailureValueNotInChoices } from "../errors/NedbBaseDocumentErrors";
 import { BaseDocument } from "../interfaces/BaseDocumentInterface";
+import { DocumentConstructorData, DocumentObjectData } from "../interfaces/DocumentBaseDataInterface";
 import { DocumentKeyRule } from "../interfaces/DocumentKeyRuleInterface";
 import { SuperCamo } from "./SuperCamo";
 
 
 export abstract class NedbBaseDocument implements BaseDocument {
-	#data: object;
+	#data: DocumentObjectData;
 	#parentDatabaseName: string | null;
 	#collectionName: string | null;
 
-
-	constructor(newData: object, newParentDatabaseName: string|null, newCollectionName:string|null){
-		this.#data = newData;
+	constructor(newData: DocumentConstructorData, newParentDatabaseName: string|null, newCollectionName:string|null){
+		if (newData._id == null || newData._id == "") newData._id = crypto.randomUUID();
+		
+		this.#data = newData as DocumentObjectData;
 		this.#parentDatabaseName = newParentDatabaseName;
 		this.#collectionName = newCollectionName;
+		
 	}
 
 	public get data(){
@@ -394,7 +397,6 @@ export abstract class NedbBaseDocument implements BaseDocument {
 			throw new PreSaveFailure(this.data);
 		});
 
-		// TODO: Actual saving logic
 		// If calling save, assume that this document is part of a DB and collection
 		// Upsert into collection within DB
 		if (!this.#parentDatabaseName || !this.#collectionName){
@@ -406,12 +408,16 @@ export abstract class NedbBaseDocument implements BaseDocument {
 		if (collectionAccessor == null){
 			throw new SaveFailure({parentDatabaseName: this.#parentDatabaseName, collectionName: this.#collectionName, data: this.data});
 		}
-		// TODO: Need to make a way to put "_id" on all documents in their ".#data" property
-		await collectionAccessor.datastore.updateAsync({_id: this})
+		// Do we need anything from the upsertResult when we're just saving?
+		// Pretty sure we don't. Still need this line as a "wait while this thing happens" step though.
+		let upsertResult = await collectionAccessor.datastore.updateAsync({_id: this.data._id}, this.data, {upsert: true});
+
 
 		await this.postSave().catch(error => {
 			throw new PostSaveFailure(this.data);
 		});
+
+		return true;
 	}
 
 	async delete(){
@@ -419,15 +425,25 @@ export abstract class NedbBaseDocument implements BaseDocument {
 			throw new PreDeleteFailure(this.data);
 		});
 
-		// TODO: Actual delete logic
 		// If calling delete, assume that this document is part of a DB and collection
 		// Delete from DB
 		// If the "delete from DB" function returns a 1 (number of docs deleted from datastore),
 		// we know it worked
+		if (!this.#parentDatabaseName || !this.#collectionName){
+			throw new DeleteFailure({parentDatabaseName: this.#parentDatabaseName, collectionName: this.#collectionName, data: this.data});
+		}
+
+		let collectionAccessor = SuperCamo.clientGet(this.#parentDatabaseName)?.getCollectionAccessor(this.#collectionName);
+		if (collectionAccessor == null){
+			throw new SaveFailure({parentDatabaseName: this.#parentDatabaseName, collectionName: this.#collectionName, data: this.data});
+		}
+		let deleteResult = await collectionAccessor.datastore.removeAsync({_id: this.data._id}, {multi: false});
 
 		await this.postDelete().catch(error => {
 			throw new PostDeleteFailure(this.data);
 		});
+
+		return deleteResult;
 	}
 
 	
@@ -464,7 +480,9 @@ export abstract class NedbBaseDocument implements BaseDocument {
 	 * @returns Object containing data from the document instance.
 	 */
 	async toPopulatedObject(){
-		let result: object = {_id: ""};
+		let result: DocumentObjectData = {
+			_id: this.data._id
+		};
 
 		for (const [key, value] of Object.entries(this)){
 			//@ts-ignore

@@ -1,5 +1,5 @@
 import Nedb from "@seald-io/nedb";
-import { NedbDocument } from "../types/NedbDocument";
+import { NedbDocument } from "../classes/NedbDocument";
 
 export interface CollectionAccessor {
 	

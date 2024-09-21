@@ -1,3 +1,4 @@
+import { DocumentConstructorData } from "./DocumentBaseDataInterface";
 
 
 export interface BaseDocument {
@@ -9,7 +10,7 @@ export interface BaseDocument {
 	 * eg. `this.username` would define the rules that the data must obey for the `username` property of a document, while the actual data for `username` should live in `this.data.username`.
 	 * @author BigfootDS
 	 */
-	data: object,
+	data: DocumentConstructorData,
 
 
 	

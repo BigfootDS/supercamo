@@ -1,3 +1,4 @@
+import { DocumentConstructorData } from "../interfaces/DocumentBaseDataInterface";
 import { NedbBaseDocument } from "./NedbBaseDocument";
 
 /**
@@ -12,7 +13,7 @@ import { NedbBaseDocument } from "./NedbBaseDocument";
  */
 export class NedbEmbeddedDocument extends NedbBaseDocument {
 	constructor(
-		newData: object,
+		newData: DocumentConstructorData,
 		newParentDatabaseName: string | null,
 		newCollectionName: string | null
 	) {

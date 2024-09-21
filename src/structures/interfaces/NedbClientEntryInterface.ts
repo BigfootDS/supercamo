@@ -1,5 +1,5 @@
-import { NedbDocument } from "../types/NedbDocument"
-import { NedbEmbeddedDocument } from "../types/NedbEmbeddedDocument"
+import { NedbDocument } from "../classes/NedbDocument"
+import { NedbEmbeddedDocument } from "../classes/NedbEmbeddedDocument"
 import { CollectionAccessor } from "./CollectionAccessorInterface"
 
 
