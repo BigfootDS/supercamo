@@ -427,58 +427,84 @@ export class NedbClient implements NedbClientEntry {
 
 	//#region Collection-specific Data UPDATE Utilities
 	findAndUpdateOneDocument = async (collectionName: string, query: object, newData: object, options?: updateOptions): Promise<NedbDocument|null> => {
+		// This object could be refactored, we're only really using upsert now.
 		let localOptionsObj: object = {
 			upsert: options ? options.upsert : false,
 			multi: false,
 			returnUpdatedDocs: true
 		}
-		let accessor = this.getCollectionAccessor(collectionName);
 
-		// TODO:
-		// This findAndUpdate functionality (document and object styles, both) needs a rework...
+
 		// Originally, NeDB uses either "new document" or "modifiers" syntax, not both
 		// Providing an object is providing a "replace the whole existing doc with this object" approach, not good
 		// Modifiers are explained here: https://github.com/louischatriot/nedb?tab=readme-ov-file#updating-documents
 		// ...I don't like that $blahblah syntax.
 		// So, we should make this a multi-step thing. Gonna be "slow" or at least "not as optimised as it could be" but...
-		// 1. Do a findOne query to see if a document exists, and retrieve it (upsert applies here to make a new doc if needed)
-		// 2. Iterate over the keys in the found document and the provided newData to overwrite the foundDoc with newData
-		// 3. Save the found doc
-		// 4. Return the saved found doc
-		let result = await accessor.datastore.updateAsync(query, newData, localOptionsObj);
-		if (result.affectedDocuments){
-			console.log(result.affectedDocuments)
-			return await this.createOne(collectionName, result.affectedDocuments);
-		} else {
-			return null;
+		
+		// 1. Do a findOne query to see if a document exists, and retrieve it.
+		let existingDoc = await this.findOneDocument(collectionName, query);
+		if (existingDoc == null){
+			if ("upsert" in localOptionsObj && localOptionsObj.upsert == true){
+				// 1a. If upsert is true and no document is found, create a new document and return that.
+				existingDoc = await this.createOne(collectionName, newData).catch(error => {throw error});
+				return existingDoc;
+			} else {
+				return null;
+			}
 		}
+		
+		// 2. Iterate over the keys in the found document and the provided newData to overwrite the foundDoc with newData
+		for (const key in newData) {
+			//@ts-ignore
+			existingDoc.data[key] = newData[key];
+		}
+
+		// 3. Save the found doc
+		await existingDoc.save();
+
+		// 4. Return the saved found doc
+		return existingDoc;
 	}
 
 	findAndUpdateOneObject = async (collectionName: string, query: object, newData: object, options?: updateOptions): Promise<object|null> => {
+		// This object could be refactored, we're only really using upsert now.
 		let localOptionsObj: object = {
 			upsert: options ? options.upsert : false,
 			multi: false,
 			returnUpdatedDocs: true
 		}
-		let accessor = this.getCollectionAccessor(collectionName);
 
-		// TODO:
-		// This findAndUpdate functionality (document and object styles, both) needs a rework...
+
 		// Originally, NeDB uses either "new document" or "modifiers" syntax, not both
 		// Providing an object is providing a "replace the whole existing doc with this object" approach, not good
 		// Modifiers are explained here: https://github.com/louischatriot/nedb?tab=readme-ov-file#updating-documents
 		// ...I don't like that $blahblah syntax.
 		// So, we should make this a multi-step thing. Gonna be "slow" or at least "not as optimised as it could be" but...
-		// 1. Do a findOne query to see if a document exists, and retrieve it (upsert applies here to make a new doc if needed)
-		// 2. Iterate over the keys in the found document and the provided newData to overwrite the foundDoc with newData
-		// 3. Save the found doc
-		// 4. Return the saved found doc
-		let result = await accessor.datastore.updateAsync(query, newData, localOptionsObj);
-		if (result.affectedDocuments){
-			return await this.insertOne(collectionName, result.affectedDocuments[0]);
-		} else {
-			return null;
+		
+		// 1. Do a findOne query to see if a document exists, and retrieve it.
+		let existingDoc = await this.findOneDocument(collectionName, query);
+		if (existingDoc == null){
+			if ("upsert" in localOptionsObj && localOptionsObj.upsert == true){
+				// 1a. If upsert is true and no document is found, create a new document and return that.
+				existingDoc = await this.createOne(collectionName, newData);
+				let existingDocAsObj = await existingDoc.toPopulatedObject();
+				return existingDocAsObj;
+			} else {
+				return null;
+			}
 		}
+		
+		// 2. Iterate over the keys in the found document and the provided newData to overwrite the foundDoc with newData
+		for (const key in newData) {
+			//@ts-ignore
+			existingDoc.data[key] = newData[key];
+		}
+
+		// 3. Save the found doc
+		await existingDoc.save();
+
+		// 4. Return the saved found doc's data
+		return await existingDoc.toPopulatedObject();
 	}
 
 	findAndUpdateManyDocuments = async () => {

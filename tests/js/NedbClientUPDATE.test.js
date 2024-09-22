@@ -3,6 +3,7 @@ const {SuperCamo, CollectionListEntry, NedbClient, CollectionAccessError} = requ
 
 const {describe, test, expect} = require("@jest/globals");
 const { User } = require("./helpers/TestDocumentDefs.js");
+const { ValidationFailureMissingValueForProperty } = require("../../dist/structures/errors/NedbBaseDocumentErrors.js");
 
 const firstUserData = {
 	email: "test@email.com",
@@ -19,6 +20,22 @@ const nonexistentUser = {
 	bio: {
 		tagline: "Nonexistent tagline.",
 		blurb: "Nonexistent blurb."
+	}
+}
+
+const upsertUserOne = {
+	email: "upseruserone@email.com",
+	bio: {
+		tagline: "Made via upsert.",
+		blurb: "Upsert is pretty cool."
+	}
+}
+
+const invalidUpsertUserOne = {
+	email: null,
+	bio: {
+		tagline: null,
+		blurb: null
 	}
 }
 
@@ -63,11 +80,17 @@ describe("Database can perform UPDATE operations", () => {
 			expect(result.data.email).toBe(secondUserData.email);
 			expect(result.data.bio.tagline).toBe("Modified embedded document data.");
 		});
-		test.skip("returns a document instance when given a valid query, data, and upsert option, when no document already matches the query.", async () => {
-			let result = await newClient.findAndUpdateOneDocument()
+		test("returns a document instance when given a valid query, data, and upsert option, when no document already matches the query.", async () => {
+			let result = await newClient.findAndUpdateOneDocument("Users", {email: upsertUserOne.email}, upsertUserOne, {upsert: true});
+			expect(result.data.email).toBe(upsertUserOne.email);
+			expect(result.data.bio.tagline).toBe(upsertUserOne.bio.tagline);
+
 		});
-		test.skip("returns a document creation error when given a valid query and upsert option but invalid data.", async () => {
-			let result = await newClient.findAndUpdateOneDocument()
+		test("returns a document creation error when given a valid query and upsert option but invalid data.", async () => {
+			expect(async () => {
+				let result = await newClient.findAndUpdateOneDocument("Users", {email: nonexistentUser.email}, invalidUpsertUserOne, {upsert: true});
+				console.log(result.data);
+			}).rejects.toThrowError(ValidationFailureMissingValueForProperty);
 		});
 	});
 
