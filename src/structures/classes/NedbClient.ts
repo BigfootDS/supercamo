@@ -6,7 +6,7 @@ import { NedbEmbeddedDocument } from "./NedbEmbeddedDocument";
 import {default as Datastore} from "@seald-io/nedb";
 import { parseCollectionsListForEmbeddeddocuments } from "../../utils/nedbClientHelper";
 import { CollectionListEntry } from "./CollectionListEntry";
-import { findManyDocumentsOptions, findManyObjectsOptions, findOneObjectOptions, updateOptions } from "../interfaces/QueryOptions";
+import { findManyDocumentsOptions, findManyObjectsOptions, findOneObjectOptions, updateManyOptions, updateOptions } from "../interfaces/QueryOptions";
 import { CollectionAccessError } from "../errors/NedbClientErrors";
 
 
@@ -507,12 +507,114 @@ export class NedbClient implements NedbClientEntry {
 		return await existingDoc.toPopulatedObject();
 	}
 
-	findAndUpdateManyDocuments = async () => {
+	findAndUpdateManyDocuments = async (collectionName: string, query: object, newData: object, options?: updateManyOptions): Promise<NedbDocument[]> => {
+		// This object could be refactored, we're only really using upsert now.
+		let localOptionsObj: updateManyOptions = {
+			upsert: options ? options.upsert : false,
+			limit: options ? options.limit : Number.MAX_SAFE_INTEGER
+		}
+
+
+		// Originally, NeDB uses either "new document" or "modifiers" syntax, not both
+		// Providing an object is providing a "replace the whole existing doc with this object" approach, not good
+		// Modifiers are explained here: https://github.com/louischatriot/nedb?tab=readme-ov-file#updating-documents
+		// ...I don't like that $blahblah syntax.
+		// So, we should make this a multi-step thing. Gonna be "slow" or at least "not as optimised as it could be" but...
 		
+		// 1. Do a findOne query to see if a document exists, and retrieve it.
+		let existingDocs = await this.findManyDocuments(collectionName, query);
+		if (existingDocs.length == 0){
+			if ("upsert" in localOptionsObj && localOptionsObj.upsert == true){
+				// 1a. If upsert is true and no document is found, create a new document and return that.
+				let newDoc = await this.createOne(collectionName, newData);
+				return [newDoc];
+			} else {
+				return [];
+			}
+		}
+		
+		// 2. For every doc found by the query, iIterate over the keys in the found document and the provided newData 
+		// to overwrite the foundDoc with newData
+		let updatedDocs = [];
+		let updateTally = 0;
+		for (const existingDoc of existingDocs){
+
+			// 2b. Stop if limit option is provided and reached
+			if (updateTally >= localOptionsObj.limit){
+				break;
+			}
+
+			for (const key in newData) {
+				//@ts-ignore
+				existingDoc.data[key] = newData[key];
+			}
+	
+			// 3. Save the found doc
+			await existingDoc.save();
+			updatedDocs.push(existingDoc);
+			updateTally++;
+		}
+	
+		// 4. Return the saved found doc's data
+		return updatedDocs;
 	}
 
-	findAndUpdateManyObjects = async () => {
+
+
+
+	findAndUpdateManyObjects = async (collectionName: string, query: object, newData: object, options?: updateManyOptions): Promise<object[]> => {
+		// This object could be refactored, we're only really using upsert now.
+		let localOptionsObj: updateManyOptions = {
+			upsert: options ? options.upsert : false,
+			limit: options ? options.limit : Number.MAX_SAFE_INTEGER
+		}
+
+
+		// Originally, NeDB uses either "new document" or "modifiers" syntax, not both
+		// Providing an object is providing a "replace the whole existing doc with this object" approach, not good
+		// Modifiers are explained here: https://github.com/louischatriot/nedb?tab=readme-ov-file#updating-documents
+		// ...I don't like that $blahblah syntax.
+		// So, we should make this a multi-step thing. Gonna be "slow" or at least "not as optimised as it could be" but...
 		
+		// 1. Do a findOne query to see if a document exists, and retrieve it.
+		let existingDocs = await this.findManyDocuments(collectionName, query);
+		if (existingDocs.length == 0){
+			if ("upsert" in localOptionsObj && localOptionsObj.upsert == true){
+				// 1a. If upsert is true and no document is found, create a new document and return that.
+				let newDoc = await this.createOne(collectionName, newData);
+				let newDocAsObj = await newDoc.toPopulatedObject();
+				return [newDocAsObj];
+			} else {
+				return [];
+			}
+		}
+		
+		// 2. For every doc found by the query, iIterate over the keys in the found document and the provided newData 
+		// to overwrite the foundDoc with newData
+		let updatedDocsAsObjs = [];
+		let updateTally = 0;
+		for (const existingDoc of existingDocs){
+
+			// 2b. Stop if limit option is provided and reached
+			if (updateTally >= localOptionsObj.limit){
+				break;
+			}
+
+			for (const key in newData) {
+				//@ts-ignore
+				existingDoc.data[key] = newData[key];
+			}
+	
+			// 3. Save the found doc
+			await existingDoc.save();
+			let existingDocAsObj = await existingDoc.toPopulatedObject();
+			updatedDocsAsObjs.push(existingDocAsObj);
+			updateTally++;
+		}
+		
+
+		// 4. Return the saved found doc's data
+		return updatedDocsAsObjs;
 	}
 	//#endregion
 

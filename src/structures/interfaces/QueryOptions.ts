@@ -25,3 +25,10 @@ export interface updateOptions {
 	upsert: boolean;
 	
 }
+
+export interface updateManyOptions {
+	
+	upsert: boolean;
+
+	limit: number;
+}
