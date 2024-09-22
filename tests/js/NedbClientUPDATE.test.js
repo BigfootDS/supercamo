@@ -3,7 +3,7 @@ const {SuperCamo, CollectionListEntry, NedbClient, CollectionAccessError} = requ
 
 const {describe, test, expect} = require("@jest/globals");
 const { User } = require("./helpers/TestDocumentDefs.js");
-const { ValidationFailureMissingValueForProperty } = require("../../dist/structures/errors/NedbBaseDocumentErrors.js");
+const { ValidationFailureMissingValueForProperty, ValidationFailureMinMaxError } = require("../../dist/structures/errors/NedbBaseDocumentErrors.js");
 
 const firstUserData = {
 	email: "test@email.com",
@@ -40,6 +40,16 @@ const updateManyDocsUserThree = {
 	bio: {tagline: "updateManyDocsUserThree user, the 3rd.", blurb: "Nested property for findAndUpdateManyDocuments to pick up."}
 };
 
+const updateManyDocsUserFour = {
+	email: "updateManyDocsUserFour@email.com",
+	bio: {tagline: "updateManyDocsUserFour user, the 4th.", blurb: "Docs! For the 'works on one but not two docs' test."}
+};
+
+const updateManyDocsUserFive = {
+	email: "updateManyDocsUserFive@email.com",
+	bio: {tagline: "updateManyDocsUserFive user, the 5th.", blurb: "Docs! For the 'works on one but not two docs' test."}
+};
+
 const updateManyObjsUserOne = {
 	email: "updateManyObjsUserOne@email.com",
 	bio: {tagline: "updateManyObjsUserOne user, the first.", blurb: "Nested property for findAndUpdateManyObjects to pick up."}
@@ -53,6 +63,16 @@ const updateManyObjsUserTwo = {
 const updateManyObjsUserThree = {
 	email: "updateManyObjsUserThree@email.com",
 	bio: {tagline: "updateManyObjsUserThree user, the 3rd.", blurb: "Nested property for findAndUpdateManyObjects to pick up."}
+};
+
+const updateManyObjsUserFour = {
+	email: "updateManyObjsUserFour@email.com",
+	bio: {tagline: "updateManyObjsUserFour user, the 4th.", blurb: "Obj! For the 'works on one but not two docs' test."}
+};
+
+const updateManyObjsUserFive = {
+	email: "updateManyObjsUserFive@email.com",
+	bio: {tagline: "updateManyObjsUserFive user, the 5th.", blurb: "Objs! For the 'works on one but not two docs' test."}
 };
 
 const nonexistentUser = {
@@ -122,6 +142,14 @@ beforeAll(async () => {
 	await newClient.insertOne("Users", updateManyDocsUserTwo);
 
 	await newClient.insertOne("Users", updateManyObjsUserTwo);
+
+	await newClient.insertOne("Users", updateManyDocsUserFour);
+
+	await newClient.insertOne("Users", updateManyObjsUserFour);
+
+	await newClient.insertOne("Users", updateManyDocsUserFive);
+
+	await newClient.insertOne("Users", updateManyObjsUserFive);
 })
 
 describe("Database can perform UPDATE operations", () => {
@@ -136,7 +164,14 @@ describe("Database can perform UPDATE operations", () => {
 			expect(result.data.bio.tagline).toBe(firstUserData.bio.tagline);
 		});
 		test("returns a document instance when given a valid query and valid update data, specifically for embedded document data.", async () => {
-			let result = await newClient.findAndUpdateOneDocument("Users",{email: secondUserData.email}, {bio: {tagline: "Modified embedded document data."}});
+			let result = await newClient.findAndUpdateOneDocument(
+				"Users",
+				{email: secondUserData.email}, 
+				{bio: {
+					tagline: "Modified embedded document data.",
+					blurb: secondUserData.bio.blurb
+				}}
+			);
 			expect(result.data.email).toBe(secondUserData.email);
 			expect(result.data.bio.tagline).toBe("Modified embedded document data.");
 		});
@@ -166,7 +201,14 @@ describe("Database can perform UPDATE operations", () => {
 			expect(result.bio.tagline).toBe(thirdUserData.bio.tagline);
 		});
 		test("returns a document instance when given a valid query and valid update data, specifically for embedded document data.", async () => {
-			let result = await newClient.findAndUpdateOneObject("Users",{email: fourthUserData.email}, {bio: {tagline: "Modified embedded document data."}});
+			let result = await newClient.findAndUpdateOneObject(
+				"Users",
+				{email: fourthUserData.email}, 
+				{bio: {
+					tagline: "Modified embedded document data.",
+					blurb: fourthUserData.bio.blurb
+				}}
+			);
 			expect(result.email).toBe(fourthUserData.email);
 			expect(result.bio.tagline).toBe("Modified embedded document data.");
 		});
@@ -198,26 +240,52 @@ describe("Database can perform UPDATE operations", () => {
 		});
 
 		test("returns an array of modified documents when given a valid query using nested-level document properties and valid document data.", async () => {
-			let result = await newClient.findAndUpdateManyDocuments("Users",{'bio.blurb': updateManyDocsUserOne.bio.blurb}, {bio: {blurb: "Edited new blurb for docs data."}});
+			let result = await newClient.findAndUpdateManyDocuments("Users",{'bio.blurb': updateManyDocsUserOne.bio.blurb}, {bio: {blurb: "Edited new blurb for docs data.", tagline: updateManyDocsUserOne.bio.tagline}});
 			expect(result.length).toBe(2);
 			expect(result[0].data.bio.blurb).toBe("Edited new blurb for docs data.");
 			expect(result[1].data.bio.blurb).toBe("Edited new blurb for docs data.");
 		});
 
-		test.skip("if a limit option is provided, the number of documents modified and document instances returned does not exceed the limit.", async () => {
-
+		test("if a limit option is provided, the number of documents modified and document instances returned does not exceed the limit.", async () => {
+			let result = await newClient.findAndUpdateManyDocuments(
+				"Users",
+				{'bio.tagline': updateManyDocsUserOne.bio.tagline}, 
+				{bio: {tagline: "Tagline content won't matter in this test, enjoy!"}},
+				{
+					limit: 0
+				}
+			);
+			expect(result.length).toBe(0);
 		});
 
-		test.skip("if an upsert option is provided alongside valid data and a query with no matches, an array containing one new database entry is returned", async () => {
-
+		test("if an upsert option is provided alongside valid data and a query with no matches, an array containing one new database entry is returned", async () => {
+			let result = await newClient.findAndUpdateManyDocuments("Users",
+				{email: updateManyDocsUserThree.email},
+				updateManyDocsUserThree,
+				{upsert: true}
+			);
+			expect(result.length).toBe(1);
+			expect(result[0].data.email).toBe(updateManyDocsUserThree.email);
 		});
 
-		test.skip("invalid update data causes the function to throw an error, passing that up as-is.", async () => {
-
+		test("invalid update data causes the function to throw an error, passing that up as-is.", async () => {
+			expect(async () => {
+				let result = await newClient.findAndUpdateManyDocuments("Users",
+					{email: updateManyDocsUserThree.email},
+					{email: null}
+				);
+				console.log(result);
+			}).rejects.toThrowError(ValidationFailureMissingValueForProperty);
 		});
 
-		test.skip("update data that is sometimes valid (eg. a unique email address can be on one document, but not two) will update some documents but interrupt on the first error, passing that error up as-is.", async () => {
-
+		test("update data that is sometimes valid (eg. a unique email address can be on one document, but not two) will update some documents but interrupt on the first error, passing that error up as-is.", async () => {
+			expect(async () => {
+				let result = await newClient.findAndUpdateManyDocuments("Users",
+					{'bio.blurb': updateManyDocsUserFive.bio.blurb},
+					{email: "duplicateEmailShouldBeOnOneUserDoc@email.com"}
+				);
+				console.log(result);
+			}).rejects.toThrowError(Error);
 		});
 	});
 
@@ -235,26 +303,52 @@ describe("Database can perform UPDATE operations", () => {
 		});
 
 		test("returns an array of modified document data objects when given a valid query using nested-level document properties and valid document data.", async () => {
-			let result = await newClient.findAndUpdateManyObjects("Users",{'bio.blurb': updateManyObjsUserOne.bio.blurb}, {bio: {blurb: "Edited new blurb for objs data."}});
+			let result = await newClient.findAndUpdateManyObjects("Users",{'bio.blurb': updateManyObjsUserOne.bio.blurb}, {bio: {blurb: "Edited new blurb for objs data.", tagline: updateManyObjsUserOne.bio.tagline}});
 			expect(result.length).toBe(2);
 			expect(result[0].bio.blurb).toBe("Edited new blurb for objs data.");
 			expect(result[1].bio.blurb).toBe("Edited new blurb for objs data.");
 		});
 
-		test.skip("if a limit option is provided, the number of documents modified and objects returned does not exceed the limit.", async () => {
-
+		test("if a limit option is provided, the number of documents modified and objects returned does not exceed the limit.", async () => {
+			let result = await newClient.findAndUpdateManyObjects(
+				"Users",
+				{'bio.tagline': updateManyObjsUserOne.bio.tagline}, 
+				{bio: {tagline: "Tagline content won't matter in this test, enjoy!", blurb: updateManyObjsUserOne.bio.blurb}},
+				{
+					limit: 0
+				}
+			);
+			expect(result.length).toBe(0);
 		});
 
-		test.skip("if an upsert option is provided alongside valid data and a query with no matches, an array containing one new database entry is returned", async () => {
-
+		test("if an upsert option is provided alongside valid data and a query with no matches, an array containing one new database entry is returned", async () => {
+			let result = await newClient.findAndUpdateManyObjects("Users",
+				{email: updateManyObjsUserThree.email},
+				updateManyObjsUserThree,
+				{upsert: true}
+			);
+			expect(result.length).toBe(1);
+			expect(result[0].email).toBe(updateManyObjsUserThree.email);
 		});
 
-		test.skip("invalid update data causes the function to throw an error, passing that up as-is.", async () => {
-
+		test("invalid update data causes the function to throw an error, passing that up as-is.", async () => {
+			expect(async () => {
+				let result = await newClient.findAndUpdateManyObjects("Users",
+					{email: updateManyObjsUserThree.email},
+					{email: null}
+				);
+				console.log(result[0]);
+			}).rejects.toThrowError(ValidationFailureMissingValueForProperty);
 		});
 
-		test.skip("update data that is sometimes valid (eg. a unique email address can be on one document, but not two) will update some documents but interrupt on the first error, passing that error up as-is.", async () => {
-
+		test("update data that is sometimes valid (eg. a unique email address can be on one document, but not two) will update some documents but interrupt on the first error, passing that error up as-is.", async () => {
+			expect(async () => {
+				let result = await newClient.findAndUpdateManyObjects("Users",
+					{'bio.blurb': updateManyObjsUserFive.bio.blurb},
+					{email: "duplicateEmailShouldBeOnOneUserObj@email.com"}
+				);
+				console.log(result);
+			}).rejects.toThrowError(Error);
 		});
 	});
 });

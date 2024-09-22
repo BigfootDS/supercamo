@@ -408,6 +408,8 @@ export abstract class NedbBaseDocument implements BaseDocument {
 		if (collectionAccessor == null){
 			throw new SaveFailure({parentDatabaseName: this.#parentDatabaseName, collectionName: this.#collectionName, data: this.data});
 		}
+
+		await this.validate();
 		// Do we need anything from the upsertResult when we're just saving?
 		// Pretty sure we don't. Still need this line as a "wait while this thing happens" step though.
 		let upsertResult = await collectionAccessor.datastore.updateAsync({_id: this.data._id}, this.data, {upsert: true});

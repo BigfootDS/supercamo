@@ -511,7 +511,7 @@ export class NedbClient implements NedbClientEntry {
 		// This object could be refactored, we're only really using upsert now.
 		let localOptionsObj: updateManyOptions = {
 			upsert: options ? options.upsert : false,
-			limit: options ? options.limit : Number.MAX_SAFE_INTEGER
+			limit: options ? (options.limit >= 0 ? options.limit : Number.MAX_SAFE_INTEGER) : Number.MAX_SAFE_INTEGER
 		}
 
 
@@ -526,7 +526,7 @@ export class NedbClient implements NedbClientEntry {
 		if (existingDocs.length == 0){
 			if ("upsert" in localOptionsObj && localOptionsObj.upsert == true){
 				// 1a. If upsert is true and no document is found, create a new document and return that.
-				let newDoc = await this.createOne(collectionName, newData);
+				let newDoc = await this.createOne(collectionName, newData).catch(error => {throw error});
 				return [newDoc];
 			} else {
 				return [];
@@ -550,7 +550,7 @@ export class NedbClient implements NedbClientEntry {
 			}
 	
 			// 3. Save the found doc
-			await existingDoc.save();
+			await existingDoc.save().catch(error => {throw error});
 			updatedDocs.push(existingDoc);
 			updateTally++;
 		}
@@ -566,7 +566,7 @@ export class NedbClient implements NedbClientEntry {
 		// This object could be refactored, we're only really using upsert now.
 		let localOptionsObj: updateManyOptions = {
 			upsert: options ? options.upsert : false,
-			limit: options ? options.limit : Number.MAX_SAFE_INTEGER
+			limit: options ? (options.limit >= 0 ? options.limit : Number.MAX_SAFE_INTEGER) : Number.MAX_SAFE_INTEGER
 		}
 
 
@@ -581,7 +581,7 @@ export class NedbClient implements NedbClientEntry {
 		if (existingDocs.length == 0){
 			if ("upsert" in localOptionsObj && localOptionsObj.upsert == true){
 				// 1a. If upsert is true and no document is found, create a new document and return that.
-				let newDoc = await this.createOne(collectionName, newData);
+				let newDoc = await this.createOne(collectionName, newData).catch(error => {throw error});
 				let newDocAsObj = await newDoc.toPopulatedObject();
 				return [newDocAsObj];
 			} else {
@@ -606,7 +606,7 @@ export class NedbClient implements NedbClientEntry {
 			}
 	
 			// 3. Save the found doc
-			await existingDoc.save();
+			await existingDoc.save().catch(error => {throw error});
 			let existingDocAsObj = await existingDoc.toPopulatedObject();
 			updatedDocsAsObjs.push(existingDocAsObj);
 			updateTally++;
