@@ -25,16 +25,16 @@ describe("NedbDocument class...", () => {
 		test("can be created outside of a database.", () => {
 		
 			let newUser = new User({email: "testuser1@email.com", bio: {tagline: "Test user.", blurb: "Super cool test user with a long, descriptive blurb."}});
-	
+			
 			expect(newUser.collectionName).toBeFalsy();
 			expect(newUser.parentDatabaseName).toBeFalsy();
 	
 		});
 	
-		test("can validate themselves.", () => {
+		test("can validate themselves.", async () => {
 			
 			let newUser = new User({email: "testuser1@email.com", bio: {tagline: "Test user.", blurb: "Super cool test user with a long, descriptive blurb."}});
-	
+			await newUser.validate();
 			expect(newUser.collectionName).toBeFalsy();
 			expect(newUser.parentDatabaseName).toBeFalsy();
 	

@@ -25,56 +25,13 @@ beforeAll(async () => {
 
 });
 
-describe.skip("NedbDocument class...", () => {
+describe.skip("NedbDocument validation tests...", () => {
 
 	test("documents inherit from NedbDocument.", () => {
 		expect(Object.getPrototypeOf(User).toString().includes("NedbDocument")).toBe(true);
 	})
 
-	describe("databaseless instances...", () => {
-		test("can be created outside of a database.", () => {
-		
-			let newUser = new User({email: "testuser1@email.com", bio: {tagline: "Test user.", blurb: "Super cool test user with a long, descriptive blurb."}});
 	
-			expect(newUser.collectionName).toBeFalsy();
-			expect(newUser.parentDatabaseName).toBeFalsy();
 	
-		});
-	
-		test("can validate themselves.", () => {
-			
-			let newUser = new User({email: "testuser1@email.com", bio: {tagline: "Test user.", blurb: "Super cool test user with a long, descriptive blurb."}});
-	
-			expect(newUser.collectionName).toBeFalsy();
-			expect(newUser.parentDatabaseName).toBeFalsy();
-	
-		});
-	});
-
-
-	describe("database-stored instances...", () => {
-		test("can be created via a database client.", async () => {
-		
-			let newUser = await newClient.createOne(
-				"Users",
-				{
-					email: "testuser1@email.com", 
-					bio: {
-						tagline: "Test user.", 
-						blurb: "Super cool test user with a long, descriptive blurb."
-					}
-				}
-			);
-	
-			expect(newUser.collectionName).toBe("Users");
-			expect(newUser.parentDatabaseName).toBe("NedbDocumentValidationsTestDb");
-			expect(newUser.data.email).toBe("testuser1@email.com");
-			expect(newUser.data.bio.tagline).toBe("Test user.");
-			expect(newUser.data.bio.blurb).toBe("Super cool test user with a long, descriptive blurb.");
-	
-		});
-	
-		
-	});
 
 });
