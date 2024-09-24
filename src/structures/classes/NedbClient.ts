@@ -302,7 +302,6 @@ export class NedbClient implements NedbClientEntry {
 			newInstance = await accessor.model.create(dataObject, this.name, collectionName);
 			await newInstance.save();
 			let insertedResult = await newInstance.toPopulatedObject();
-			
 			if ("_id" in insertedResult){
 				let confirmedDatabaseResult = await this.findOneDocument(collectionName, {_id: insertedResult._id});
 				

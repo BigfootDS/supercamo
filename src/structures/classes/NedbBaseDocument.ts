@@ -13,6 +13,17 @@ export abstract class NedbBaseDocument implements BaseDocument {
 	#parentDatabaseName: string | null;
 	#collectionName: string | null;
 
+	
+	/**
+	 * Define your document's properties in here!
+	 * 
+	 * @type {Object.<{string, DocumentKeyRule}>}
+	 * @author BigfootDS
+	 */
+	rules: {
+		[key: string]: DocumentKeyRule;	
+	}
+
 	constructor(newData: DocumentConstructorData, newParentDatabaseName: string|null, newCollectionName:string|null){
 		if (newData._id == null || newData._id == "") newData._id = crypto.randomUUID();
 		
@@ -20,6 +31,7 @@ export abstract class NedbBaseDocument implements BaseDocument {
 		this.#parentDatabaseName = newParentDatabaseName;
 		this.#collectionName = newCollectionName;
 		
+		this.rules = {};
 	}
 
 	public get data(){
@@ -108,11 +120,11 @@ export abstract class NedbBaseDocument implements BaseDocument {
 			throw new PreValidationFailure(this.data);
 		});
 		
-		for await (const [key, value] of Object.entries(this)){
+		for await (const [key, value] of Object.entries(this.rules)){
 			// #region Compile the data that could potentially trigger a validation failure.
 
 			//@ts-ignore
-			let keyRule: DocumentKeyRule = this[key];
+			let keyRule: DocumentKeyRule = this.rules[key];
 
 			let modelExpectsProperty: boolean = isObject(keyRule);
 			if (!modelExpectsProperty){
@@ -200,7 +212,7 @@ export abstract class NedbBaseDocument implements BaseDocument {
 								}
 
 								//@ts-ignore
-								let errorToThrow = new ValidationFailureMissingValueForReferencedDoc(key, this.#data[key], this[key], forgotToCallGetData);
+								let errorToThrow = new ValidationFailureMissingValueForReferencedDoc(key, this.#data[key], this.rules[key], forgotToCallGetData);
 
 								throw errorToThrow;
 							} 
@@ -218,7 +230,7 @@ export abstract class NedbBaseDocument implements BaseDocument {
 								forgotToCallGetData = true;
 							}
 							//@ts-ignore
-							let errorToThrow = new ValidationFailureMissingValueForReferencedDoc(key, this.#data[key], this[key], forgotToCallGetData);
+							let errorToThrow = new ValidationFailureMissingValueForReferencedDoc(key, this.#data[key], this.rules[key], forgotToCallGetData);
 
 							throw errorToThrow;
 						} 
@@ -486,21 +498,21 @@ export abstract class NedbBaseDocument implements BaseDocument {
 			_id: this.data._id
 		};
 
-		for (const [key, value] of Object.entries(this)){
+		for (const [key, value] of Object.entries(this.rules)){
 			//@ts-ignore
-			if (isObject(this[key]) && !(this.#data[key] == null)){
+			if (isObject(this.rules[key]) && !(this.#data[key] == null)){
 				// Only add property to output if it
 				// was defined in the model AND
 				// has a value to export
 
 				//@ts-ignore
-				let keyClassList = getClassInheritanceList(this[key].type);
+				let keyClassList = getClassInheritanceList(this.rules[key].type);
 				if (keyClassList.includes("NedbDocument")) {
 					// Convert referenced doc into object data to bundle into this object data
 					const SuperCamo = require("../../index.js");
 					if (this.#parentDatabaseName){
 						//@ts-ignore
-						let foundDocument = await SuperCamo.activeClients[this.#parentDatabaseName].findOneDocument(this[key].collection, {_id: this.#data[key]});
+						let foundDocument = await SuperCamo.activeClients[this.#parentDatabaseName].findOneDocument(this.rules[key].collection, {_id: this.#data[key]});
 						//@ts-ignore
 						result[key] = await foundDocument.getData();
 					}

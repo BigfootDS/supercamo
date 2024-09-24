@@ -1,9 +1,9 @@
 import { DocumentConstructorData } from "./DocumentBaseDataInterface";
+import { DocumentKeyRule } from "./DocumentKeyRuleInterface";
+
 
 
 export interface BaseDocument {
-
-	
 	/**
 	 * Storage of the document data, used when making instances of document-based classes to create documents.
 	 * 
@@ -13,7 +13,7 @@ export interface BaseDocument {
 	data: DocumentConstructorData,
 
 
-	
+		
 	/**
 	 * The name of the database that the data for this document instance has come from. Useful for checking if a database already has this document, from the document or generic functions.
 	 * 
