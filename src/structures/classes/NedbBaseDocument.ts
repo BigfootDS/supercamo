@@ -190,10 +190,12 @@ export abstract class NedbBaseDocument implements BaseDocument {
 				SuperCamoLogger(`Key of ${key} is expecting this to be an ID referring to a document: \n${JSON.stringify(this.#data[key])}`, "BaseDocument")
 
 				let targetCollectionName = keyRule.collection;
-				if (this.#parentDatabaseName == null){
+				if (this.#parentDatabaseName == null && keyRule.required != false){
 					throw new ValidationFailureReferenceWithoutDatabase(key);
-				}
-				let targetCollection = await SuperCamo.activeClients[this.#parentDatabaseName].getCollectionAccessor(targetCollectionName);
+				} else if (this.#parentDatabaseName == null) {
+					continue;
+				} 
+				let targetCollection = SuperCamo.clients[this.#parentDatabaseName].getCollectionAccessor(targetCollectionName);
 
 				if (modelPropertyIsRequired || modelInstanceHasData){
 					// If some ID is required or provided, make sure it's for an actual document in the collection that this key needs.
@@ -262,6 +264,7 @@ export abstract class NedbBaseDocument implements BaseDocument {
 				SuperCamoLogger("~~~~~~~~~~~~~", "BaseDocument");
 
 			} else {
+				// console.log(`Checking is value matches type for property of ${key}: {type: ${keyRule.type}, value: ${this.#data[key]}}`);
 				//@ts-ignore
 				let modelInstanceDataMatchesExpectedType = isType(keyRule.type, this.#data[key]);
 				if (modelPropertyIsRequired && !modelInstanceDataMatchesExpectedType) {
@@ -335,20 +338,29 @@ export abstract class NedbBaseDocument implements BaseDocument {
 				(keyRule.minLength !== null || keyRule.minLength !== undefined)
 				&&
 				//@ts-ignore
-				(keyRule.type == String && keyRule.minLength && this.#data[key].length < keyRule.minLength)
+				(keyRule.type == String && keyRule.minLength && ((this.#data[key] == null || this.#data[key] == undefined) || this.#data[key].length < keyRule.minLength))
 			) {
 				if (keyRule.invalidateOnMinMaxError){
 					throw new ValidationFailureMinMaxError(key);
 				} else {
+					if ((this.#data[key] == null || this.#data[key] == undefined)){
+						// Ensure that it's a string so padEnd works!
+						this.#data[key] = "";
+					}
+					// console.log("Padding value now...\n" + this.#data[key]);
+					// console.log(`this.#data[key].padEnd(${(keyRule.minLength - this.#data[key].length)}, ${(keyRule.padStringValue ? keyRule.padStringValue : " ")});`)
 					//@ts-ignore
-					this.#data[key].padEnd((keyRule.minLength - this.#data[key].length), (keyRule.padStringValue ? keyRule.padStringValue : " "));
+					this.#data[key] = this.#data[key].padEnd((keyRule.minLength - this.#data[key].length) + 1, (keyRule.padStringValue ? keyRule.padStringValue : " "));
+
+					// console.log("After padding, value is...\n" + this.#data[key]);
+
 				}
-			}
+			} 
 			if (
 				(keyRule.maxLength !== null || keyRule.maxLength !== undefined)
 				&&
 				//@ts-ignore
-				(keyRule.type == String && keyRule.maxLength && this.#data[key].length > keyRule.maxLength)
+				(keyRule.type == String && keyRule.maxLength && this.#data[key]?.length > keyRule.maxLength)
 			) {
 				if (keyRule.invalidateOnMinMaxError){
 					throw new ValidationFailureMinMaxError(key);
@@ -369,8 +381,10 @@ export abstract class NedbBaseDocument implements BaseDocument {
 				if (keyRule.invalidateOnMinMaxError){
 					throw new ValidationFailureMinMaxError(key);
 				} else {
+					let tempArray: Array<any> = Object.assign(new Array(keyRule.minLength), this.#data[key]);
+					tempArray = tempArray.fill(this.rules[key].padArrayValue, this.#data[key].length || 0);
 					//@ts-ignore
-					Object.assign(new Array(keyRule.minLength), this.#data[key]);
+					this.#data[key] = tempArray;
 				}
 			}
 			if (
@@ -434,7 +448,7 @@ export abstract class NedbBaseDocument implements BaseDocument {
 		return true;
 	}
 
-	async delete(){
+	async delete(deleteReferences?: boolean, deepDeleteReferences?: boolean){
 		await this.preDelete().catch(error => {
 			throw new PreDeleteFailure(this.data);
 		});
@@ -449,8 +463,48 @@ export abstract class NedbBaseDocument implements BaseDocument {
 
 		let collectionAccessor = SuperCamo.clientGet(this.#parentDatabaseName)?.getCollectionAccessor(this.#collectionName);
 		if (collectionAccessor == null){
-			throw new SaveFailure({parentDatabaseName: this.#parentDatabaseName, collectionName: this.#collectionName, data: this.data});
+			throw new DeleteFailure({parentDatabaseName: this.#parentDatabaseName, collectionName: this.#collectionName, data: this.data});
 		}
+
+		if (deleteReferences || deepDeleteReferences){
+
+			let refsToDelete: Array<{_id: string, collectionName: string}> = new Array();
+			const docsToDelete = async (kvp: Array<{_id: string, collectionName: string}>) => {
+				if (this.#parentDatabaseName == null){
+					throw new DeleteFailure({parentDatabaseName: this.#parentDatabaseName, collectionName: this.#collectionName, data: this.data});
+				}
+				for (const kvItem of kvp) {
+					let foundDoc = await SuperCamo.clients[this.#parentDatabaseName].findOneDocument(kvItem.collectionName, {_id: kvItem._id});
+					if (foundDoc == null){
+						throw new DeleteFailure({parentDatabaseName: this.#parentDatabaseName, collectionName: this.#collectionName, data: this.data});
+					}
+					if (deepDeleteReferences == true){
+						await foundDoc.delete(true, true);
+					} else {
+						await foundDoc.delete();
+					}
+				}
+			}
+
+			if (deleteReferences == true) {
+				Object.entries(this.rules).forEach(ruleObj => {
+					if (ruleObj[1].collection){
+						refsToDelete.push({_id: this.#data[ruleObj[0]], collectionName: ruleObj[1].collection});
+					}
+				});
+				if (refsToDelete.length != 0){
+					await docsToDelete(refsToDelete);
+				}
+			} else {
+				throw new DeleteFailure({
+					parentDatabaseName: this.#parentDatabaseName, 
+					collectionName: this.#collectionName, 
+					data: this.data, 
+					deleteReferences: deleteReferences
+				});
+			}
+		}
+
 		let deleteResult = await collectionAccessor.datastore.removeAsync({_id: this.data._id}, {multi: false});
 
 		await this.postDelete().catch(error => {
@@ -509,12 +563,13 @@ export abstract class NedbBaseDocument implements BaseDocument {
 				let keyClassList = getClassInheritanceList(this.rules[key].type);
 				if (keyClassList.includes("NedbDocument")) {
 					// Convert referenced doc into object data to bundle into this object data
-					const SuperCamo = require("../../index.js");
+					const {SuperCamo} = require("../../index.js");
+					// console.log(SuperCamo);
 					if (this.#parentDatabaseName){
 						//@ts-ignore
-						let foundDocument = await SuperCamo.activeClients[this.#parentDatabaseName].findOneDocument(this.rules[key].collection, {_id: this.#data[key]});
+						let foundDocument = await SuperCamo.clients[this.#parentDatabaseName].findOneDocument(this.rules[key].collection, {_id: this.#data[key]});
 						//@ts-ignore
-						result[key] = await foundDocument.getData();
+						result[key] = await foundDocument.toPopulatedObject();
 					}
 					
 				} else if (keyClassList.includes("NedbEmbeddedDocument")){

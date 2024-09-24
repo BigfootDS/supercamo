@@ -201,7 +201,8 @@ class ValidationRuleTester extends NedbDocument {
 			}, 	
 			exampleReferenceDoc: {
 				type: User,
-				collection: "Users"
+				collection: "Users",
+				required: false
 			}, 	
 			exampleStringMinLength: {
 				type: String,

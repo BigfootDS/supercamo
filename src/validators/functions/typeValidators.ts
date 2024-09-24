@@ -146,6 +146,7 @@ export const isAsyncFunction = (valueToCheck: any) => {
 }
 
 export const isPromise = (valueToCheck: any) => {
+	// console.log(valueToCheck);
 	return util.types.isPromise(valueToCheck);
 }
 
