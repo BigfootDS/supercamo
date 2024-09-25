@@ -1,4 +1,7 @@
-/** @module Internal */
+/** @module Internal
+  * @ignore 
+ */
+
 
 import { getClassInheritanceList } from "../validators/functions/ancestors";
 import { isESClass } from "../validators/functions/typeValidators";

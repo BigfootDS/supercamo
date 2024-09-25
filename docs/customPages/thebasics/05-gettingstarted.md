@@ -1,3 +1,8 @@
+---
+title: 05 - Getting Started
+
+---
+
 So, if you're ready to start coding with SuperCamo, this is the page for you!
 
 This page will walk through installation, document declaration, database connection, and basic CRUD operations.

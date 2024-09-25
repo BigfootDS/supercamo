@@ -1,8 +1,23 @@
+/**
+ * The core properties of any type of document used in SuperCamo.
+ * @author BigfootDS
+ * @module Interfaces
+ * @category Reference 
+ * @interface
+ */
+
 import { DocumentConstructorData } from "./DocumentBaseDataInterface";
 import { DocumentKeyRule } from "./DocumentKeyRuleInterface";
 
 
 
+/**
+ * The core properties of any type of document used in SuperCamo.
+ * @author BigfootDS
+ * @module Interfaces
+ * @category Reference 
+ * @interface
+ */
 export interface BaseDocument {
 	/**
 	 * Storage of the document data, used when making instances of document-based classes to create documents.

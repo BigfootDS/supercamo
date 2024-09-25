@@ -1,3 +1,8 @@
+/** @module Internal
+  * @ignore 
+ */
+
+
 const util = require("node:util");
 
 const log = {

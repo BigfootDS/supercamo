@@ -2,8 +2,8 @@
 /**
  * Configuration object for methods that find one document and returns it as an object.
  * @author BigfootDS
- *
- * @export
+ * @module Interfaces
+ * @category Reference
  * @interface
  */
 export interface findOneObjectOptions {
@@ -22,7 +22,7 @@ export interface findOneObjectOptions {
  * Configuration object for methods that find many documents as objects at once.
  * @author BigfootDS
  *
- * @export
+ * 
  * @interface
  */
 export interface findManyObjectsOptions {
@@ -47,7 +47,7 @@ export interface findManyObjectsOptions {
  * Configuration object for methods that find many documents at once.
  * @author BigfootDS
  *
- * @export
+ * 
  * @interface
  */
 export interface findManyDocumentsOptions {
@@ -63,7 +63,7 @@ export interface findManyDocumentsOptions {
  * Configuration object for methods that update a singular document at a time.
  * @author BigfootDS
  *
- * @export
+ * 
  * @interface
  */
 export interface updateOptions {
@@ -82,7 +82,7 @@ export interface updateOptions {
  * Configuration object for methods that update many documents at once.
  * @author BigfootDS
  *
- * @export
+ * 
  * @interface
  */
 export interface updateManyOptions {

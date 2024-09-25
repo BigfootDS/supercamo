@@ -1,3 +1,34 @@
+/**
+ * @module Classes
+ * @category Reference
+ * @categoryDescription Reference
+ * 
+ * @remarks
+ * 
+ * These classes will be the most-common thing you'll interact with when using this package.
+ * 
+ * Typically, you'd be using the SuperCamo singleton class for its static methods and defining your own document models by inheriting from NedbDocument and NedbEmbeddedDocument classes.
+ * 
+ * @example
+ * NodeJS CommonJS import:
+ * ```js
+ * const {SuperCamo} = require("@bigfootds/supercamo");
+ * SuperCamo.clientConnect(/* params go here *\/);
+ * ```
+ * ```js
+ * const SuperCoolPackage = require("@bigfootds/supercamo");
+ * SuperCoolPackage.SuperCamo.clientConnect(/* params go here *\/);
+ * ```
+ * 
+ * ES6 Import:
+ * ```js
+ * import {SuperCamo} from "@bigfootds/supercamo";
+ * SuperCamo.clientConnect(/* params go here *\/);
+ * ```
+ * 
+ * 
+ */
+
 import path from "node:path";
 import { CollectionAccessor } from "../interfaces/CollectionAccessorInterface";
 import { NedbClientEntry } from "../interfaces/NedbClientEntryInterface";
@@ -53,7 +84,6 @@ export class NedbClient implements NedbClientEntry {
 	 * Creates an instance of NedbClient.
 	 * @author BigfootDS
 	 *
-	 * @constructor
 	 * @param {string} dbName A unique name for the database. 
 	 * @param {string} dbDirectoryPath The folder path for where the database and its collections will be stored.
 	 * @param {Array<CollectionListEntry>} collectionsList An array of collections, where each item in this array is an object containing the name of the collection and the model or document that the collection will use.
@@ -104,7 +134,7 @@ export class NedbClient implements NedbClientEntry {
 	 * See the [@seald/nedb](https://github.com/seald/nedb?tab=readme-ov-file#indexing) documentation for more info about NeDB indexes.
 	 * @author BigfootDS
 	 *
-	 * @async
+	 * 
 	 * @param {string} collectionName A string of the collection name to target within the database.
 	 * @param {Datastore.EnsureIndexOptions} indexOptions An object per the [@seald/nedb](https://github.com/seald/nedb?tab=readme-ov-file#indexing) documentation to configure the index that is to be created.
 	 * @returns {Promise<void>} Promise.
@@ -119,7 +149,7 @@ export class NedbClient implements NedbClientEntry {
 	 * Remove a collection's index from an array of given field names.
 	 * @author BigfootDS
 	 *
-	 * @async
+	 * 
 	 * @param {string} collectionName A string of the collection name to target within the database.
 	 * @param {string[]} fieldNames An array containing one or more fields on the collection that you'd like to remove the index from.
 	 * @returns {Promise<void>} Promise.
@@ -165,7 +195,7 @@ export class NedbClient implements NedbClientEntry {
 	 * 
 	 * @author BigfootDS
 	 *
-	 * @async
+	 * 
 	 * @param {string} name The name of the collections to search for.
 	 * @param {boolean} [deleteData=true] Whether or not data within the collection should be deleted. Defaults to true.
 	 * @returns {Promise<number>} The number of collections with a matching name that were deleted.
@@ -197,7 +227,7 @@ export class NedbClient implements NedbClientEntry {
 	 * 
 	 * @author BigfootDS
 	 *
-	 * @async
+	 * 
 	 * @param {typeof NedbDocument} model The model to search for.
 	 * @param {boolean} [deleteData=true] Whether or not data within the collection should be deleted. Defaults to true.
 	 * @returns {Promise<number>} The number of collections with a matching name that were deleted.
@@ -252,7 +282,7 @@ export class NedbClient implements NedbClientEntry {
 	 * Insert an object of data into the database, following a document schema, and return the saved object of data.
 	 * @author BigfootDS
 	 *
-	 * @async
+	 * 
 	 * @param {string} collectionName The name of the collection to insert the data into.
 	 * @param {object} dataObject The data to be inserted.
 	 * @returns {Promise<object>} The data saved in the database, as an object.
@@ -269,7 +299,7 @@ export class NedbClient implements NedbClientEntry {
 	 * Insert an array of objects of data into the database, following a document schema, and return the saved array of objects of data.
 	 * @author BigfootDS
 	 *
-	 * @async
+	 * 
 	 * @param {string} collectionName The name of the collection to insert the data into.
 	 * @param {object[]} dataObjectArray The data to be inserted.
 	 * @returns {Promise<object[]>} The data saved in the database, as an object.
@@ -290,7 +320,7 @@ export class NedbClient implements NedbClientEntry {
 	 * Create a document instance from a provided object of data, insert the new document instance into the database, and return the new document instance.
 	 * @author BigfootDS
 	 *
-	 * @async
+	 * 
 	 * @param {string} collectionName
 	 * @param {object} dataObject
 	 * @returns {Promise<NedbDocument>}
@@ -323,7 +353,7 @@ export class NedbClient implements NedbClientEntry {
 	/**
 	 * Create multiple document instances from a provided array of object data, insert each document instance into the database, and return the array of document instances.
 	 * @author BigfootDS
-	 * @async
+	 * 
 	 * @param {string} collectionName
 	 * @param {object[]} dataObjectArray
 	 * @returns {Promise<NedbDocument[]>}
@@ -350,7 +380,7 @@ export class NedbClient implements NedbClientEntry {
      * 
      * @author BigfootDS
      *
-     * @async
+     * 
      * @param {string} collectionName The name of the collection that you wish to search through.
      * @param {object} query The NeDB query used to find the specific document within the collection. Read more about NeDB queries here: https://github.com/seald/nedb?tab=readme-ov-file#finding-documents
      * @returns {Promise<NedbDocument | null>} An instance of the collection's model.
@@ -411,7 +441,7 @@ export class NedbClient implements NedbClientEntry {
      * Query a collection and receive a number representing the count of documents matching that query.
      * @author BigfootDS
      *
-     * @async
+     * 
      * @param {string} collectionName The name of the collection that you wish search through.
      * @param {object} query The NeDB query used to find the specific document within the collection.
      * @returns {Promise<number>} Integer number of documents within the specified collection that match the query.
@@ -622,7 +652,7 @@ export class NedbClient implements NedbClientEntry {
 	/**
      * Find and delete one document from a specified collection.
      * @author BigfootDS
-     * @async
+     * 
      * @param {string} collectionName The name of the collection that you wish to search through and modify.
      * @param {object} query The NeDB query used to find the specific document within the collection.
      * @param {Datastore.RemoveOptions} options Options to pass to the query system in NeDB. For this particular method, `multi` is always set to `false`.
@@ -637,7 +667,7 @@ export class NedbClient implements NedbClientEntry {
 	/**
      * Find and delete multiple documents from a specified collection.
      * @author BigfootDS
-     * @async
+     * 
      * @param {string} collectionName The name of the collection that you wish to search through and modify.
      * @param {object} query The NeDB query used to find the specific documents within the collection.
      * @param {Datastore.RemoveOptions} options Options to pass to the query system in NeDB. For this particular method, `multi` is always set to `true`.

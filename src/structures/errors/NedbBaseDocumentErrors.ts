@@ -1,3 +1,8 @@
+/**
+ * @module Error Classes
+ * @category Reference
+ */
+
 export class PreValidationFailure extends Error {
 	constructor(documentDataObject: object){
 		super(`Document failed pre-validation with this data in itself:\n${JSON.stringify(documentDataObject, null, 4)}`);

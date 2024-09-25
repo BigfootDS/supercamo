@@ -16,9 +16,20 @@ This package is in active development, we are breaking things on almost every re
 
 ## Where To Start
 
-Please have a look at the Tutorials!
+Please have a look at the Guides section of the documentation website!
 
 This package is made to facilitate the use of a local, embedded NoSQL database called "NeDB". So it still has Documents and Subdocuments/EmbeddedDocuments at its core - but there are some other nice things introduced in this package that do impact the usage of those features and functionalities.
+
+The documentation website contains really handy resources:
+
+- [Quick Start](./documents/Quick_Start.html)
+- [Package Concept Walkthroughs](./documents/The_Basics.html)
+
+## API Reference
+
+Reference documentation for this package lives over here:
+
+- [The "Reference" section of the documentation website](./modules/Classes.html)
 
 ## Example Projects
 

@@ -1,3 +1,34 @@
+/**
+ * @module Classes
+ * @category Reference
+ * @categoryDescription Reference
+ * 
+ * @remarks
+ * 
+ * These classes will be the most-common thing you'll interact with when using this package.
+ * 
+ * Typically, you'd be using the SuperCamo singleton class for its static methods and defining your own document models by inheriting from NedbDocument and NedbEmbeddedDocument classes.
+ * 
+ * @example
+ * NodeJS CommonJS import:
+ * ```js
+ * const {SuperCamo} = require("@bigfootds/supercamo");
+ * SuperCamo.clientConnect(/* params go here *\/);
+ * ```
+ * ```js
+ * const SuperCoolPackage = require("@bigfootds/supercamo");
+ * SuperCoolPackage.SuperCamo.clientConnect(/* params go here *\/);
+ * ```
+ * 
+ * ES6 Import:
+ * ```js
+ * import {SuperCamo} from "@bigfootds/supercamo";
+ * SuperCamo.clientConnect(/* params go here *\/);
+ * ```
+ * 
+ * 
+ */
+
 import { SuperCamoLogger } from "../../utils/logging";
 import { getClassInheritanceList } from "../../validators/functions/ancestors";
 import { isArray, isAsyncFunction, isFunction, isInChoices, isObject, isPromise, isType } from "../../validators/functions/typeValidators";
@@ -8,6 +39,16 @@ import { DocumentKeyRule } from "../interfaces/DocumentKeyRuleInterface";
 import { SuperCamo } from "./SuperCamo";
 
 
+/**
+ * The core, base functionality of both Documents and Embedded Documents.
+ * 
+ * Your own code shouldn't inherit from this class, but instead inherit from Document or Embedded Document classes.
+ * @author BigfootDS
+ * @module Classes
+ * @category Reference
+ * @abstract
+ * @class
+ */
 export abstract class NedbBaseDocument implements BaseDocument {
 
 	
@@ -49,7 +90,6 @@ export abstract class NedbBaseDocument implements BaseDocument {
 	 * Creates an instance of a SuperCamo document compatible with a NeDB system.
 	 * @author BigfootDS
 	 *
-	 * @constructor
 	 * @param {DocumentConstructorData} newData
 	 * @param {string} [newParentDatabaseName]
 	 * @param {string} [newCollectionName]
@@ -112,7 +152,7 @@ export abstract class NedbBaseDocument implements BaseDocument {
 	 * An asynchronous function or promise that runs whenever `validate()` is executed. Override this and customise it if you'd like!
 	 * @author BigfootDS
 	 *
-	 * @async
+	 * 
 	 * @returns {Promise<void>}
 	 */
 	async preValidate(): Promise<void>{
@@ -122,7 +162,7 @@ export abstract class NedbBaseDocument implements BaseDocument {
 	 * An asynchronous function or promise that runs whenever `save()` is executed. Override this and customise it if you'd like!
 	 * @author BigfootDS
 	 *
-	 * @async
+	 * 
 	 * @returns {Promise<void>}
 	 */
 	async preSave(): Promise<void>{
@@ -132,7 +172,7 @@ export abstract class NedbBaseDocument implements BaseDocument {
 	 * An asynchronous function or promise that runs whenever `delete()` is executed. Override this and customise it if you'd like!
 	 * @author BigfootDS
 	 *
-	 * @async
+	 * 
 	 * @returns {Promise<void>}
 	 */
 	async preDelete(): Promise<void>{
@@ -146,7 +186,7 @@ export abstract class NedbBaseDocument implements BaseDocument {
 	 * An asynchronous function or promise that runs whenever `validate()` is executed. Override this and customise it if you'd like!
 	 * @author BigfootDS
 	 *
-	 * @async
+	 * 
 	 * @returns {Promise<void>}
 	 */
 	async postValidate(): Promise<void>{
@@ -156,7 +196,7 @@ export abstract class NedbBaseDocument implements BaseDocument {
 	 * An asynchronous function or promise that runs whenever `save()` is executed. Override this and customise it if you'd like!
 	 * @author BigfootDS
 	 *
-	 * @async
+	 * 
 	 * @returns {Promise<void>}
 	 */
 	async postSave(): Promise<void>{
@@ -166,7 +206,7 @@ export abstract class NedbBaseDocument implements BaseDocument {
 	 * An asynchronous function or promise that runs whenever `delete()` is executed. Override this and customise it if you'd like!
 	 * @author BigfootDS
 	 *
-	 * @async
+	 * 
 	 * @returns {Promise<void>}
 	 */
 	async postDelete(): Promise<void>{
@@ -181,8 +221,7 @@ export abstract class NedbBaseDocument implements BaseDocument {
 	 * This does not write any data to a database.
 	 * @author BigfootDS
 	 *
-	 * @static
-	 * @async
+	 * 
 	 * @param {object} newData Object containing keys of data that the document requires per its schema.
 	 * @param {string} newParentDatabaseName The name of the database/client that is managing this data.
 	 * @param {string} newCollectionName The name of the collection that is using this document as a model for its data.
@@ -224,7 +263,7 @@ export abstract class NedbBaseDocument implements BaseDocument {
 	 * This function also runs any `preValidate` and `postValidate` methods defined on the document.
 	 * @author BigfootDS
 	 *
-	 * @async
+	 * 
 	 * @returns {Promise<boolean>}
 	 */
 	async validate(): Promise<boolean>{
@@ -565,7 +604,7 @@ export abstract class NedbBaseDocument implements BaseDocument {
 	 * This function also runs any `preSave` and `postSave` methods defined on the document.
 	 * @author BigfootDS
 	 *
-	 * @async
+	 * 
 	 * @returns {Promise<boolean>}
 	 */
 	async save(): Promise<boolean>{
@@ -605,7 +644,7 @@ export abstract class NedbBaseDocument implements BaseDocument {
 	 * If you're using a databaseless-document instance, this method will throw an error!
 	 * @author BigfootDS
 	 *
-	 * @async
+	 * 
 	 * @param {boolean} [deleteReferences] Similar to `deepDeleteReferences`, but you can pick one or the other. If true, all referenced documents will also delete themselves. If those referenced documents also reference additional documents, those documents are unaffected and may become orphaned.
 	 * @param {boolean} [deepDeleteReferences] Similar to `deleteReferences`, but you can pick one or the other. If true, all referenced documents will also delete themselves and recursively delete any documents that they also reference.
 	 * @returns {number} Number of documents deleted. You'd want this to be just 1. Other functions may use this number to create a greater tally (eg. a database client's `findAndDeleteMany` method).

@@ -4,7 +4,8 @@
  * The constraints that SuperCamo can use on its document data properties. Try not to use them all on a single property - be sensible!
  * @author BigfootDS
  *
- * @export
+ * @module Interfaces
+ * @category Reference
  * @interface
  */
 export interface DocumentKeyRule {

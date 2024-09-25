@@ -1,4 +1,8 @@
-/** @module Internal */
+/** @module Internal
+  * @ignore 
+ */
+
+
 import * as util from "node:util";
 import { SuperCamoLogger } from "../../utils/logging";
 

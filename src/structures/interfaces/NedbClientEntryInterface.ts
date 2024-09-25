@@ -1,3 +1,11 @@
+/**
+ * Metadata about NeDB clients in use within SuperCamo.
+ * @author BigfootDS
+ * @module Interfaces
+ * @category Reference
+ * @interface
+ */
+
 import { NedbDocument } from "../classes/NedbDocument"
 import { NedbEmbeddedDocument } from "../classes/NedbEmbeddedDocument"
 import { CollectionAccessor } from "./CollectionAccessorInterface"
@@ -6,8 +14,8 @@ import { CollectionAccessor } from "./CollectionAccessorInterface"
 /**
  * Metadata about NeDB clients in use within SuperCamo.
  * @author BigfootDS
- *
- * @export
+ * @module Interfaces
+ * @category Reference
  * @interface
  */
 export interface NedbClientEntry {

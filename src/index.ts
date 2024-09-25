@@ -1,3 +1,26 @@
+/**
+ * This is the content that you can import in your own code.
+ * 
+ * @example
+ * NodeJS CommonJS import:
+ * ```js
+ * const {NedbClient, SuperCamo} = require("@bigfootds/supercamo");
+ * ```
+ * ```js
+ * const SuperCoolPackage = require("@bigfootds/supercamo");
+ * ```
+ * 
+ * ES6 Import:
+ * ```js
+ * import {SuperCamo} from "@bigfootds/supercamo";
+ * ```
+ * 
+ 
+ * 
+ * @module Package Exports
+ * @category Guides
+ * @packageDocumentation
+ */
 
 
 export { CollectionAccessor } from "./structures/classes/CollectionAccessor";

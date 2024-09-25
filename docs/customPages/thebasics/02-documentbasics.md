@@ -1,3 +1,8 @@
+---
+title: 02 - Document Basics
+
+---
+
 NeDB is a NoSQL database. That means that instead of tables and rows to represent entities of data, we use collections of documents.
 
 Traditionally, one NeDB datastore is one collection. SuperCamo manages that for you, so you just have to assign a document and a collection name to a database client to make that work the same way you'd expect from popular NoSQL systems like MongoDB and MongooseJS.

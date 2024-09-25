@@ -1,3 +1,34 @@
+/**
+ * @module Classes
+ * @category Reference
+ * @categoryDescription Reference
+ * 
+ * @remarks
+ * 
+ * These classes will be the most-common thing you'll interact with when using this package.
+ * 
+ * Typically, you'd be using the SuperCamo singleton class for its static methods and defining your own document models by inheriting from NedbDocument and NedbEmbeddedDocument classes.
+ * 
+ * @example
+ * NodeJS CommonJS import:
+ * ```js
+ * const {SuperCamo} = require("@bigfootds/supercamo");
+ * SuperCamo.clientConnect(/* params go here *\/);
+ * ```
+ * ```js
+ * const SuperCoolPackage = require("@bigfootds/supercamo");
+ * SuperCoolPackage.SuperCamo.clientConnect(/* params go here *\/);
+ * ```
+ * 
+ * ES6 Import:
+ * ```js
+ * import {SuperCamo} from "@bigfootds/supercamo";
+ * SuperCamo.clientConnect(/* params go here *\/);
+ * ```
+ * 
+ * 
+ */
+
 import { CollectionsListEntry } from "../interfaces/CollectionsListEntryInterface";
 import { NedbClient } from "./NedbClient";
 import { SuperCamoLogger } from "../../utils/logging";
@@ -5,14 +36,35 @@ import { isDatabaseConnected_RootHelper } from "../../validators/functions/isDat
 import path from "node:path";
 import fs from "node:fs";
 
-export class SuperCamo {
 
+/**
+ * The singleton system used to access any and all database clients you've created.
+ * @author BigfootDS
+ * @module Classes
+ * @category Reference
+ * @class
+ * @hideconstructor
+ */
+class SuperCamo {
+
+	
+	/**
+	 * Creates an instance of SuperCamo. Do not do this!
+	 * @author BigfootDS
+	 *
+	 * @hideconstructor
+	 * @hidden
+	 * @ignore
+	 */
+	constructor(){
+		throw new Error("Do not use instances of SuperCamo! Use it as a static singleton!");
+	}
 	
 	/**
 	 * An object containing the app's currently-connected database clients. Each key in this object is one client, and the name of each key is the name of that database.
 	 * @author BigfootDS
 	 *
-	 * @static
+	 * 
 	 * 
 	 * @example 
 	 * ```js
@@ -34,7 +86,7 @@ export class SuperCamo {
 	 * Create a database client instance, connecting to it and returning its instance.
 	 * @author BigfootDS
 	 *
-	 * @static
+	 * 
 	 * @param {string} databaseName A unique name for the database. 
 	 * @param {string} [databaseDirectory=""] The folder path for where the database and its collections will be stored.
 	 * @param {Array<CollectionsListEntry>} [collectionsList=[]] An array of collections, where each item in this array is an object containing the name of the collection and the model or document that the collection will use.
@@ -58,7 +110,7 @@ export class SuperCamo {
 	 * Disconnect from the specified database.
 	 * @author BigfootDS
 	 *
-	 * @static
+	 * 
 	 * @param targetClient The name of the database that you wish to disconnect from.
 	 * @returns Number of clients disconnected.
 	 */
@@ -75,7 +127,7 @@ export class SuperCamo {
 	 * Disconnect from the specified database AND delete its files. This is extremely destructive! Be careful!
 	 * @author BigfootDS
 	 *
-	 * @static
+	 * 
 	 * @param targetClient The name of the database that you wish to disconnect from.
 	 * @returns Number of clients disconnected.
 	 */
@@ -107,7 +159,7 @@ export class SuperCamo {
 	 * Create an accessor for a database that is connected in the app.
 	 * @author BigfootDS
 	 *
-	 * @static
+	 * 
 	 * @param targetClient The name of the database that you wish to connect to.
 	 * @returns A NedbClient instance.
 	 */
@@ -126,7 +178,7 @@ export class SuperCamo {
 	 * Get a list of databases connected.
 	 * @author BigfootDS
 	 *
-	 * @static
+	 * 
 	 * @returns
 	 */
 	static get clientList(): string[]{
@@ -136,3 +188,5 @@ export class SuperCamo {
 
 }
 
+
+export {SuperCamo};

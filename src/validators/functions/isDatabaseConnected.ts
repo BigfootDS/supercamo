@@ -1,4 +1,7 @@
-/** @module Internal */
+/** @module Internal
+  * @ignore 
+ */
+
 
 import { SuperCamo } from "../../structures/classes/SuperCamo";
 

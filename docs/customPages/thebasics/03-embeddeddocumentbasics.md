@@ -1,3 +1,8 @@
+---
+title: 03 - Embedded Document Basics
+
+---
+
 Subdocuments or embedded documents are a way of structuring complex data nested within documents. While a document can have objects as its properties/fields, it's typically more straightforward to create embedded documents to represent objects instead. 
 
 ## Declaring Embedded Documents

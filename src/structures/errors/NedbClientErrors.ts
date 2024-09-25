@@ -1,3 +1,7 @@
+/**
+ * @module Error Classes
+ * @category Reference
+ */
 
 export class CollectionAccessError extends Error {
 	constructor(collectionName: string){

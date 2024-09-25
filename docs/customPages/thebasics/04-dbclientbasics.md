@@ -1,3 +1,8 @@
+---
+title: 04 - DB Client Basics
+
+---
+
 The database client is the main way that you should be interacting with the database in this package.
 
 ### Instantiating a Database Client

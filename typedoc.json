@@ -1,0 +1,35 @@
+{
+	"$schema": "https://typedoc.org/schema.json",
+	"entryPoints": ["./src/**"],
+	"entryPointStrategy": "resolve",
+	"out": "out",
+	"name": "SuperCamo",
+	"includeVersion": true,
+	"excludeInternal": true,
+	"cacheBust": true,
+	"hostedBaseUrl": "https://bigfootds.github.io/supercamo/",
+	"useHostedBaseUrlForAbsoluteLinks": false,
+	"sidebarLinks": {
+		"GitHub Repository":"https://github.com/BigfootDS/supercamo"
+	},
+	"navigationLinks": {
+		"GitHub Repository":"https://github.com/BigfootDS/supercamo"
+	},
+	"navigation": {
+		"includeCategories": true,
+		"includeGroups": false,
+		"includeFolders": false
+	},
+	"readme": "./docs/homepage.md",
+	"projectDocuments": [
+		// "./docs/*.md",
+		"./docs/customPages/*.md"
+	],
+	"plugin": [
+		"typedoc-github-theme",
+		"typedoc-plugin-merge-modules"
+	],
+	"mergeModulesRenameDefaults": true, // NEW option of TypeDoc added by this plugin
+    "mergeModulesMergeMode": "module-category", // NEW option of TypeDoc added by this plugin
+
+}

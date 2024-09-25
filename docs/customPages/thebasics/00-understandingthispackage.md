@@ -1,3 +1,8 @@
+---
+title: 00 - Understanding This Package
+
+---
+
 SuperCamo is a package built as a wrapper around NeDB. It contains several key parts that you need to understand to really make good use of this package, and you would benefit from also digging around in NeDB package documentation - but we'll point that out when it's necessary in the other documentation pages.
 
 This page will walk you through the key components of this package and briefly explain what they are, as well as when you need to use them.
@@ -47,7 +52,7 @@ router.get("/all", async (request, response) => {
 });
 ```
 
-Read more about the SuperCamo singleton on [its tutorial page](./tutorial-01-thesupercamosingleton.html).
+Read more about the SuperCamo singleton on [its tutorial page](./01-thesupercamosingleton.md).
 
 
 
@@ -91,7 +96,7 @@ The parameters in the constructor are managed by the NeDB database client - this
 
 Documents have support for document referencing and population, as well as validation and other operation event hooks.
 
-Read more about the SuperCamo document on [its tutorial page](./tutorial-02-documentbasics.html).
+Read more about the SuperCamo document on [its tutorial page](./02-documentbasics.md).
 
 
 ## Subdocuments or Embedded Documents
@@ -141,7 +146,7 @@ module.exports = { LocalizedContent };
 
 The embedded document above provides a way to structure localized content. A document that uses this embedded document would be able to store translated and localized data by declaring a property that uses an array of LocalizedContent as its `type`.
 
-Read more about embedded documents on [its tutorial page](./tutorial-03-embeddeddocumentbasics.html).
+Read more about embedded documents on [its tutorial page](./03-embeddeddocumentbasics.md).
 
 
 ## Database Client
@@ -150,8 +155,10 @@ As we've seen in the snippets of code so far, we use SuperCamo to create a conne
 
 The database client is built with a focus on `async` functionality. Database operations take time. Beyond that, the database client provides a variety of methods to allow you to carry out typical database operations.
 
-Read more about the SuperCamo database client on [its tutorial page](./tutorial-04-dbclientbasics.html).
+Read more about the SuperCamo database client on [its tutorial page](./04-dbclientbasics.md).
 
 ## Summary
 
 So, those are the four main components to SuperCamo. If that sounds interesting to you, keep digging into this documentation and start coding! 
+
+Go and [get started!](./05-gettingstarted.md)

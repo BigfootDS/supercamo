@@ -1,3 +1,8 @@
+---
+title: 01 - The SuperCamo Singleton
+
+---
+
 This package is all about making it easier to manage multiple NeDB database connections within a single app's lifetime. The SuperCamo singleton is how that happens.
 
 Essentially, you should connect to a database via the SuperCamo singleton. The `SuperCamo.connect()` function returns a reference to the database client instance, and that same instance can be retrieved again in any file that uses the SuperCamo singleton too.
