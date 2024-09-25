@@ -9,8 +9,28 @@ import { SuperCamo } from "./SuperCamo";
 
 
 export abstract class NedbBaseDocument implements BaseDocument {
+
+	
+	/**
+	 * Internal property to store the actual data of a document instance. 
+	 * Properties in here depend on the `rules` defined in the inheriting classes.
+	 * @author BigfootDS
+	 */
 	#data: DocumentObjectData;
+
+	/**
+	 * Internal property to store a document instance's database name. Should not be set ever after instantiation.
+	 * If null, assume that the document instance does not represent data stored in a database.
+	 * @author BigfootDS
+	 */
 	#parentDatabaseName: string | null;
+
+	
+	/**
+	 * Internal property to store a document instance's collection name. Should not be set ever after instantiation.
+	 * If null, assume that the document instance does not represent data stored in a database.
+	 * @author BigfootDS
+	 */
 	#collectionName: string | null;
 
 	
@@ -24,6 +44,17 @@ export abstract class NedbBaseDocument implements BaseDocument {
 		[key: string]: DocumentKeyRule;	
 	}
 
+	
+	/**
+	 * Creates an instance of a SuperCamo document compatible with a NeDB system.
+	 * @author BigfootDS
+	 *
+	 * @constructor
+	 * @param {DocumentConstructorData} newData
+	 * @param {string} [newParentDatabaseName]
+	 * @param {string} [newCollectionName]
+	 * 
+	 */
 	constructor(newData: DocumentConstructorData, newParentDatabaseName: string|null, newCollectionName:string|null){
 		if (newData._id == null || newData._id == "") newData._id = crypto.randomUUID();
 		
@@ -34,38 +65,111 @@ export abstract class NedbBaseDocument implements BaseDocument {
 		this.rules = {};
 	}
 
-	public get data(){
+	
+	/**
+	 * A key-value pair dictionary of any data that this document instance contains.
+	 * 
+	 * It's an object, and should have an `_id` property if this document instance represents data stored in a database.
+	 * @author BigfootDS
+	 *
+	 * @public
+	 * @readonly
+	 * @returns {DocumentObjectData}
+	 */
+	public get data(): DocumentObjectData{
 		return this.#data;
 	}
 
-	public get parentDatabaseName(){
+	/**
+	 * Read-only string containing the name of the database that this document instance comes from. 
+	 * 
+	 * If this is null, assume that this document instance does not represent any data stored in a database.
+	 * @author BigfootDS
+	 *
+	 * @public
+	 * @readonly
+	 */
+	public get parentDatabaseName(): string|null{
 		return this.#parentDatabaseName;
 	}
 
-	public get collectionName(){
+	
+	/**
+	 * Read-only string containing the name of the database collection that this document instance comes from. 
+	 * 
+	 * If this is null, assume that this document instance does not represent any data stored in a database.
+	 * @author BigfootDS
+	 *
+	 * @public
+	 * @readonly
+	 */
+	public get collectionName(): string|null{
 		return this.#collectionName;
 	}
 
 	//#region PRE hooks
-	async preValidate(){
+	/**
+	 * An asynchronous function or promise that runs whenever `validate()` is executed. Override this and customise it if you'd like!
+	 * @author BigfootDS
+	 *
+	 * @async
+	 * @returns {Promise<void>}
+	 */
+	async preValidate(): Promise<void>{
 
 	}
-	async preSave(){
+	/**
+	 * An asynchronous function or promise that runs whenever `save()` is executed. Override this and customise it if you'd like!
+	 * @author BigfootDS
+	 *
+	 * @async
+	 * @returns {Promise<void>}
+	 */
+	async preSave(): Promise<void>{
 
 	}
-	async preDelete(){
+	/**
+	 * An asynchronous function or promise that runs whenever `delete()` is executed. Override this and customise it if you'd like!
+	 * @author BigfootDS
+	 *
+	 * @async
+	 * @returns {Promise<void>}
+	 */
+	async preDelete(): Promise<void>{
 
 	}
 	//#endregion
 
 	//#region POST hooks
-	async postValidate(){
+	
+	/**
+	 * An asynchronous function or promise that runs whenever `validate()` is executed. Override this and customise it if you'd like!
+	 * @author BigfootDS
+	 *
+	 * @async
+	 * @returns {Promise<void>}
+	 */
+	async postValidate(): Promise<void>{
 
 	}
-	async postSave(){
+	/**
+	 * An asynchronous function or promise that runs whenever `save()` is executed. Override this and customise it if you'd like!
+	 * @author BigfootDS
+	 *
+	 * @async
+	 * @returns {Promise<void>}
+	 */
+	async postSave(): Promise<void>{
 
 	}
-	async postDelete(){
+	/**
+	 * An asynchronous function or promise that runs whenever `delete()` is executed. Override this and customise it if you'd like!
+	 * @author BigfootDS
+	 *
+	 * @async
+	 * @returns {Promise<void>}
+	 */
+	async postDelete(): Promise<void>{
 
 	}
 	//#endregion
@@ -83,7 +187,7 @@ export abstract class NedbBaseDocument implements BaseDocument {
 	 * @param {string} newParentDatabaseName The name of the database/client that is managing this data.
 	 * @param {string} newCollectionName The name of the collection that is using this document as a model for its data.
 	 * @param {boolean} [validateOnCreate=true] Boolean flag for whether or not a document instance created with this method should be validated ASAP. Default is true.
-	 * @returns
+	 * @returns {Promise<Type extends NedbBaseDocument>}
 	 */
 	static async create<Type extends NedbBaseDocument>(
 		this: { 
@@ -113,6 +217,16 @@ export abstract class NedbBaseDocument implements BaseDocument {
 		return newInstance;
 	}
 
+	
+	/**
+	 * Run validation logic against the rules defined in the document's `rules` property.
+	 * 
+	 * This function also runs any `preValidate` and `postValidate` methods defined on the document.
+	 * @author BigfootDS
+	 *
+	 * @async
+	 * @returns {Promise<boolean>}
+	 */
 	async validate(): Promise<boolean>{
 		let isValid: boolean = true;
 
@@ -444,7 +558,17 @@ export abstract class NedbBaseDocument implements BaseDocument {
 		return isValid;
 	}
 
-	async save(){
+	
+	/**
+	 * Save the document to the database. If the document doesn't already exist in the database, it will be added to the database automatically.
+	 * 
+	 * This function also runs any `preSave` and `postSave` methods defined on the document.
+	 * @author BigfootDS
+	 *
+	 * @async
+	 * @returns {Promise<boolean>}
+	 */
+	async save(): Promise<boolean>{
 		await this.preSave().catch(error => {
 			throw new PreSaveFailure(this.data);
 		});
@@ -474,7 +598,19 @@ export abstract class NedbBaseDocument implements BaseDocument {
 		return true;
 	}
 
-	async delete(deleteReferences?: boolean, deepDeleteReferences?: boolean){
+	
+	/**
+	 * Delete this document from the database client that it lives in.
+	 * 
+	 * If you're using a databaseless-document instance, this method will throw an error!
+	 * @author BigfootDS
+	 *
+	 * @async
+	 * @param {boolean} [deleteReferences] Similar to `deepDeleteReferences`, but you can pick one or the other. If true, all referenced documents will also delete themselves. If those referenced documents also reference additional documents, those documents are unaffected and may become orphaned.
+	 * @param {boolean} [deepDeleteReferences] Similar to `deleteReferences`, but you can pick one or the other. If true, all referenced documents will also delete themselves and recursively delete any documents that they also reference.
+	 * @returns {number} Number of documents deleted. You'd want this to be just 1. Other functions may use this number to create a greater tally (eg. a database client's `findAndDeleteMany` method).
+	 */
+	async delete(deleteReferences?: boolean, deepDeleteReferences?: boolean): Promise<number>{
 		await this.preDelete().catch(error => {
 			throw new PreDeleteFailure(this.data);
 		});
@@ -543,9 +679,11 @@ export abstract class NedbBaseDocument implements BaseDocument {
 	
 	/**
 	 * This document instance's data, and only the data, organized onto an object.
+	 * 
+	 * This does not retrieve any referenced document's data, it's just a shallow object representation of this own document!
 	 * @author BigfootDS
 	 *
-	 * @returns Object containing data from the document instance.
+	 * @returns {object} Object containing data from the document instance.
 	 */
 	toObject(): object {
 		let result = {};
@@ -568,12 +706,12 @@ export abstract class NedbBaseDocument implements BaseDocument {
 	}
 
 	/**
-	 * This document instance's data, and only the data, organized onto an object.
+	 * This document instance's data, and only the data, organized onto an object. This also retrieves data from referenced documents and stores their data as a nested object within this document, too.
 	 * @author BigfootDS
 	 *
-	 * @returns Object containing data from the document instance.
+	 * @returns {DocumentObjectData} Object containing data from the document instance.
 	 */
-	async toPopulatedObject(){
+	async toPopulatedObject(): Promise<DocumentObjectData>{
 		let result: DocumentObjectData = {
 			_id: this.data._id
 		};

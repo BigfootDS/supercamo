@@ -16,11 +16,11 @@
   "scripts": {
     "dev": "ts-node ./src/index.ts",
     "build:code": "tsc",
-    "build:docs": "jsdoc ./src -r -c ./jsdoc.json",
+    "build:docs:js": "jsdoc ./src -r -c ./jsdoc.json",
+    "build:docs:ts:init": "api-extractor init",
     "test:js": "npm run build:code && jest ./tests/js/* --watch --config ./jest-js.config.js --runInBand",
     "test:js:ci": "npm run build:code && jest ./tests/js/* --config ./jest-js.config.js --runInBand",
     "test:js:cc": "npm run build:code && jest ./tests/js/* --watch --config ./jest-js.config.js --runInBand --coverage=true"
-
   },
   "repository": {
     "type": "git",
@@ -58,6 +58,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
+    "@microsoft/api-extractor": "^7.47.9",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.14.10",
     "clean-jsdoc-theme": "^4.3.0",

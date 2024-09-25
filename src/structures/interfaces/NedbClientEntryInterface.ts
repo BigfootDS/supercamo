@@ -3,6 +3,13 @@ import { NedbEmbeddedDocument } from "../classes/NedbEmbeddedDocument"
 import { CollectionAccessor } from "./CollectionAccessorInterface"
 
 
+/**
+ * Metadata about NeDB clients in use within SuperCamo.
+ * @author BigfootDS
+ *
+ * @export
+ * @interface
+ */
 export interface NedbClientEntry {
 	
 	/**
