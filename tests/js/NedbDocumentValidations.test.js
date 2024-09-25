@@ -2,6 +2,7 @@ const {SuperCamo, CollectionListEntry, NedbClient} = require("../../dist/index.j
 
 const {describe, test, expect} = require("@jest/globals");
 const { User, ValidationRuleTester } = require("./helpers/TestDocumentDefs.js");
+const BaseDocumentErrors = require("../../dist/structures/errors/NedbBaseDocumentErrors.js");
 
 let goodValidVrtData = {
 	exampleRequiredNoDefault: "Hello, world!",
@@ -25,14 +26,20 @@ let goodValidVrtData = {
 	exampleValidateRule: "Hello, world!"
 };
 
+
+/**
+ * @type {NedbClient}
+ * @author BigfootDS
+ */
+let newClient = null;
+
 afterAll(async () => {
+	await newClient.dropDatabase();
 	SuperCamo.clientDelete("NedbDocumentValidationsTestDb");
 });
 
-
-describe("NedbDocument validation tests...", () => {
-
-	let newClient = SuperCamo.clientConnect(
+beforeAll(async () => {
+	newClient = SuperCamo.clientConnect(
 		"NedbDocumentValidationsTestDb",
 		"./.testing/NedbDocumentValidationsTestDb/",
 		[
@@ -40,6 +47,12 @@ describe("NedbDocument validation tests...", () => {
 			new CollectionListEntry("ValidationRuleTesters", ValidationRuleTester)
 		]
 	);
+})
+
+
+describe("NedbDocument validation tests...", () => {
+
+	
 
 	test("documents inherit from NedbDocument.", () => {
 		expect(Object.getPrototypeOf(User).toString().includes("NedbDocument")).toBe(true);
@@ -151,4 +164,85 @@ describe("NedbDocument validation tests...", () => {
 		let foundUserToRef2 = await newClient.findOneDocument("Users", {_id: userToRefSelfDeleter.data._id});
 		expect(foundUserToRef2).toBeFalsy();
 	});
+
+	describe("NedbDocument error-handling tests per rule...", () => {
+		test("Invalid data given for a property with a required constraint throws a required-specific error.", async () => {
+			let localVrtData = {...goodValidVrtData};
+			localVrtData.exampleRequiredNoDefault = null;
+			
+			let vrtInstance = new ValidationRuleTester(localVrtData);
+			expect(async () => {
+				await vrtInstance.validate();
+			}).rejects.toThrowError(BaseDocumentErrors.ValidationFailureMissingValueForProperty)
+		});
+
+		test("Invalid data given for a property with a unique constraint throws a unique-specific error.", async () => {
+			let localGoodValidVrtData = {...goodValidVrtData};
+
+			let someGoodDoc = await newClient.createOne("ValidationRuleTesters", localGoodValidVrtData);
+
+			expect(async () => {
+				let localBadVrtData = {...localGoodValidVrtData};
+				localBadVrtData.exampleUnique = someGoodDoc.data.exampleUnique;
+				let someBadDoc = await newClient.createOne("ValidationRuleTesters", localBadVrtData);
+				// Tbh, this should be something more specific than just a general "SaveFailure"...
+				// ...but the way uniqueness is checked is at the database level, so a better error
+				// would require a better uniqueness validation technique.
+			}).rejects.toThrowError(BaseDocumentErrors.SaveFailure);
+		});
+
+		test("Invalid data given for a property of a specified type throws a type-specific error.", async () => {
+			let localVrtData = {...goodValidVrtData};
+			localVrtData.exampleMinNumber = "bananas";
+			
+			let vrtInstance = new ValidationRuleTester(localVrtData);
+			expect(async () => {
+				await vrtInstance.validate();
+			}).rejects.toThrowError(BaseDocumentErrors.ValidationFailureMissingValueForProperty)
+		});
+
+		test("Invalid data given for a property with a strict min constraint throws a minmax-specific error.", async () => {
+			let localVrtData = {...goodValidVrtData};
+			localVrtData.exampleMinNumberWithError = 0;
+			
+			let vrtInstance = new ValidationRuleTester(localVrtData);
+			expect(async () => {
+				await vrtInstance.validate();
+				console.log(vrtInstance.data);
+			}).rejects.toThrowError(BaseDocumentErrors.ValidationFailureMinMaxError)
+		});
+
+		test("Invalid data given for a property with a strict max constraint throws a minmax-specific error.", async () => {
+			let localVrtData = {...goodValidVrtData};
+			localVrtData.exampleMaxNumberWithError = 9001;
+			
+			let vrtInstance = new ValidationRuleTester(localVrtData);
+			expect(async () => {
+				await vrtInstance.validate();
+				console.log(vrtInstance.data);
+			}).rejects.toThrowError(BaseDocumentErrors.ValidationFailureMinMaxError)
+		});
+
+		test("Invalid data given for a property with a choices constraint throws a choices-specific error.", async () => {
+			let localVrtData = {...goodValidVrtData};
+			localVrtData.exampleValueInChoices = "pikachu";
+			
+			let vrtInstance = new ValidationRuleTester(localVrtData);
+			expect(async () => {
+				await vrtInstance.validate();
+				console.log(vrtInstance.data);
+			}).rejects.toThrowError(BaseDocumentErrors.ValidationFailureValueNotInChoices)
+		});
+
+		test("Invalid data given for a property with a choices constraint throws a choices-specific error.", async () => {
+			let localVrtData = {...goodValidVrtData};
+			localVrtData.exampleValidateRule = "pikachu";
+			
+			let vrtInstance = new ValidationRuleTester(localVrtData);
+			expect(async () => {
+				await vrtInstance.validate();
+				console.log(vrtInstance.data);
+			}).rejects.toThrowError(BaseDocumentErrors.ValidationFailure)
+		});
+	})
 });

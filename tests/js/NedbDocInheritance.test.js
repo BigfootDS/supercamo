@@ -36,7 +36,7 @@ describe("NedbDocument validation tests...", () => {
 	test("all rules work when valid data is supplied that obeys the rules.", async () => {
 		let wizardTesto = await newClient.createOne("Wizards", goodWizardData);
 		
-		console.log(wizardTesto.data);
+		// console.log(wizardTesto.data);
 		expect(wizardTesto.data.spells).toEqual(expect.arrayContaining(["Wish"]));
 		expect(wizardTesto.data.name).toBe(goodWizardData.name);
 		expect(wizardTesto.data.currentHealth).toBe(goodWizardData.currentHealth);

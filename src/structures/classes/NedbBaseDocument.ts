@@ -164,6 +164,32 @@ export abstract class NedbBaseDocument implements BaseDocument {
 			}
 
 
+
+			// If a custom validate function is provided, run that.
+			if (keyRule.validate){
+				let validationResult: Boolean = false;
+				if (isAsyncFunction(keyRule.validate)) {
+					SuperCamoLogger(`${key} is an async function`, "BaseDocument");
+					validationResult = await keyRule.validate(this.#data[key]);
+				} else if (isPromise(keyRule.validate)) {
+					SuperCamoLogger(`${key} is a promise`, "BaseDocument");
+					let validatorAsPromise = keyRule.validate(this.#data[key]);
+					validationResult = await Promise.race([validatorAsPromise]);
+				} else if (isFunction(keyRule.validate)){
+					SuperCamoLogger(`${key} is a synchronous function`, "BaseDocument");
+					//@ts-ignore
+					validationResult = keyRule.validate(this.#data[key]);
+				} else {
+					SuperCamoLogger(`${key} is a variable`, "BaseDocument");
+					validationResult = keyRule.validate == this.#data[key];
+				}
+
+				if (validationResult == false){
+					throw new ValidationFailure(this.#data)
+				}
+			}
+
+
 			let modelPropertyIsRequired: boolean = keyRule.required == true;
 			//@ts-ignore
 			let modelInstanceHasData = !(this.#data[key] == null);
@@ -278,7 +304,7 @@ export abstract class NedbBaseDocument implements BaseDocument {
 
 			let modelHasChoices = isArray(keyRule.choices);
 			let modelInstanceDataIsInChoices = undefined; 
-			if (modelPropertyIsRequired && modelHasChoices && keyRule.choices){
+			if (modelHasChoices && keyRule.choices){
 				//@ts-ignore
 				modelInstanceDataIsInChoices = isInChoices(keyRule.choices, this.#data[key]);
 
@@ -308,7 +334,7 @@ export abstract class NedbBaseDocument implements BaseDocument {
 				(keyRule.min !== null || keyRule.min !== undefined)
 				&&
 				//@ts-ignore
-				(keyRule.min && this.#data[key] < keyRule.min)
+				(keyRule.min && (this.#data[key] < keyRule.min))
 			) {
 				if (keyRule.invalidateOnMinMaxError){
 					throw new ValidationFailureMinMaxError(key);
