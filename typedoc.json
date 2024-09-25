@@ -7,6 +7,7 @@
 	"includeVersion": true,
 	"excludeInternal": true,
 	"cacheBust": true,
+	"logLevel": "Error",
 	"hostedBaseUrl": "https://bigfootds.github.io/supercamo/",
 	"useHostedBaseUrlForAbsoluteLinks": false,
 	"sidebarLinks": {

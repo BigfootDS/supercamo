@@ -17,8 +17,7 @@
     "dev": "ts-node ./src/index.ts",
     "build:code": "tsc",
     "build:docs:js": "jsdoc ./src -r -c ./jsdoc.json",
-    "build:docs:ts:init": "api-extractor init",
-    "build:docs:ts": "npm run build:code && typedoc --options ./typedoc.json",
+    "build:docs:ts": "typedoc --options ./typedoc.json",
     "test:js": "npm run build:code && jest ./tests/js/* --watch --config ./jest-js.config.js --runInBand",
     "test:js:ci": "npm run build:code && jest ./tests/js/* --config ./jest-js.config.js --runInBand",
     "test:js:cc": "npm run build:code && jest ./tests/js/* --watch --config ./jest-js.config.js --runInBand --coverage=true"
