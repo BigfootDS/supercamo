@@ -274,6 +274,61 @@ class ValidationRuleTester extends NedbDocument {
 	}
 }
 
+class Adventurer extends NedbDocument {
+	constructor(newData, newParentDatabaseName, newCollectionName){
+		super(newData, newParentDatabaseName, newCollectionName);
+
+		this.rules = {
+			name: {
+				type: String,
+				required: true,
+				unique: true
+			},
+			bio: {
+				type: Bio,
+				required: false
+			},
+			maxHealth: {
+				type: Number,
+				required: true,
+				min: 100,
+				invalidateOnMinMaxError: true
+			},
+			currentHealth: {
+				type: Number,
+				required: true,
+				min: 0,
+				max: this.rules.maxHealth
+			}
+		}	
+	}
+}
+
+class Wizard extends Adventurer {
+	constructor(newData, newParentDatabaseName, newCollectionName){
+		super(newData, newParentDatabaseName, newCollectionName);
+
+		let wizardRules = {
+			spells: {
+				type: [String],
+				required: true,
+				default: ["Fireball"]
+			},
+			maxHealth: {
+				type: Number,
+				required: true,
+				min: 10000,
+				invalidateOnMinMaxError: false
+			}
+		}	
+
+		this.rules = {...this.rules, ...wizardRules};
+		// console.log(this.rules); // I'm so happy that this works, woo!
+	}
+}
+
+
 module.exports = {
-	Bio, User, UserWithPassword, ValidationRuleTester
+	Bio, User, UserWithPassword, ValidationRuleTester,
+	Adventurer, Wizard
 }

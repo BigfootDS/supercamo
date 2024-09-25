@@ -98,8 +98,11 @@ export const isType = (typeWanted: any, valueToCheck: any) => {
 		// then we can assume that valueToCheck is the data obj of typeWanted's "array of XYZ" class
 		let valueToCheckKeys = Object.keys(valueToCheck);
 		let typeWantedCoreKeys = Object.keys(typeWanted[0]);
+		let doesValueMatchType = typeof(valueToCheck[0]) == typeWanted[0].name.toString().toLocaleLowerCase()
+		//						 typeof(stringValue)  == stringType.name.toString().toLocaleLowerCase();
+		SuperCamoLogger(JSON.stringify([valueToCheck[0], valueToCheckKeys, typeWanted, typeWantedCoreKeys, doesValueMatchType]), "Validators");
 
-		return valueToCheckKeys.every(key => typeWantedCoreKeys.includes(key));
+		return doesValueMatchType;
 	}
 
 	if (isObject(valueToCheck)){
@@ -146,7 +149,6 @@ export const isAsyncFunction = (valueToCheck: any) => {
 }
 
 export const isPromise = (valueToCheck: any) => {
-	// console.log(valueToCheck);
 	return util.types.isPromise(valueToCheck);
 }
 
