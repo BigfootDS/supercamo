@@ -1,6 +1,6 @@
 {
   "name": "@bigfootds/supercamo",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "Camo-inspired ODM for NeDB, built specifically for BigfootDS' needs.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -18,7 +18,7 @@
     "build:code": "tsc",
     "build:docs:js": "jsdoc ./src -r -c ./jsdoc.json",
     "build:docs:ts": "typedoc --options ./typedoc.json",
-    "dev:docs:ts":"typedoc --watch --options ./typedoc.json",
+    "dev:docs:ts": "typedoc --watch --options ./typedoc.json",
     "test:js": "npm run build:code && jest ./tests/js/* --watch --config ./jest-js.config.js --runInBand",
     "test:js:ci": "npm run build:code && jest ./tests/js/* --config ./jest-js.config.js --runInBand",
     "test:js:cc": "npm run build:code && jest ./tests/js/* --watch --config ./jest-js.config.js --runInBand --coverage=true"
