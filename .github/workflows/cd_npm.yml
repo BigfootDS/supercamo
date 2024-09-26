@@ -7,6 +7,8 @@ on:
     branches: 
       - main
   workflow_dispatch:
+  push: 
+    branches: ["main"]
 
 jobs:
   draft_release:
