@@ -134,10 +134,10 @@ let exampleDb = await SuperCamo.connect(
 	"SomeDatabaseName", 
 	path.join(process.cwd(), "databases", "SomeDatabaseName"),
 	[
-		{name: "Users", model: User}, 
-		{name: "Admins", model: User}, 
-		{name: "Profiles", model: Profile},
-		{name: "Config", model: Settings}
+		new CollectionListEntry(name: "Users", model: User), 
+		new CollectionListEntry(name: "Admins", model: User), 
+		new CollectionListEntry(name: "Profiles", model: Profile),
+		new CollectionListEntry(name: "Config", model: Settings)
 	]
 );
 ```
@@ -153,10 +153,10 @@ let exampleDb = await SuperCamo.connect(
 	"SomeDatabaseName", 
 	path.join(process.cwd(), "databases"),
 	[
-		{name: "Users", model: User}, 
-		{name: "Admins", model: User}, 
-		{name: "Profiles", model: Profile},
-		{name: "Config", model: Settings}
+		new CollectionListEntry(name: "Users", model: User), 
+		new CollectionListEntry(name: "Admins", model: User), 
+		new CollectionListEntry(name: "Profiles", model: Profile),
+		new CollectionListEntry(name: "Config", model: Settings)
 	]
 );
 
@@ -164,10 +164,10 @@ let anotherDb = await SuperCamo.connect(
 	"SomeOtherDatabaseName", 
 	path.join(process.cwd(), "databases"),
 	[
-		{name: "Users", model: User}, 
-		{name: "Admins", model: User}, 
-		{name: "Profiles", model: Profile},
-		{name: "Config", model: Settings}
+		new CollectionListEntry(name: "Users", model: User), 
+		new CollectionListEntry(name: "Admins", model: User), 
+		new CollectionListEntry(name: "Profiles", model: Profile),
+		new CollectionListEntry(name: "Config", model: Settings)
 	]
 );
 ```
@@ -232,15 +232,16 @@ class Profile extends NedbDocument {
 	constructor(data, databaseName, collectionName){
 		super(data, databaseName, collectionName);
 
-		this.username = {
-			type: String,
-			required: true
-		}
-
-		this.user = {
-			type: User,
-			collection: "Users",
-			required: true
+		this.rules = {
+			username: {
+				type: String,
+				required: true
+			}
+			user: {
+				type: User,
+				required: true,
+				collection: "Users"
+			}
 		}
 
 	}
