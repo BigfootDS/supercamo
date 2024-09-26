@@ -15,13 +15,11 @@
  * import {SuperCamo} from "@bigfootds/supercamo";
  * ```
  * 
- 
  * 
  * @module Package Exports
  * @category Guides
  * @packageDocumentation
  */
-
 
 export { CollectionAccessor } from "./structures/classes/CollectionAccessor";
 export { CollectionListEntry } from "./structures/classes/CollectionListEntry";

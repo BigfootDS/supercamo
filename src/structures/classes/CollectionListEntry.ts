@@ -32,7 +32,26 @@
 import { CollectionsListEntry } from "../interfaces/CollectionsListEntryInterface";
 import { NedbDocument } from "./NedbDocument";
 
-
+/**
+ * The data structure used by NedbClients to initialise a collection when setting up a database connection.
+ * 
+ * You, as a user of the SuperCamo package, will typically use this class when first connecting to a database - and no other times.
+ * 
+ * @example 
+ * ```js
+ * let newClient = SuperCamo.clientConnect(
+		"ExampleDatabase",
+		"./ExampleDatabase/",
+		[
+			new CollectionListEntry("Users", User),
+		]
+	);
+ * ```
+ * 
+ * @author BigfootDS
+ *
+ * @class
+ */
 export class CollectionListEntry implements CollectionsListEntry {
 	name: string;
 	model: typeof NedbDocument;

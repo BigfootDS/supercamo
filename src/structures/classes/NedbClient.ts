@@ -40,7 +40,6 @@ import { CollectionListEntry } from "./CollectionListEntry";
 import { findManyDocumentsOptions, findManyObjectsOptions, findOneObjectOptions, updateManyOptions, updateOptions } from "../interfaces/QueryOptions";
 import { CollectionAccessError } from "../errors/NedbClientErrors";
 
-
 export class NedbClient implements NedbClientEntry {
 	
 	/**
@@ -256,15 +255,34 @@ export class NedbClient implements NedbClientEntry {
 
 	//#region Database General Data Utilities
 
-	dumpDatabaseAsObjects = async () => {
+	
+	/**
+	 * Dump the entirety of all data stored in this database client. All documents from all collections.
+	 * 
+	 * Data is combined into a JSON string, and that string is returned.
+	 * 
+	 * Not yet implemented!
+	 * @author BigfootDS
+	 *
+	 * @ignore
+	 * @returns {Promise<string>}
+	 */
+	dumpDatabaseAsObjects = async (): Promise<string> => {
+		let jsonStringResult: string = "";
 
+		return jsonStringResult;
 	}
 
-	dumpDatabaseAsDocuments = async () => {
-		
-	}
-
-	dropDatabase = async () => {
+	
+	/**
+	 * Delete all documents in all collections within this database. Highly destructive.
+	 * Could use more work.
+	 * @author BigfootDS
+	 *
+	 * 
+	 * @returns {Promise<void>}
+	 */
+	dropDatabase = async (): Promise<void> => {
 		for await (const collectionAccessor of this.collections){
 			await this.deleteCollectionByName(collectionAccessor.name);
 		}
@@ -374,7 +392,7 @@ export class NedbClient implements NedbClientEntry {
 	//#region Collection-specific Data READ Utilities
 	
 	/**
-     * Query a collection and receive the first document matching that query.
+     * Query a collection and receive the first document matching that query, returned as a document instance.
      * 
      * This method is NOT compatible with NeDB projections, and thus returns an instance of the document used by the specified collection.
      * 
@@ -395,6 +413,19 @@ export class NedbClient implements NedbClientEntry {
         }
 	}
 
+	/**
+     * Query a collection and receive the first document matching that query, returned as a plain object.
+     * 
+     * This method is compatible with NeDB projections, allowing you to trim the returned data. Read more in [the NeDB documentation](https://github.com/seald/nedb?tab=readme-ov-file#projections).
+     * 
+     * @author BigfootDS
+     *
+     * 
+     * @param {string} collectionName The name of the collection that you wish to search through.
+     * @param {object} query The NeDB query used to find the specific document within the collection. Read more about NeDB queries here: https://github.com/seald/nedb?tab=readme-ov-file#finding-documents
+	 * @param {findOneObjectOptions} [options] Optional. Configuration for this database operation.
+     * @returns {Promise<object | null>} An instance of the collection's model.
+     */
 	findOneObject = async (collectionName: string, query: object, options?: findOneObjectOptions): Promise<object | null> => {
 		let accessor = this.getCollectionAccessor(collectionName);
         let result = await accessor.datastore.findOneAsync(query, options?.projection);
@@ -405,6 +436,21 @@ export class NedbClient implements NedbClientEntry {
         }
 	}
 
+	/**
+     * Query a collection and return an array of document instances matching that query.
+     * 
+     * This method is NOT compatible with NeDB projections.
+     * 
+	 * Even if nothing matches the given query, an array is returned.
+	 * 
+     * @author BigfootDS
+     *
+     * 
+     * @param {string} collectionName The name of the collection that you wish to search through.
+     * @param {object} query The NeDB query used to find the specific document within the collection. Read more about NeDB queries here: https://github.com/seald/nedb?tab=readme-ov-file#finding-documents
+	 * @param {findManyDocumentsOptions} [options] Optional. Configuration for this database operation.
+     * @returns {Promise<NedbDocument[]>} An instance of the collection's model.
+     */
 	findManyDocuments = async (collectionName: string, query: object, options?: findManyDocumentsOptions): Promise<NedbDocument[]> => {
 		let accessor = this.getCollectionAccessor(collectionName);
         let result = await accessor.datastore.findAsync(query);
@@ -424,6 +470,21 @@ export class NedbClient implements NedbClientEntry {
         }
 	}
 
+	/**
+     * Query a collection and return an array of objects matching that query, where each object is a document's data.
+     * 
+     * This method is compatible with NeDB projections, allowing you to trim the returned data. Read more in [the NeDB documentation](https://github.com/seald/nedb?tab=readme-ov-file#projections).
+     * 
+	 * Even if nothing matches the given query, an array is returned.
+	 * 
+     * @author BigfootDS
+     *
+     * 
+     * @param {string} collectionName The name of the collection that you wish to search through.
+     * @param {object} query The NeDB query used to find the specific document within the collection. Read more about NeDB queries here: https://github.com/seald/nedb?tab=readme-ov-file#finding-documents
+	 * @param {findManyObjectsOptions} [options] Optional. Configuration for this database operation.
+     * @returns {Promise<object[]>} An instance of the collection's model.
+     */
 	findManyObjects = async (collectionName: string, query: object, options?: findManyObjectsOptions): Promise<object[]> => {
 		let accessor = this.getCollectionAccessor(collectionName);
         let result = await accessor.datastore.findAsync(query, options?.projection);
@@ -455,6 +516,18 @@ export class NedbClient implements NedbClientEntry {
 	//#endregion
 
 	//#region Collection-specific Data UPDATE Utilities
+	
+	
+	/**
+	 * Search a database for a singular matched document and modify it, returning the modified document as a document instance.
+	 * @author BigfootDS
+	 *
+	 * @param {string} collectionName The name of the database collection to query.
+	 * @param {object} query The query to run to find the relevant document.
+	 * @param {object} newData The data to apply to the found document.
+	 * @param {updateOptions} [options] Optional. The options that can be used in this operation.
+	 * @returns {Promise<NedbDocument|null>}
+	 */
 	findAndUpdateOneDocument = async (collectionName: string, query: object, newData: object, options?: updateOptions): Promise<NedbDocument|null> => {
 		// This object could be refactored, we're only really using upsert now.
 		let localOptionsObj: object = {
@@ -495,6 +568,16 @@ export class NedbClient implements NedbClientEntry {
 		return existingDoc;
 	}
 
+	/**
+	 * Search a database for a singular matched document and modify it, returning the modified document as a plain object.
+	 * @author BigfootDS
+	 *
+	 * @param {string} collectionName The name of the database collection to query.
+	 * @param {object} query The query to run to find the relevant document.
+	 * @param {object} newData The data to apply to the found document.
+	 * @param {updateOptions} [options] Optional. The options that can be used in this operation.
+	 * @returns {Promise<object|null>}
+	 */
 	findAndUpdateOneObject = async (collectionName: string, query: object, newData: object, options?: updateOptions): Promise<object|null> => {
 		// This object could be refactored, we're only really using upsert now.
 		let localOptionsObj: object = {
@@ -536,6 +619,19 @@ export class NedbClient implements NedbClientEntry {
 		return await existingDoc.toPopulatedObject();
 	}
 
+	/**
+	 * Search a database for one  or more matched documents and modify them, returning the modified documents as an array of document instances.
+	 * 
+	 * If no documents match the given query, this function will return an empty array.
+	 * 
+	 * @author BigfootDS
+	 *
+	 * @param {string} collectionName The name of the database collection to query.
+	 * @param {object} query The query to run to find the relevant document.
+	 * @param {object} newData The data to apply to the found document.
+	 * @param {updateManyOptions} [options] Optional. The options that can be used in this operation.
+	 * @returns {Promise<NedbDocument[]>}
+	 */
 	findAndUpdateManyDocuments = async (collectionName: string, query: object, newData: object, options?: updateManyOptions): Promise<NedbDocument[]> => {
 		// This object could be refactored, we're only really using upsert now.
 		let localOptionsObj: updateManyOptions = {
@@ -590,7 +686,19 @@ export class NedbClient implements NedbClientEntry {
 
 
 
-
+/**
+	 * Search a database for one  or more matched documents and modify them, returning the modified documents as an array of plain objects.
+	 * 
+	 * If no documents match the given query, this function will return an empty array.
+	 * 
+	 * @author BigfootDS
+	 *
+	 * @param {string} collectionName The name of the database collection to query.
+	 * @param {object} query The query to run to find the relevant document.
+	 * @param {object} newData The data to apply to the found document.
+	 * @param {updateManyOptions} [options] Optional. The options that can be used in this operation.
+	 * @returns {Promise<object[]>}
+	 */
 	findAndUpdateManyObjects = async (collectionName: string, query: object, newData: object, options?: updateManyOptions): Promise<object[]> => {
 		// This object could be refactored, we're only really using upsert now.
 		let localOptionsObj: updateManyOptions = {

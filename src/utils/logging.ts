@@ -1,5 +1,37 @@
-/** @module Internal
-  * @ignore 
+/**
+ * Configured logging system for the SuperCamo package.
+ * 
+ * This is not something for users of the SuperCamo package to directly use. Instead, this is something impacted by usage of the NODE_DEBUG environment variable.
+ * 
+ * For example, if you want logging from multiple packages, including SuperCamo, you may want to set NODE_DEBUG to be or include "verbose". This would enable multiple packages to log.
+ * But if you only want SuperCamo to log, and not any other packages, you may want to set NODE_DEBUG to be or include "supercamo".
+ * 
+ * The list of relevant `NODE_DEBUG` values are:
+ * 
+ * ```
+ * "verbose"
+ * "supercamo"
+ * "supercamo:root"
+ * "supercamo:document"
+ * "supercamo:embeddeddocument"
+ * "supercamo:basedocument"
+ * "supercamo:client"
+ * "supercamo:validators"
+ * ```
+* @example
+ * <caption>Running your app with this command would enable logging for anything that uses "verbose" in its util logger:</caption>
+ * 
+ * NODE_DEBUG=verbose node ./index.js	
+ * 
+ * 
+ * @example 
+ * <caption>Running your app with this command would enable logging for just SuperCamo, NodeJS "fs", and NodeJS "network" libraries:</caption>
+ * 
+ * NODE_DEBUG=supercamo,fs,network node ./index.js
+ * 
+ * @author BigfootDS
+ * @module Logging
+ * @category Reference 
  */
 
 
@@ -28,25 +60,25 @@ log.superCamoValidators("Starting SuperCamo with SuperCamo validator-specific ve
 
 
 /**
- * Configured logging system for the SuperCamo package.
+ * 
  * 
  * Pass a string to this, and it'll automatically figure out which NodeJS util.DebugLogger to use.
  * 
- * This is not something for users of the SuperCamo package to directly use. Instead, this is something impacted by usage of the NODE_DEBUG environment variable.
+ * This is not a function that you should be using within your own project's code, but this is more for anyone who is contributing to SuperCamo development to use.
  * 
- * For example, if you want logging from multiple packages, including SuperCamo, you may want to set NODE_DEBUG to be or include "verbose". This would enable multiple packages to log.
- * But if you only want SuperCamo to log, and not any other packages, you may want to set NODE_DEBUG to be or include "supercamo".
+ * If you're not a contributor, you may just wanna stick to the parent "Logging" page so you can see the `NODE_DEBUG` values that you can use to see this package's logger output instead.
  * 
- * @example
- * <caption>Running your app with this command would enable logging for anything that uses "verbose" in its util logger:</caption>
- * 
- * NODE_DEBUG=verbose node ./index.js	
- * 
+ * You would use this within the SuperCamo package's code in place of `console.log` statements. Refer to the example section below.
  * 
  * @example 
- * <caption>Running your app with this command would enable logging for just SuperCamo, NodeJS "fs", and NodeJS "network" libraries:</caption>
+ * ```js
+ * import { SuperCamoLogger } from "../../utils/logging";
  * 
- * NODE_DEBUG=supercamo,fs,network node ./index.js
+ * SuperCamoLogger("This message will only print if the NODE_DEBUG value includes 'supercamo' in it.");
+ * 
+ * SuperCamoLogger("This message will only print if the NODE_DEBUG value includes 'supercamo:basedocument' in it.", "BaseDocument");
+ * ```
+ * 
  * 
  * 
  * @author BigfootDS

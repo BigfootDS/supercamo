@@ -26,7 +26,6 @@ let goodValidVrtData = {
 	exampleValidateRule: "Hello, world!"
 };
 
-
 /**
  * @type {NedbClient}
  * @author BigfootDS

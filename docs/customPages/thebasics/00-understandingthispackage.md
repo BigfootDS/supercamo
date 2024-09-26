@@ -24,7 +24,7 @@ async function connect(){
 	// Connect to the database
 	databaseInstance = await SuperCamo.connect(
 		"BasicExampleDatabase", 
-		path.join(process.cwd(), ".sandbox" , "databases"),
+		path.join(process.cwd(), "databases", "BasicExampleDatabase"),
 		[
 			{name:"Users", model:User},
 			{name: "Articles", model: Article}
@@ -43,7 +43,7 @@ const express = require("express");
 const router = express.Router();
 
 const SuperCamo = require("@bigfootds/supercamo");
-const databaseInstance = SuperCamo.getClientByName("BasicExampleDatabase");
+const databaseInstance = SuperCamo.clientGet("BasicExampleDatabase");
 
 router.get("/all", async (request, response) => {
 	let availableArticles = await databaseInstance.findManyObjects("Articles", {});
@@ -63,16 +63,18 @@ Declaring a document is how you can define a schema or structure for your data.
 Like so:
 
 ```js
-const NedbDocument = require("@bigfootds/supercamo/NedbDocument");
+const {NedbDocument} = require("@bigfootds/supercamo");
 
 class User extends NedbDocument {
 	constructor(data, databaseName, collectionName){
 		super(data, databaseName, collectionName);
 		
-		this.username = {
-			type: String,
-			required: true,
-			unique: true
+		this.rules = {
+			username: {
+				type: String,
+				required: true,
+				unique: true
+			}
 		}
 
 	}
@@ -108,7 +110,7 @@ Embedded documents have their own validation step, so you can configure validati
 For example:
 
 ```js
-const NedbEmbeddedDocument = require('@bigfootds/supercamo/NedbEmbeddedDocument');
+const {NedbEmbeddedDocument} = require('@bigfootds/supercamo');
 const ISO6391 = require('iso-639-1');
 let allowedLanguageCodes = ISO6391.getAllCodes();
 
@@ -116,28 +118,28 @@ class LocalizedContent extends NedbEmbeddedDocument {
 	constructor(data, databaseName, collectionName){
 		super(data, databaseName, collectionName);
 
-		/**
-		 * A two-letter language code that matches the language of this subdocument's name and content.
-		 * Examples: "EN", "FR", "DE"
-		 * Refer to the ISO-639-1 standard online for the full list of usable codes.
-		 */
-		this.language = {
-			type: String,
-			choices: allowedLanguageCodes,
-			unique: false,
-			required: true
-		}
-
-		/**
-		 * Content written in the language assigned to this.language.
-		 */
-		this.content = {
-			type: String,
-			required: true,
-			unique: false
+		this.rules = {
+			/**
+			 * A two-letter language code that matches the language of this subdocument's name and content.
+			 * Examples: "EN", "FR", "DE"
+			 * Refer to the ISO-639-1 standard online for the full list of usable codes.
+			 */
+			language: {
+				type: String,
+				choices: allowedLanguageCodes,
+				unique: false,
+				required: true
+			},
+			/**
+			 * Content written in the language assigned to this.language.
+			 */
+			content: {
+				type: String,
+				required: true,
+				unique: false
+			}
 		}
 	}
-
 }
 
 
@@ -161,4 +163,4 @@ Read more about the SuperCamo database client on [its tutorial page](./04-dbclie
 
 So, those are the four main components to SuperCamo. If that sounds interesting to you, keep digging into this documentation and start coding! 
 
-Go and [get started!](./05-gettingstarted.md)
+Go and [get started!](../00%20-%20QuickStart.md)

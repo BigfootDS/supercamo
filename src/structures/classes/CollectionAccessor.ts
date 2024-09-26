@@ -33,6 +33,19 @@ import Nedb from "@seald-io/nedb";
 import { CollectionAccessor as ICollectionAccessor } from "../interfaces/CollectionAccessorInterface";
 import { NedbDocument } from "./NedbDocument";
 
+
+/**
+ * The data structure used by NedbClients to manage their collections of documents.
+ * 
+ * The path and datastore are used in the actual persisting of the data by NeDB.
+ * 
+ * The name and model are used by SuperCamo to determine what document rules to apply to the collection's data.
+ * 
+ * This is not a class that you, as a user of the SuperCamo package, will typically interact with or use directly at all.
+ * @author BigfootDS
+ *
+ * @class
+ */
 export class CollectionAccessor implements ICollectionAccessor {
 	name: string;
 	model: typeof NedbDocument;

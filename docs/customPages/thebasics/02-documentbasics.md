@@ -15,7 +15,7 @@ Declaring a document is how you can define a schema or structure for your data.
 Like so:
 
 ```js
-const NedbDocument = require("@bigfootds/supercamo/NedbDocument");
+const {NedbDocument} = require("@bigfootds/supercamo");
 
 class User extends NedbDocument {
 	constructor(data, databaseName, collectionName){
@@ -86,10 +86,10 @@ If you want to work with a document directly, you can do so:
 
 ```js
 let foundUser = await databaseInstance.findOneDocument("Users", {username: "Bigfoot"}, true);
-let foundUserData = await foundUser.getData();
+console.log(foundUser.data);
 ```
 
-The above example queries for a user with a username that exactly matches `"Bigfoot"`, and returns an instance of the User document with the data of that matching user. However, to actually retrieve its values, you must call `.getData()` on the instance.
+The above example queries for a user with a username that exactly matches `"Bigfoot"`, and returns an instance of the User document with the data of that matching user. 
 
 Documents can refer to other documents, specify minimum and maximum values of properties, restrict property values to a set of choices, and more.
 You can read more about Document usage and functionalities in other pages - this is just a brief intro for now! 😉

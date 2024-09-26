@@ -26,7 +26,6 @@
  * SuperCamo.clientConnect(/* params go here *\/);
  * ```
  * 
- * 
  */
 
 import { DocumentConstructorData } from "../interfaces/DocumentBaseDataInterface";

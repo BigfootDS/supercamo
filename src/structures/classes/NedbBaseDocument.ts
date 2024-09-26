@@ -43,6 +43,7 @@ import { SuperCamo } from "./SuperCamo";
  * The core, base functionality of both Documents and Embedded Documents.
  * 
  * Your own code shouldn't inherit from this class, but instead inherit from Document or Embedded Document classes.
+ * 
  * @author BigfootDS
  * @module Classes
  * @category Reference
@@ -820,5 +821,4 @@ export abstract class NedbBaseDocument implements BaseDocument {
 	toString(){
 		return this.toJSON();
 	}
-
 }

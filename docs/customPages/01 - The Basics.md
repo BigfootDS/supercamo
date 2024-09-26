@@ -8,7 +8,6 @@ children:
   - ./thebasics/02-documentbasics.md
   - ./thebasics/03-embeddeddocumentbasics.md
   - ./thebasics/04-dbclientbasics.md
-  - ./thebasics/05-gettingstarted.md
 ---
 
 This section introduces the fundamental concepts that this package relies on. There are only a few main components. In general, when using this package, you will want to:

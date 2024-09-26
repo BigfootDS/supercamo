@@ -12,7 +12,7 @@ Embedded documents have their own validation step, so you can configure validati
 For example:
 
 ```js
-const NedbEmbeddedDocument = require('@bigfootds/supercamo/NedbEmbeddedDocument');
+const {NedbEmbeddedDocument} = require('@bigfootds/supercamo');
 const ISO6391 = require('iso-639-1');
 let allowedLanguageCodes = ISO6391.getAllCodes();
 
@@ -53,7 +53,7 @@ module.exports = { LocalizedContent };
 The embedded document above provides a way to structure localized content. So, an Article document would then use the LocalizedContent embedded document like this - an array of localized content to represent article translations:
 
 ```js
-const NedbDocument = require("@bigfootds/supercamo/NedbDocument");
+const {NedbDocument} = require("@bigfootds/supercamo");
 const { LocalizedContent } = require("../subdocuments/LocalizedContent");
 
 class Article extends NedbDocument {

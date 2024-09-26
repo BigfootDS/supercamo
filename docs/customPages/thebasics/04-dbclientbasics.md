@@ -16,7 +16,7 @@ const SuperCamo = require("@bigfootds/supercamo");
 
 let exampleDb = await SuperCamo.connect(
 	"SomeDatabaseName", 
-	path.join(process.cwd(), "databases"),
+	path.join(process.cwd(), "databases", "SomeDatabaseName"),
 	[
 		{name: "Users", model: User}, 
 		{name: "Admins", model: User}, 
@@ -35,7 +35,7 @@ const SuperCamo = require("@bigfootds/supercamo");
 
 let exampleDb = await SuperCamo.connect(
 	"SomeDatabaseName", 
-	path.join(process.cwd(), "databases"),
+	path.join(process.cwd(), "databases", "SomeDatabaseName"),
 	[
 		{name: "Users", model: User}, 
 		{name: "Admins", model: User}, 
@@ -46,7 +46,7 @@ let exampleDb = await SuperCamo.connect(
 
 let anotherDb = await SuperCamo.connect(
 	"SomeOtherDatabaseName", 
-	path.join(process.cwd(), "databases"),
+	path.join(process.cwd(), "databases", "SomeOtherDatabaseName"),
 	[
 		{name: "Users", model: User}, 
 		{name: "Admins", model: User}, 
