@@ -2,210 +2,210 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/index.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/hierarchy.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/documents/Quick_Start.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/documents/The_Basics.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/documents/The_Basics.00___Understanding_This_Package.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/documents/The_Basics.01___The_SuperCamo_Singleton.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/documents/The_Basics.02___Document_Basics.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/documents/The_Basics.03___Embedded_Document_Basics.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/documents/The_Basics.04___DB_Client_Basics.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/documents/Tips___Tricks.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/modules/Classes.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/classes/Classes.CollectionAccessor.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/classes/Classes.CollectionListEntry.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/classes/Classes.NedbBaseDocument.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/classes/Classes.NedbClient.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/classes/Classes.NedbDocument.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/classes/Classes.NedbEmbeddedDocument.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/classes/Classes.SuperCamo.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/modules/Error_Classes.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/classes/Error_Classes.CollectionAccessError.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/classes/Error_Classes.DeleteFailure.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/classes/Error_Classes.PostDeleteFailure.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/classes/Error_Classes.PostSaveFailure.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/classes/Error_Classes.PostValidationFailure.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/classes/Error_Classes.PreDeleteFailure.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/classes/Error_Classes.PreSaveFailure.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/classes/Error_Classes.PreValidationFailure.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/classes/Error_Classes.SaveFailure.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/classes/Error_Classes.ValidationFailure.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/classes/Error_Classes.ValidationFailureMinMaxError.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/classes/Error_Classes.ValidationFailureMissingValueForProperty.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/classes/Error_Classes.ValidationFailureMissingValueForReferencedDoc.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/classes/Error_Classes.ValidationFailureReferenceWithoutDatabase.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/classes/Error_Classes.ValidationFailureUnexpectedProperty.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/classes/Error_Classes.ValidationFailureValueNotInChoices.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/modules/Interfaces.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/interfaces/Interfaces.BaseDocument.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/interfaces/Interfaces.CollectionAccessor.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/interfaces/Interfaces.CollectionsListEntry.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/interfaces/Interfaces.DocumentBaseData.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/interfaces/Interfaces.DocumentConstructorData.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/interfaces/Interfaces.DocumentKeyRule.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/interfaces/Interfaces.DocumentObjectData.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/interfaces/Interfaces.findManyDocumentsOptions.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/interfaces/Interfaces.findManyObjectsOptions.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/interfaces/Interfaces.findOneObjectOptions.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/interfaces/Interfaces.NedbClientEntry.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/interfaces/Interfaces.updateManyOptions.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/interfaces/Interfaces.updateOptions.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/modules/Logging.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/functions/Logging.SuperCamoLogger.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 	<url>
 		<loc>https://bigfootds.github.io/supercamo/modules/Package_Exports.html</loc>
-		<lastmod>2024-09-26T01:49:50.514Z</lastmod>
+		<lastmod>2024-09-26T01:50:40.391Z</lastmod>
 	</url>
 </urlset>
