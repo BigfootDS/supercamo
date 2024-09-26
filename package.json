@@ -2,16 +2,26 @@
   "name": "@bigfootds/supercamo",
   "version": "0.4.4",
   "description": "Camo-inspired ODM for NeDB, built specifically for BigfootDS' needs.",
-  "main": "src/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "exports": {
-    ".": "./src/SuperCamo.js",
-    "./NedbDocument": "./src/structures/documents/NedbDocument.js",
-    "./NedbEmbeddedDocument": "./src/structures/documents/NedbEmbeddedDocument.js",
-    "./NedbClient": "./src/structures/database/NedbClient.js",
-    "./NedbBaseDocument": "./src/structures/documents/NedbBaseDocument.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./structures/*": null,
+    "./utils/*": null,
+    "./validators/*": null
   },
   "scripts": {
-    "build:docs": "jsdoc ./src -r -c ./jsdoc.json"
+    "dev": "ts-node ./src/index.ts",
+    "build:code": "tsc",
+    "build:docs:js": "jsdoc ./src -r -c ./jsdoc.json",
+    "build:docs:ts": "typedoc --options ./typedoc.json",
+    "dev:docs:ts":"typedoc --watch --options ./typedoc.json",
+    "test:js": "npm run build:code && jest ./tests/js/* --watch --config ./jest-js.config.js --runInBand",
+    "test:js:ci": "npm run build:code && jest ./tests/js/* --config ./jest-js.config.js --runInBand",
+    "test:js:cc": "npm run build:code && jest ./tests/js/* --watch --config ./jest-js.config.js --runInBand --coverage=true"
   },
   "repository": {
     "type": "git",
@@ -48,7 +58,16 @@
     "@seald-io/nedb": "^4.0.4"
   },
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.14.10",
     "clean-jsdoc-theme": "^4.3.0",
-    "jsdoc": "^4.0.3"
+    "jest": "^29.7.0",
+    "jsdoc": "^4.0.3",
+    "ts-jest": "^29.2.4",
+    "typedoc": "^0.26.7",
+    "typedoc-github-theme": "^0.1.2",
+    "typedoc-plugin-merge-modules": "^6.0.1",
+    "typescript": "^5.5.3"
   }
 }

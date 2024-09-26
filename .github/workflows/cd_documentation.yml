@@ -13,15 +13,17 @@ on:
     workflows: ["Build & Release to NPM"]
     types: [completed]
   workflow_dispatch:
+  push: 
+    branches: ["main"]
 
 
 jobs:
   convert_jsdoc_to_website:
-    name: Convert JSDoc to Website
+    name: Run TypeDoc to build website
     runs-on: ubuntu-latest
     steps:
     - run: |
-        echo Running jsdoc now...
+        echo Running typedoc now...
 
     - uses: actions/checkout@v4
       with:
@@ -37,7 +39,7 @@ jobs:
       run: npm install
     
     - name: Generate website
-      run: npm run build:docs
+      run: npm run build:docs:ts
 
     - name: Deploy
       uses: s0/git-publish-subdir-action@develop

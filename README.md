@@ -1,6 +1,8 @@
 # @bigfootds/supercamo
 
-Camo-inspired object data modeller (ODM) for NeDB, built specifically for BigfootDS' needs.
+SuperCamo is a Camo-inspired object data modeller (ODM) for NeDB, built specifically for BigfootDS' needs.
+
+This package was inspired by Scott Robinson's [Camo](https://github.com/scottwrobinson/camo) ODM - but BigfootDS had some specific needs and an urge to try out TypeScript. We greatly appreciate what Camo is and does!
 
 ## The URLs
 
@@ -36,7 +38,7 @@ npm install @bigfootds/supercamo
 
 ## The usage
 
-This package is intended for usage in back-end JavaScript systems - anything that is built with _and runs on_ NodeJS, not the browser. Might work in the browser, but it is not supported by BigfootDS at all. We're more after ExpressJS server usage and ElectronJS "main" process usage.
+This package is intended for usage in back-end JavaScript systems - anything that is built with _and runs on_ NodeJS, not the browser. Might work in the browser - we haven't tested it in the browser ourselves - we only have a need for NodeJS compatibility at this time. We're specifically after ExpressJS server usage and ElectronJS "main" process usage.
 
 ### Concepts
 
@@ -49,7 +51,7 @@ Essentially:
 - This library lets you create custom NedbClients.
 - Each custom NedbClient that you create must include a list of Documents allowed to exist in that database client's database. 
 	- EmbeddedDocuments do not need specifying, as they can only be used within Documents anyway.
-- When performing queries on Documents, you must instead perform queries on a specific database client's reference to the Document. eg. no more `Document.findOne();`, but instead `SomeClient.findOne("CollectionName", query);`.
+- When performing queries on Documents, you must instead perform queries on a specific database client's reference to the Document. eg. no more `Document.findOne();`, but instead `SomeClient.findOneDocument("CollectionName", query);`.
 
 ### Declare Your Models
 
@@ -62,54 +64,52 @@ module.exports = class User extends NedbDocument {
 	constructor(data, databaseName, collectionName){
 		super(data, databaseName, collectionName);
 
-		this.name = {
-			type: String,
-			required: true
-		}
-
-		this.email = {
-			type: String,
-			required: true
-		}
-
-		this.company = {
-			type: String,
-			required: true,
-			default: "BigfootDS"
-		}
-
-		this.luckyNumber = {
-			type: Number,
-			required: false,
-			default: () => {
-				return Math.floor(Math.random() * 100) 
-			}
-		}
-
-		this.assignedPokemonOne = {
-			type: String,
-			required: true,
-			default: async () => {
-				let pokemonNumber = Math.floor(Math.random() * 1025);
-				let response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonNumber}`);
-				let data = await response.json();
-				return data.name;
-			}
-		}
-
-		this.assignedPokemonTwo = {
-			type: String,
-			required: false,
-			default: new Promise((resolve, reject) => {
-				let pokemonNumber = Math.floor(Math.random() * 1025);
-				fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonNumber}`).then(response => response.json()).then((data) => {
-					resolve(data.name);
-				}).catch((error) => {
-					// No reject() since we want this fallback data to be accepted if the fetch fails.
-					resolve("pikachu");
+		this.rules = {
+			name: {
+				type: String,
+				required: true
+			},
+			email: {
+				type: String,
+				required: true,
+				unique: true
+			},
+			company: {
+				type: String,
+				required: true,
+				default: "BigfootDS"
+			},
+			luckyNumber: {
+				type: Number,
+				required: false,
+				default: () => {
+					return Math.floor(Math.random() * 100) 
+				}
+			},
+			assignedPokemonOne: {
+				type: String,
+				required: true,
+				default: async () => {
+					let pokemonNumber = Math.floor(Math.random() * 1025);
+					let response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonNumber}`);
+					let data = await response.json();
+					return data.name;
+				}
+			},
+			assignedPokemonTwo: {
+				type: String,
+				required: false,
+				default: new Promise((resolve, reject) => {
+					let pokemonNumber = Math.floor(Math.random() * 1025);
+					fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonNumber}`).then(response => response.json()).then((data) => {
+						resolve(data.name);
+					}).catch((error) => {
+						// No reject() since we want this fallback data to be accepted if the fetch fails.
+						resolve("pikachu");
+					})
 				})
-			})
-		}
+			}
+		};
 	}
 }
 ```
@@ -119,11 +119,6 @@ Some points of difference here, compared to the original Camo library:
 - We do allow a document property to be both required **and** have a default value. So if no value is provided for `company` when making instances of the model shown above, it will not throw an error - it will just set the value to `"BigfootDS"` and move on.
 - Whatever value `default` has must evaluate into a supported data type. This means that `default` can be a value, a function, an async function, or promise. 
 
-```
-HEY!
-
-We're still working on this package. Pretty sure Document references and EmbeddedDocuments do nothing right now, as we haven't touched those yet. This package will actively change a lot in 2024!
-```
 
 
 ### Instantiating a Database Client
@@ -133,11 +128,11 @@ Once you have a model created, you can create an instance of a database client.
 Essentially, we must tell each database client instance which models they're allowed to use. We do this by specifying a key-value pair list of collections and their models.
 
 ```js
-const SuperCamo = require("@bigfootds/supercamo");
+const {SuperCamo, CollectionListEntry} = require("@bigfootds/supercamo");
 
 let exampleDb = await SuperCamo.connect(
 	"SomeDatabaseName", 
-	path.join(process.cwd(), "databases"),
+	path.join(process.cwd(), "databases", "SomeDatabaseName"),
 	[
 		{name: "Users", model: User}, 
 		{name: "Admins", model: User}, 
@@ -152,7 +147,7 @@ As you can see in the code above, we can use a model in multiple collections in 
 Since these database client instances are entirely self contained, we can create more and more of them.
 
 ```js
-const SuperCamo = require("@bigfootds/supercamo");
+const {SuperCamo, CollectionListEntry} = require("@bigfootds/supercamo");
 
 let exampleDb = await SuperCamo.connect(
 	"SomeDatabaseName", 
@@ -215,11 +210,11 @@ Basically, you should be able to create your database clients in File A and cont
 
 ```js
 
-const SuperCamo = require("@bigfootds/supercamo");
+const {SuperCamo} = require("@bigfootds/supercamo");
 
-console.log(SuperCamo.getClientList());
+console.log(SuperCamo.clientList());
 
-let dbInstance = SuperCamo.getClientByName("SomeDatabaseName");
+let dbInstance = SuperCamo.clientGet("SomeDatabaseName");
 
 let foundUsers = await dbInstance.findManyDocuments("Users", {});
 console.log(foundUsers);
@@ -231,7 +226,9 @@ console.log(foundUsers);
 Documents can reference other documents. You would do this by defining a property in one document using the other document as a data type, like so:
 
 ```js
-class Profile extends SuperCamo.NedbDocument {
+const {NedbDocument} = require("@bigfootds/supercamo");
+
+class Profile extends NedbDocument {
 	constructor(data, databaseName, collectionName){
 		super(data, databaseName, collectionName);
 
@@ -256,19 +253,19 @@ You would then work with that data like so:
 
 ```js
 let existingUser = await exampleDb.findOneDocument("Users", {email:"alex@bigfootds.com"});
-let existingUserData = await existingUser.getData();
-let existingUserId = existingUserData._id;
+
 let newProfile = await exampleDb.insertOne("Profiles", {
 	username: "thebestalex", 
-	user: existingUserId,
+	user: existingUser._id,
 });
 ```
 
-When retrieving data, the query will populate all referenced documents by default.
+When retrieving data, the query will not populate any data. Instead, you must manually call `.toPopulatedObject()` on a document instance.
 
 ```js
 let existingProfile = await blogDb.findOneDocument("Profiles", {username: "thebestalex"});
-console.log(await existingProfile.getData());
+let populatedData = await existingProfile.toPopulatedObject();
+console.log(populatedData);
 ```
 
 ```js
@@ -287,27 +284,6 @@ console.log(await existingProfile.getData());
 }
 ```
 
-You can prevent document population by passing `false` to the `getData()` method:
-
-```js
-let existingProfile = await blogDb.findOneDocument("Profiles", {username: "thebestalex"});
-console.log(await existingProfile.getData(false));
-```
-
-```js
-{
-  _id: 'UE5t6EzCDTB1f6Ss',
-  username: 'thebestalex',
-  user: 'lX2uQosLgGPdHpbU',
-}
-```
-
-You can also work with populated query results from these methods on a database client instance:
-
-- findOneObject(collectionName, queryObject, shouldPopulate = false, projections = null)
-- findManyObjects(collectionName, queryObject, shouldPopulate = false, projections = null)
-
-Please note that not all methods will populate by default. If some method parameter with name along the lines of `shouldPopulate` or `populate` is set to false, data will not populate.
 
 ### Embedded Documents
 
@@ -316,7 +292,9 @@ Embedded documents (a.k.a "subdocuments") are a way to give a schema and validat
 Create them like so:
 
 ```js
-class ProfileFlags extends SuperCamo.NedbEmbeddedDocument {
+const {NedbEmbeddedDocument} = require("@bigfootds/supercamo");
+
+class ProfileFlags extends NedbEmbeddedDocument {
 	constructor(data, databaseName, collectionName){
 		super(data, databaseName, collectionName);
 
@@ -338,7 +316,9 @@ class ProfileFlags extends SuperCamo.NedbEmbeddedDocument {
 You would then use them in another document's schema as if they were a data type, like so:
 
 ```js
-class Profile extends SuperCamo.NedbDocument {
+const {NedbDocument} = require("@bigfootds/supercamo");
+
+class Profile extends NedbDocument {
 	constructor(data, databaseName, collectionName){
 		super(data, databaseName, collectionName);
 
@@ -402,15 +382,12 @@ Document population is not tied to embedded document functionality at all - the 
 }
 ```
 
-
-
-
-
 ## Example Projects
 
 Dig through these to see what else can be done with this library, and learn about how it's used in specific types of projects:
 
 - [NodeJS terminal app](https://github.com/BigfootDS/supercamo-example-basic)
+	- Uses SuperCamo v0.4.4
 - ExpressJS server - NOT YET IMPLEMENTED
 - ElectronJS app - NOT YET IMPLEMENTED
 
