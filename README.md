@@ -388,7 +388,6 @@ Document population is not tied to embedded document functionality at all - the 
 Dig through these to see what else can be done with this library, and learn about how it's used in specific types of projects:
 
 - [NodeJS terminal app](https://github.com/BigfootDS/supercamo-example-basic)
-	- Uses SuperCamo v0.4.4
 - ExpressJS server - NOT YET IMPLEMENTED
 - ElectronJS app - NOT YET IMPLEMENTED
 
