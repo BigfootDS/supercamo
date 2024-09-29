@@ -34,7 +34,6 @@ This package contains a heap of test code, so you may want to dig into the `test
 Alternatively, you can dig through these projects to see practical usage of this package, and learn about how it's used in specific types of projects:
 
 - [NodeJS terminal app](https://github.com/BigfootDS/supercamo-example-basic)
-	- Uses SuperCamo v0.4.4
 - ExpressJS server - NOT YET IMPLEMENTED
 - ElectronJS app - NOT YET IMPLEMENTED
 
