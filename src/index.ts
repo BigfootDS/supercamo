@@ -35,3 +35,32 @@ export { NedbClientErrors }
 
 import * as NedbBaseDocumentErrors from "./structures/errors/NedbBaseDocumentErrors";
 export { NedbBaseDocumentErrors }
+
+import { DocumentBaseData, DocumentConstructorData, DocumentObjectData } from "./structures/interfaces/DocumentBaseDataInterface";
+import { BaseDocument } from "./structures/interfaces/BaseDocumentInterface";
+import { CollectionAccessor } from "./structures/interfaces/CollectionAccessorInterface";
+import { CollectionsListEntry } from "./structures/interfaces/CollectionsListEntryInterface";
+import { DocumentKeyRule } from "./structures/interfaces/DocumentKeyRuleInterface";
+import { NedbClientEntry } from "./structures/interfaces/NedbClientEntryInterface";
+import { findManyDocumentsOptions, findManyObjectsOptions, findOneObjectOptions, updateManyOptions, updateOptions } from "./structures/interfaces/QueryOptions";
+
+
+interface SuperCamoInterfaces {
+	DocumentConstructorData: DocumentConstructorData,
+	DocumentObjectData: DocumentObjectData,
+	DocumentBaseData: DocumentBaseData,
+	BaseDocument: BaseDocument,
+	CollectionAccessor: CollectionAccessor,
+	CollectionsListEntry: CollectionsListEntry,
+	DocumentKeyRule: DocumentKeyRule,
+	NedbClientEntry: NedbClientEntry,
+	QueryOptions: {
+		findOneObjectOptions: findOneObjectOptions,
+		findManyObjectsOptions: findManyObjectsOptions,
+		findManyDocumentsOptions: findManyDocumentsOptions,
+		updateOptions: updateOptions,
+		updateManyOptions: updateManyOptions
+	}
+}
+
+export {SuperCamoInterfaces}
