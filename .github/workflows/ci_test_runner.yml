@@ -2,13 +2,18 @@ name: 'CI Test Runner'
 on:
   pull_request:
   workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+  checks: write
 jobs:
-  build-test:
+  test-run:
+    name: Run Project Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4         
       
-      - run: npm ci                       
+      - run: npm install                     
       
       - run: npm run test:js:ci           
 
@@ -17,3 +22,20 @@ jobs:
         with:
           name: test-results
           path: reports/jest-junit.xml
+
+  report:
+    name: Create Test Report
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Generate test report
+      uses: dorny/test-reporter@v1
+      id: reporter
+      with:
+        artifact: test-results            
+        name: Jest Test Report                  
+        path: '*.xml'                     
+        reporter: jest-junit           
+
+    - name: Show the test report URL
+      run: echo ${{ steps.reporter.outputs.url_html }}
