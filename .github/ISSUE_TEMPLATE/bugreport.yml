@@ -1,0 +1,62 @@
+name: Bug report
+description: Lodge an issue that you've had with this NodeJS package.
+title: '[Bug]: '
+labels: ["bug"]
+assignees:
+  - alexstormwood
+body:
+  - type: input
+    id: packageversion
+    attributes:
+      label: Package Version
+      description: Please enter the version defined in your project's "package.json" file.
+      value: v.X.X.X
+    validations:
+      required: true
+  - type: input
+    id: onesentence
+    attributes:
+      label: One-Sentence Description
+      description: Explain your issue, in brief.
+      placeholder: Kinda like an elevator pitch - get my attention real quick!
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Detailed Description
+      description: Explain your issue in depth here.
+      placeholder: 'Remember: code examples and console.log outputs are helpful here!'
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: >-
+        Select how much of a priority this issue is for your usage of this
+        package.
+      options:
+        - Quality of Life
+        - Can Be Worked Around
+        - Can't Be Worked Around, But Not A Blocker
+        - Implementation Blocker
+    validations:
+      required: true
+  - type: checkboxes
+    id: codeofconduct
+    attributes:
+      label: Code of Conduct
+      description: >-
+        I acknowledge and agree to abide by this repository's [code of conduct
+        and contributor
+        standards](https://github.com/BigfootDS/supercamo/blob/main/.github/CODE_OF_CONDUCT.md).
+        Especially the part about being nice to others!
+      options:
+        - label: Agree
+          required: true
+  - type: markdown
+    attributes:
+      value: >-
+        This template was generated with [Issue Forms
+        Creator](https://issue-forms-creator.netlify.app)

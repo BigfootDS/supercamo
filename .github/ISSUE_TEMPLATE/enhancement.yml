@@ -1,0 +1,55 @@
+name: Enhancement Request
+description: Request a nice, useful thing to be added to this package.
+title: '[Enhancement]: '
+labels:
+  - enhancement
+assignees:
+  - alexstormwood
+body:
+  - type: input
+    id: onesentence
+    attributes:
+      label: One-Sentence Description
+      description: Explain your request, in brief.
+      placeholder: Kinda like an elevator pitch - get my attention real quick!
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Explain your request in depth here.
+      placeholder: Comparisons to other packages, products, and projects are cool here.
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: >-
+        Select how much of a priority this request is for your usage of this
+        package.
+      options:
+        - Not Needed, Just Sounds Cool
+        - Quality of Life
+        - Would Remove A Hacky Workaround
+        - This Thing Missing Is A Dealbreaker For Me
+    validations:
+      required: true
+  - type: checkboxes
+    id: codeofconduct
+    attributes:
+      label: Code of Conduct
+      description: >-
+        I acknowledge and agree to abide by this repository's [code of conduct
+        and contributor
+        standards](https://github.com/BigfootDS/supercamo/blob/main/.github/CODE_OF_CONDUCT.md).
+        Especially the part about being nice to others!
+      options:
+        - label: Agree
+          required: true
+  - type: markdown
+    attributes:
+      value: >-
+        This template was generated with [Issue Forms
+        Creator](https://issue-forms-creator.netlify.app)
