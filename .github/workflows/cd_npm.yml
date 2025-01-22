@@ -1,13 +1,13 @@
 name: Build & Release to NPM
 
 on:
-  pull_request:
-    types:
-      - closed
-    branches: 
-      - main
+  # pull_request:
+  #   types:
+  #     - closed
+  #   branches: 
+  #     - main
   workflow_dispatch:
-  
+  workflow_call:
 
 jobs:
   draft_release:

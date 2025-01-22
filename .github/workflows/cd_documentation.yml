@@ -13,8 +13,8 @@ on:
     workflows: ["Build & Release to NPM"]
     types: [completed]
   workflow_dispatch:
-  push: 
-    branches: ["main"]
+  # push: 
+  #   branches: ["main"]
 
 
 jobs:

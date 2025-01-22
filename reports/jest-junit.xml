@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="89" failures="0" errors="0" time="1.664">
+  <testsuite name="tests\js\NedbClientUPDATE.test.js" errors="0" failures="0" skipped="0" timestamp="2025-01-22T03:37:26" time="0.413" tests="24">
+    <testcase classname="Database can perform UPDATE operations › findAndUpdateOneDocument operations" name="returns null when no data matches the given query." time="0.002">
+    </testcase>
+    <testcase classname="Database can perform UPDATE operations › findAndUpdateOneDocument operations" name="returns a document instance when given a valid query and valid update data, specifically for top-level document data." time="0.003">
+    </testcase>
+    <testcase classname="Database can perform UPDATE operations › findAndUpdateOneDocument operations" name="returns a document instance when given a valid query and valid update data, specifically for embedded document data." time="0.002">
+    </testcase>
+    <testcase classname="Database can perform UPDATE operations › findAndUpdateOneDocument operations" name="returns a document instance when given a valid query, data, and upsert option, when no document already matches the query." time="0.003">
+    </testcase>
+    <testcase classname="Database can perform UPDATE operations › findAndUpdateOneDocument operations" name="returns a document creation error when given a valid query and upsert option but invalid data." time="0.001">
+    </testcase>
+    <testcase classname="Database can perform UPDATE operations › findAndUpdateOneObject operations" name="returns null when no data matches the given query." time="0.001">
+    </testcase>
+    <testcase classname="Database can perform UPDATE operations › findAndUpdateOneObject operations" name="returns a document instance when given a valid query and valid update data, specifically for top-level document data." time="0.003">
+    </testcase>
+    <testcase classname="Database can perform UPDATE operations › findAndUpdateOneObject operations" name="returns a document instance when given a valid query and valid update data, specifically for embedded document data." time="0.003">
+    </testcase>
+    <testcase classname="Database can perform UPDATE operations › findAndUpdateOneObject operations" name="returns a document instance when given a valid query, data, and upsert option, when no document already matches the query." time="0.002">
+    </testcase>
+    <testcase classname="Database can perform UPDATE operations › findAndUpdateOneObject operations" name="returns a document creation error when given a valid query and upsert option but invalid data." time="0.001">
+    </testcase>
+    <testcase classname="Database can perform UPDATE operations › findAndUpdateManyDocuments operations" name="returns an empty array when no data matches the given query." time="0.001">
+    </testcase>
+    <testcase classname="Database can perform UPDATE operations › findAndUpdateManyDocuments operations" name="returns an array of modified documents when given a valid query using top-level document properties and valid document data." time="0.006">
+    </testcase>
+    <testcase classname="Database can perform UPDATE operations › findAndUpdateManyDocuments operations" name="returns an array of modified documents when given a valid query using nested-level document properties and valid document data." time="0.004">
+    </testcase>
+    <testcase classname="Database can perform UPDATE operations › findAndUpdateManyDocuments operations" name="if a limit option is provided, the number of documents modified and document instances returned does not exceed the limit." time="0.001">
+    </testcase>
+    <testcase classname="Database can perform UPDATE operations › findAndUpdateManyDocuments operations" name="if an upsert option is provided alongside valid data and a query with no matches, an array containing one new database entry is returned" time="0.002">
+    </testcase>
+    <testcase classname="Database can perform UPDATE operations › findAndUpdateManyDocuments operations" name="invalid update data causes the function to throw an error, passing that up as-is." time="0">
+    </testcase>
+    <testcase classname="Database can perform UPDATE operations › findAndUpdateManyDocuments operations" name="update data that is sometimes valid (eg. a unique email address can be on one document, but not two) will update some documents but interrupt on the first error, passing that error up as-is." time="0.001">
+    </testcase>
+    <testcase classname="Database can perform UPDATE operations › findAndUpdateManyObjects operations" name="returns an empty array when no data matches the given query." time="0.002">
+    </testcase>
+    <testcase classname="Database can perform UPDATE operations › findAndUpdateManyObjects operations" name="returns an array of modified document data objects when given a valid query using top-level document properties and valid document data." time="0.003">
+    </testcase>
+    <testcase classname="Database can perform UPDATE operations › findAndUpdateManyObjects operations" name="returns an array of modified document data objects when given a valid query using nested-level document properties and valid document data." time="0.004">
+    </testcase>
+    <testcase classname="Database can perform UPDATE operations › findAndUpdateManyObjects operations" name="if a limit option is provided, the number of documents modified and objects returned does not exceed the limit." time="0.001">
+    </testcase>
+    <testcase classname="Database can perform UPDATE operations › findAndUpdateManyObjects operations" name="if an upsert option is provided alongside valid data and a query with no matches, an array containing one new database entry is returned" time="0.002">
+    </testcase>
+    <testcase classname="Database can perform UPDATE operations › findAndUpdateManyObjects operations" name="invalid update data causes the function to throw an error, passing that up as-is." time="0.001">
+    </testcase>
+    <testcase classname="Database can perform UPDATE operations › findAndUpdateManyObjects operations" name="update data that is sometimes valid (eg. a unique email address can be on one document, but not two) will update some documents but interrupt on the first error, passing that error up as-is." time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="tests\js\NedbClientCREATE.test.js" errors="0" failures="0" skipped="0" timestamp="2025-01-22T03:37:26" time="0.52" tests="7">
+    <testcase classname="Database can perform CREATE operations › insertOne (object) operations" name="returns an appropriate object when given valid data for database insertion." time="0.078">
+    </testcase>
+    <testcase classname="Database can perform CREATE operations › insertMany (objects) operations" name="returns an appropriate array of objects when given a valid array of data for database insertion." time="0.163">
+    </testcase>
+    <testcase classname="Database can perform CREATE operations › insertMany (objects) operations" name="throws an error when attempting to make a document with invalid data." time="0.001">
+    </testcase>
+    <testcase classname="Database can perform CREATE operations › createOne (document) operations" name="returns an appropriate object when given valid data for database insertion." time="0.053">
+    </testcase>
+    <testcase classname="Database can perform CREATE operations › createOne (document) operations" name="throws an error when attempting to make a document with invalid data." time="0.001">
+    </testcase>
+    <testcase classname="Database can perform CREATE operations › createMany (documents) operations" name="returns an appropriate array of document instances when given a valid array of data for database insertion." time="0.158">
+    </testcase>
+    <testcase classname="Database can perform CREATE operations › createMany (documents) operations" name="throws an error when attempting to make a document with invalid data." time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="tests\js\NedbDocumentValidations.test.js" errors="0" failures="0" skipped="0" timestamp="2025-01-22T03:37:27" time="0.129" tests="12">
+    <testcase classname="NedbDocument validation tests..." name="documents inherit from NedbDocument." time="0.001">
+    </testcase>
+    <testcase classname="NedbDocument validation tests..." name="all rules work when valid data is supplied that obeys the rules." time="0.027">
+    </testcase>
+    <testcase classname="NedbDocument validation tests..." name="a document instance should be able to save its data to its own database record." time="0.008">
+    </testcase>
+    <testcase classname="NedbDocument validation tests..." name="a document instance can exist separate from any database and still validate successfully." time="0.002">
+    </testcase>
+    <testcase classname="NedbDocument validation tests..." name="a document can delete itself." time="0.015">
+    </testcase>
+    <testcase classname="NedbDocument validation tests... › NedbDocument error-handling tests per rule..." name="Invalid data given for a property with a required constraint throws a required-specific error." time="0.013">
+    </testcase>
+    <testcase classname="NedbDocument validation tests... › NedbDocument error-handling tests per rule..." name="Invalid data given for a property with a unique constraint throws a unique-specific error." time="0.003">
+    </testcase>
+    <testcase classname="NedbDocument validation tests... › NedbDocument error-handling tests per rule..." name="Invalid data given for a property of a specified type throws a type-specific error." time="0.001">
+    </testcase>
+    <testcase classname="NedbDocument validation tests... › NedbDocument error-handling tests per rule..." name="Invalid data given for a property with a strict min constraint throws a minmax-specific error." time="0.002">
+    </testcase>
+    <testcase classname="NedbDocument validation tests... › NedbDocument error-handling tests per rule..." name="Invalid data given for a property with a strict max constraint throws a minmax-specific error." time="0.001">
+    </testcase>
+    <testcase classname="NedbDocument validation tests... › NedbDocument error-handling tests per rule..." name="Invalid data given for a property with a choices constraint throws a choices-specific error." time="0.001">
+    </testcase>
+    <testcase classname="NedbDocument validation tests... › NedbDocument error-handling tests per rule..." name="Invalid data given for a property with a choices constraint throws a choices-specific error." time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="tests\js\NedbClientREAD.test.js" errors="0" failures="0" skipped="0" timestamp="2025-01-22T03:37:27" time="0.094" tests="26">
+    <testcase classname="Database can perform READ operations › findOneDocument operations" name="can retrieve one document." time="0.001">
+    </testcase>
+    <testcase classname="Database can perform READ operations › findOneDocument operations" name="can retrieve a random document when given an empty query object." time="0.001">
+    </testcase>
+    <testcase classname="Database can perform READ operations › findOneDocument operations" name="can retrieve the correct document when given a query object containing top-level data keys." time="0.001">
+    </testcase>
+    <testcase classname="Database can perform READ operations › findOneDocument operations" name="can retrieve the correct document when given a query object containing nested-level data keys." time="0.001">
+    </testcase>
+    <testcase classname="Database can perform READ operations › findOneDocument operations" name="returns null when the query does not match anything" time="0.001">
+    </testcase>
+    <testcase classname="Database can perform READ operations › findOneDocument operations" name="throws an error if attempting to query a collection not found in the database." time="0.001">
+    </testcase>
+    <testcase classname="Database can perform READ operations › findManyDocuments operations" name="can retrieve ALL documents." time="0.001">
+    </testcase>
+    <testcase classname="Database can perform READ operations › findManyDocuments operations" name="can retrieve the correct documents when given a query object containing top-level data keys." time="0">
+    </testcase>
+    <testcase classname="Database can perform READ operations › findManyDocuments operations" name="can retrieve the correct documents when given a query object containing nested-level data keys." time="0">
+    </testcase>
+    <testcase classname="Database can perform READ operations › findManyDocuments operations" name="returns null when the query does not match anything" time="0.001">
+    </testcase>
+    <testcase classname="Database can perform READ operations › findManyDocuments operations" name="can retrieve documents and limit the number of documents returned." time="0.001">
+    </testcase>
+    <testcase classname="Database can perform READ operations › findManyDocuments operations" name="throws an error if attempting to query a collection not found in the database." time="0.001">
+    </testcase>
+    <testcase classname="Database can perform READ operations › findOneObject operations" name="can retrieve one object." time="0.001">
+    </testcase>
+    <testcase classname="Database can perform READ operations › findOneObject operations" name="can retrieve a random object when given an empty query object." time="0.001">
+    </testcase>
+    <testcase classname="Database can perform READ operations › findOneObject operations" name="can retrieve the correct object when given a query object containing top-level data keys." time="0">
+    </testcase>
+    <testcase classname="Database can perform READ operations › findOneObject operations" name="can retrieve the correct object when given a query object containing nested-level data keys." time="0">
+    </testcase>
+    <testcase classname="Database can perform READ operations › findOneObject operations" name="returns null when the query does not match anything" time="0">
+    </testcase>
+    <testcase classname="Database can perform READ operations › findOneObject operations" name="throws an error if attempting to query a collection not found in the database." time="0.001">
+    </testcase>
+    <testcase classname="Database can perform READ operations › findOneObject operations" name="returns an object containing specific keys if a projection option is provided for a valid query." time="0.002">
+    </testcase>
+    <testcase classname="Database can perform READ operations › findManyObjects operations" name="can retrieve ALL objects." time="0">
+    </testcase>
+    <testcase classname="Database can perform READ operations › findManyObjects operations" name="can retrieve the correct objects when given a query object containing top-level data keys." time="0.001">
+    </testcase>
+    <testcase classname="Database can perform READ operations › findManyObjects operations" name="can retrieve the correct objects when given a query object containing nested-level data keys." time="0.003">
+    </testcase>
+    <testcase classname="Database can perform READ operations › findManyObjects operations" name="returns null when the query does not match anything" time="0.001">
+    </testcase>
+    <testcase classname="Database can perform READ operations › findManyObjects operations" name="can retrieve objects and limit the number of objects returned." time="0.001">
+    </testcase>
+    <testcase classname="Database can perform READ operations › findManyObjects operations" name="throws an error if attempting to query a collection not found in the database." time="0">
+    </testcase>
+    <testcase classname="Database can perform READ operations › findManyObjects operations" name="returns an array of object containing specific keys if a projection option is provided for a valid query." time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="tests\js\NedbClientDELETE.test.js" errors="0" failures="0" skipped="0" timestamp="2025-01-22T03:37:27" time="0.067" tests="4">
+    <testcase classname="Database can perform DELETE operations › findAndDeleteOne operations" name="returns 0 when no documents match the given query, and no deletions occur." time="0.001">
+    </testcase>
+    <testcase classname="Database can perform DELETE operations › findAndDeleteOne operations" name="returns a positive number when at least one document does match the given query, and deletions do occur." time="0.002">
+    </testcase>
+    <testcase classname="Database can perform DELETE operations › findAndDeleteMany operations" name="returns 0 when no documents match the given query, and no deletions occur." time="0.001">
+    </testcase>
+    <testcase classname="Database can perform DELETE operations › findAndDeleteMany operations" name="returns a positive number when at least one document does match the given query, and deletions do occur." time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="tests\js\NedbDocument.test.js" errors="0" failures="0" skipped="0" timestamp="2025-01-22T03:37:27" time="0.066" tests="4">
+    <testcase classname="NedbDocument class..." name="documents inherit from NedbDocument." time="0.001">
+    </testcase>
+    <testcase classname="NedbDocument class... › databaseless instances..." name="can be created outside of a database." time="0">
+    </testcase>
+    <testcase classname="NedbDocument class... › databaseless instances..." name="can validate themselves." time="0.001">
+    </testcase>
+    <testcase classname="NedbDocument class... › database-stored instances..." name="can be created via a database client." time="0.015">
+    </testcase>
+  </testsuite>
+  <testsuite name="tests\js\NedbDocInheritance.test.js" errors="0" failures="0" skipped="0" timestamp="2025-01-22T03:37:27" time="0.069" tests="2">
+    <testcase classname="NedbDocument validation tests..." name="documents inherit from NedbDocument." time="0.001">
+    </testcase>
+    <testcase classname="NedbDocument validation tests..." name="all rules work when valid data is supplied that obeys the rules." time="0.018">
+    </testcase>
+  </testsuite>
+  <testsuite name="tests\js\NedbClientGeneral.test.js" errors="0" failures="0" skipped="0" timestamp="2025-01-22T03:37:27" time="0.066" tests="4">
+    <testcase classname="NedbClient class..." name="instances can exist in SuperCamo static class." time="0.001">
+    </testcase>
+    <testcase classname="NedbClient class..." name="specific instance exists in SuperCamo static class and has valid data." time="0">
+    </testcase>
+    <testcase classname="NedbClient class instances..." name="specific instance has valid data." time="0.001">
+    </testcase>
+    <testcase classname="NedbClient class instances..." name="can count documents in a collection that match a given query." time="0.016">
+    </testcase>
+  </testsuite>
+  <testsuite name="tests\js\SuperCamo.test.js" errors="0" failures="0" skipped="0" timestamp="2025-01-22T03:37:27" time="0.061" tests="6">
+    <testcase classname="SuperCamo static class..." name="can create a new database client." time="0.001">
+    </testcase>
+    <testcase classname="SuperCamo static class..." name="can retrieve a client from list of clients." time="0">
+    </testcase>
+    <testcase classname="SuperCamo static class..." name="cannot create another client with an existing client&apos;s name." time="0.005">
+    </testcase>
+    <testcase classname="SuperCamo static class..." name="cannot delete a database client or its data if that database does not exist." time="0.001">
+    </testcase>
+    <testcase classname="SuperCamo static class..." name="can disconnect from a database client." time="0">
+    </testcase>
+    <testcase classname="SuperCamo static class..." name="returns 0 if attempting to disconnect from a database that is not connected." time="0">
+    </testcase>
+  </testsuite>
+</testsuites>
