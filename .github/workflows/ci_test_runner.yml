@@ -24,6 +24,7 @@ jobs:
           path: reports/jest-junit.xml
 
   report:
+    needs: [test-run]
     name: Create Test Report
     runs-on: ubuntu-latest
     steps:
