@@ -1,7 +1,7 @@
 name: 'Test Report'
 on:
   workflow_run:
-    workflows: ['CI Test Runner']                     # runs after CI workflow
+    workflows: ['CI Test Runner']                     
     types:
       - completed
 permissions:
@@ -12,9 +12,15 @@ jobs:
   report:
     runs-on: ubuntu-latest
     steps:
-    - uses: dorny/test-reporter@v1
+
+    - name: Generate test report
+      uses: dorny/test-reporter@v1
+      id: reporter
       with:
-        artifact: test-results            # artifact name
-        name: JEST Tests                  # Name of the check run which will be created
-        path: '*.xml'                     # Path to test results (inside artifact .zip)
-        reporter: jest-junit              # Format of test results
+        artifact: test-results            
+        name: Jest Test Report                  
+        path: '*.xml'                     
+        reporter: jest-junit           
+
+    - name: Show the test report URL
+      run: echo ${{ steps.reporter.outputs.url_html }}
