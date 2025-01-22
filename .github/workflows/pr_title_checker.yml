@@ -10,6 +10,7 @@ on:
       - synchronize
 jobs:
   lint-pr:
+    name: Validate PR Title as a Conventional Commit
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
