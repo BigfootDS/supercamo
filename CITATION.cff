@@ -1,0 +1,29 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: SuperCamo
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Alex
+    family-names: Stormwood
+    email: alex@bigfootds.com
+    affiliation: BigfootDS
+    orcid: 'https://orcid.org/0009-0008-2183-7041'
+repository-code: 'https://github.com/BigfootDS/supercamo'
+url: 'https://bigfootds.github.io/supercamo/'
+abstract: >-
+  Modern ODM for NeDB, built specifically for BigfootDS' needs.
+keywords:
+  - nodejs
+  - javascript
+  - database
+  - nosql
+  - odm
+  - typescript
+license: MIT
+version: 1.0.6
+date-released: '2024-10-19'
